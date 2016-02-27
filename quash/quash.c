@@ -10,7 +10,12 @@
 #include "quash.h" // Putting this above the other includes allows us to ensure
                    // this file's headder's #include statements are self
                    // contained.
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+//#include <strings.h>
+#include <errno.h>
+#include <sys/wait.h>
 #include <string.h>
 
 /**************************************************************************
@@ -23,6 +28,7 @@
 // compilation unit (this file and all files that include it). This is similar
 // to private in other languages.
 static bool running;
+int status;
 
 /**************************************************************************
  * Private Functions 
@@ -37,6 +43,35 @@ static void start() {
 /**************************************************************************
  * Public Functions 
  **************************************************************************/
+void exec_cmd(command_t cmd)
+{
+	int pid = 0;//fork();
+	if(!pid)
+	{
+
+
+		int slen = strcspn(cmd.cmdstr," ");
+		char path[slen];
+		strncpy(path, cmd.cmdstr, slen);
+		printf("\n%s\n",path);
+		/*if((execl(,cmd.cmdstr,(char *)0))<0)
+		{
+			fprint(stderr, "\nError execing %s. Error# %d\n",cmd.cmdstr, errno);
+			return EXIT_FAILURE;
+		}*/
+		exit(0);
+	}
+	else
+	{
+		printf("[%d] is running\n", pid);
+		if((waitpid(pid,&status,0))==-1)
+		{
+			fprintf(stderr, "Process encountered an error. ERROR%d", errno);
+			//return EXIT_FAILURE;
+		}
+	}
+}
+
 bool is_running() {
   return running;
 }
@@ -85,10 +120,12 @@ int main(int argc, char** argv) {
     // this while loop. It is just an example.
 
     // The commands should be parsed, then executed.
-    if (!strcmp(cmd.cmdstr, "exit"))
+    if (!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
+
       terminate(); // Exit Quash
     else 
-      puts(cmd.cmdstr); // Echo the input string
+      exec_cmd(cmd);
+      //puts(cmd.cmdstr); // Echo the input string
   }
 
   return EXIT_SUCCESS;
