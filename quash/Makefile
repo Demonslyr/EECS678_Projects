@@ -52,6 +52,10 @@ doc: $(CFILES) $(HFILES) $(DOXYGENCONF) README.md
 # we will be able to build your project from the code you gave us
 testsubmit: submit unsubmit
 
+#for exec testing
+sTest:
+	gcc --std=c99 -Wall -g -Og sTest.c -o sTest
+
 # Build a safeassign friendly submission of the quash project
 submit: clean
 #	Perform renaming copies across the Makefile and all .c and .h
