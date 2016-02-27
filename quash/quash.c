@@ -48,18 +48,13 @@ void exec_cmd(command_t cmd)
 	int pid = 0;//fork();
 	if(!pid)
 	{
-
-
-		int slen = strcspn(cmd.cmdstr," ");
-		char path[slen];
-		strncpy(path, cmd.cmdstr, slen);
-		printf("\n%s\n",path);
+		printf("\n%s\n",cmd.execName);
 		/*if((execl(,cmd.cmdstr,(char *)0))<0)
 		{
 			fprint(stderr, "\nError execing %s. Error# %d\n",cmd.cmdstr, errno);
 			return EXIT_FAILURE;
 		}*/
-		exit(0);
+		//exit(0);
 	}
 	else
 	{
@@ -72,6 +67,11 @@ void exec_cmd(command_t cmd)
 	}
 }
 
+void set(command_t cmd)
+{
+
+}
+
 bool is_running() {
   return running;
 }
@@ -81,9 +81,13 @@ void terminate() {
 }
 
 bool get_command(command_t* cmd, FILE* in) {
+
+  printf("meh : ");
+
   if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) {
     size_t len = strlen(cmd->cmdstr);
     char last_char = cmd->cmdstr[len - 1];
+
 
     if (last_char == '\n' || last_char == '\r') {
       // Remove trailing new line character.
@@ -92,6 +96,10 @@ bool get_command(command_t* cmd, FILE* in) {
     }
     else
       cmd->cmdlen = len;
+    
+    int execLen = strcspn(cmd->cmdstr," ");
+	cmd->execName[execLen] = '\0';
+	strncpy(cmd->execName, cmd->cmdstr, execLen);
     
     return true;
   }
@@ -121,7 +129,6 @@ int main(int argc, char** argv) {
 
     // The commands should be parsed, then executed.
     if (!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
-
       terminate(); // Exit Quash
     else 
       exec_cmd(cmd);

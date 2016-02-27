@@ -15,6 +15,7 @@
  * Specify the maximum number of characters accepted by the command string
  */
 #define MAX_COMMAND_LENGTH (1024)
+#define MAX_PATH_LENGTH (256)
 
 /**
  * Holds information about a command.
@@ -26,9 +27,12 @@ typedef struct command_t {
                                    ///< arbitrarily long strings for
                                    ///< robustness.
   size_t cmdlen;                   ///< length of the cmdstr character buffer
-
+  char execName[MAX_COMMAND_LENGTH];
   // Extend with more fields if needed
 } command_t;
+
+char path[MAX_PATH_LENGTH];
+char home[MAX_PATH_LENGTH];
 
 /**
  * Query if quash should accept more input or not.
