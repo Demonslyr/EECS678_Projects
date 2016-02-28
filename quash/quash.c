@@ -69,11 +69,47 @@ int exec_cmd(command_t cmd)
 
 void set(command_t cmd)
 {
+	char * temp;
+	temp = strtok(cmd.execArgs[1],"=");
 
+	if( !strcmp(temp, "PATH") )
+	{
+		PATH = strtok(NULL, " ");
+		printf("PATH set to %s\n", PATH);
+	}
+	else if( !strcmp(temp, "HOME") )
+	{
+		HOME = strtok(NULL, " ");
+	}
+	else
+	{
+		printf("Cannot set %s\n", temp);
+	}
+
+	printf("PATH1= %s\n", PATH);	
+}
+
+void echo(command_t cmd)
+{
+	printf("%s\n", PATH);
+	/*
+	if( !strcmp(cmd.execArgs[1], "PATH") )
+	{
+		printf("%s\n", PATH);
+	}
+	else if( !strcmp(cmd.execArgs[1], "HOME") )
+	{
+		printf("%s\n", HOME);
+	}
+	else
+	{
+		printf("Cannot echo %s\n", cmd.execArgs[1]);
+	}
+	*/
 }
 
 bool is_running() {
-  return running;
+  	return running;
 }
 
 void terminate() {
@@ -133,25 +169,33 @@ bool get_command(command_t* cmd, FILE* in) {
  * @return program exit status
  */
 int main(int argc, char** argv) { 
-  command_t cmd; //< Command holder argument
-  
-  start();
-  
-  puts("Welcome to Quash!");
-  puts("Type \"exit\" to quit");
+	command_t cmd; //< Command holder argument
+	  
+	start();
+	  
+	puts("Welcome to Quash!");
+	puts("Type \"exit\" to quit");
 
-  // Main execution loop
-  while (is_running() && get_command(&cmd, stdin)) {
-    // NOTE: I would not recommend keeping anything inside the body of
-    // this while loop. It is just an example.
+  	// Main execution loop
+  	while (is_running() && get_command(&cmd, stdin)) {
+	    // NOTE: I would not recommend keeping anything inside the body of
+	    // this while loop. It is just an example.
 
-    // The commands should be parsed, then executed.
-    if (!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
-      terminate(); // Exit Quash
-    else 
-      exec_cmd(cmd);
-      //puts(cmd.cmdstr); // Echo the input string
-  }
+	    printf("PATH1= %s\n", PATH);
 
-  return EXIT_SUCCESS;
+	    // The commands should be parsed, then executed.
+	    if (!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
+	      	terminate(); // Exit Quash
+	  	else if(!strcmp(cmd.execArgs[0], "set"))
+	  		set(cmd);
+	  	else if(!strcmp(cmd.execArgs[0], "echo"))
+	  		echo(cmd);
+	    else 
+	      	exec_cmd(cmd);
+	      	//puts(cmd.cmdstr); // Echo the input string
+
+	    printf("PATH2= %s\n", PATH);
+    }
+
+    return EXIT_SUCCESS;
 }
