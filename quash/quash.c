@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-//#include <strings.h>
 #include <errno.h>
 #include <sys/wait.h>
 #include <string.h>
@@ -43,8 +42,73 @@ static void start() {
 /**************************************************************************
  * Public Functions 
  **************************************************************************/
+bool pathExists(char* path)
+{ 
+  FILE * file = fopen(path,"r");
+  if (file!=NULL)
+  {
+    fclose(file);
+    return true;
+  }
+  return false;
+}
+
+void testPath(char * testPath, char * testReturn)
+{
+  printf(pathExists(testPath)? "true\n" : "false\n");
+
+  char tempPath[MAX_PATH_LENGTH];
+  char * temptok;
+
+  strcpy(testReturn, testPath);
+
+  if(pathExists(testPath))
+  {
+    printf("pathExists\n");
+    return;
+  }
+  else if(testPath[0] == '/')
+  {
+    printf("it was an absolute path\n");
+    return;
+  }
+  else
+  {
+    printf("I'm here\n");
+    printf("PATH: %s\n",PATH);
+    if (PATH[0] == '\0')
+    {
+      printf("PATH is NULL\n");
+      return;
+    }
+    temptok = strtok(PATH,":");
+    
+    while(temptok!=NULL)
+    {
+      strcpy(tempPath,temptok);
+
+      strcat(tempPath,"/");
+      strcat(tempPath, testPath);
+      printf("Checking %s\n",tempPath);
+      if(pathExists(tempPath))
+      {
+        strcpy(testReturn, tempPath);
+      }
+      temptok = strtok(NULL,":");
+    }
+
+  }
+return;
+}
+
 int exec_cmd(command_t cmd)
 {
+  char test[MAX_PATH_LENGTH];
+
+  testPath(cmd.execArgs[0],test);
+
+  strcpy(cmd.execArgs[0], test);
+
 	int pid = fork();
 	if(!pid)
 	{
@@ -169,24 +233,25 @@ int main(int argc, char** argv) {
 	  
 	start();
 	  
-	puts("Welcome to Quash!");
-	puts("Type \"exit\" to quit");
+	puts("Welcome to Qwash!");
+  PATH[0] = '\0';
+  HOME[0] = '\0';
 
-  	// Main execution loop
-  	while (is_running() && get_command(&cmd, stdin)) {
-	    // NOTE: I would not recommend keeping anything inside the body of
-	    // this while loop. It is just an example.
+	// Main execution loop
+	while (is_running() && get_command(&cmd, stdin)) {
+    // NOTE: I would not recommend keeping anything inside the body of
+    // this while loop. It is just an example.
 
-	    // The commands should be parsed, then executed.
-	    if (!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
-	      	terminate(); // Exit Quash
-	  	else if(!strcmp(cmd.execArgs[0], "set"))
-	  		set(cmd);
-	  	else if(!strcmp(cmd.execArgs[0], "echo"))
-	  		echo(cmd);
-	    else 
-	      	exec_cmd(cmd);
-	      	//puts(cmd.cmdstr); // Echo the input string
+    // The commands should be parsed, then executed.
+    if (!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
+      	terminate(); // Exit Quash
+  	else if(!strcmp(cmd.execArgs[0], "set"))
+  		set(cmd);
+  	else if(!strcmp(cmd.execArgs[0], "echo"))
+  		echo(cmd);
+    else 
+      	exec_cmd(cmd);
+      	//puts(cmd.cmdstr); // Echo the input string
     }
 
     return EXIT_SUCCESS;
