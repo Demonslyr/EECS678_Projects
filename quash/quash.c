@@ -105,8 +105,6 @@ bool pathExists(char* path)
 
 void testPath(char * testPath, char * testReturn)
 {
-    printf(pathExists(testPath)? "true\n" : "false\n");
-
     char tempPath[MAX_PATH_LENGTH];
     char * temptok;
 
@@ -115,14 +113,12 @@ void testPath(char * testPath, char * testReturn)
 
     if(testPath[0] == '/')
     {
-        printf("it was an absolute path\n");
         return;
     }
 
     strcpy( tempPath, WKDIR );
     strcat( tempPath, "/" );
     strcat( tempPath, testPath );
-    printf(" tempPath: %s\n", tempPath );
 
     if( pathExists( tempPath ) )
     {
@@ -132,8 +128,6 @@ void testPath(char * testPath, char * testReturn)
 
     else
     {
-        printf("I'm here\n");
-        printf("PATH: %s\n",PATH);
         if (PATH[0] == '\0')
         {
             printf("PATH is NULL\n");
@@ -147,7 +141,6 @@ void testPath(char * testPath, char * testReturn)
             strcat(tempPath,"/");
             strcat(tempPath, testPath);
 
-            printf("Checking %s\n",tempPath);
             if(pathExists(tempPath))
             {
                 strcpy(testReturn, tempPath);
@@ -244,10 +237,10 @@ bool get_command(command_t* cmd, FILE* in)
 
     if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) 
     {
+        cmd->execBg = false;
         size_t len = strlen(cmd->cmdstr);
         char last_char = cmd->cmdstr[len - 1];
 
-        cmd->execBg = false;
 
         if (last_char == '\n' || last_char == '\r') {
             // Remove trailing new line character.
@@ -276,7 +269,7 @@ bool get_command(command_t* cmd, FILE* in)
             cmd->execArgs[i] = strtok(NULL," ");
             i++;
         }
-        cmd->execArgs [i+1] = "\0";
+        cmd->execArgs [i+1] = NULL;
 
         return true;
     }
@@ -305,8 +298,6 @@ int main(int argc, char** argv) {
   sa.sa_handler = catchChild;
   sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
   
-  //PATH[0] = '\0';
-  //HOME[0] = '\0';
   strcpy( PATH, getenv("PATH") );
   strcpy( HOME, getenv("HOME") );
   strcpy( WKDIR, HOME );

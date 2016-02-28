@@ -26,10 +26,10 @@ typedef struct command_t {
                                    ///< to modify this to accept
                                    ///< arbitrarily long strings for
                                    ///< robustness.
-  	size_t cmdlen;                   ///< length of the cmdstr character buffer
-  	// Extend with more fields if needed
-  	char* execArgs[MAX_PATH_LENGTH] ;
+    size_t cmdlen;                   ///< length of the cmdstr character buffer
+    // Extend with more fields if needed
   	bool execBg;//true if this is a background execution
+    char* execArgs[MAX_PATH_LENGTH] ;
 } command_t;
 
 /**
