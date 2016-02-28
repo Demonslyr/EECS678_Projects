@@ -41,11 +41,17 @@ char HOME[MAX_PATH_LENGTH];
 char WKDIR[MAX_PATH_LENGTH];
 
 /**
+*SIGCHLD handler
+*/
+void catchChild();
+
+/**
  * Query if quash should accept more input or not.
  *
  * @return True if Quash should accept more input and false otherwise
  */
 bool is_running();
+
 
 /**
  * Causes the execution loop to end.

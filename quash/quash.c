@@ -10,12 +10,14 @@
 #include "quash.h" // Putting this above the other includes allows us to ensure
                    // this file's headder's #include statements are self
                    // contained.
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <signal.h>
+ #include <setjmp.h>
 
 /**************************************************************************
  * Private Variables
@@ -27,6 +29,7 @@
 // compilation unit (this file and all files that include it). This is similar
 // to private in other languages.
 static bool running;
+//sigjmp_buf env;
 int status;
 
 /**************************************************************************
@@ -42,6 +45,19 @@ static void start() {
 /**************************************************************************
  * Public Functions 
  **************************************************************************/
+void catchChild(int signum)//child return or terminate callback
+{
+  printf("Child died!%d\n",signum);
+  pid_t pid;
+  int status;
+  while((pid = waitpid(-1,&status,WNOHANG)) != -1)
+  {
+    printf("I got in the while!\n");
+    //unregister_child(pid,status);
+  }
+  printf("PID: %1d\n",pid);
+  //siglongjmp(env,1);
+}
 
 void pwd()
 {
@@ -51,9 +67,6 @@ void pwd()
 
 void cd(command_t cmd)
 {
-  char * temp;
-  //temp = strtok(cmd.cmdstr," ");
-  //temp = strtok(NULL," ");
   if (cmd.execArgs[1] == NULL)
   {
     if (HOME[0] == '\0')
@@ -153,7 +166,7 @@ int exec_cmd(command_t cmd)
   testPath(cmd.execArgs[0],test);
 
   strcpy(cmd.execArgs[0], test);
-
+  //sigsetjmp(env,1);
 	int pid = fork();
 	if(!pid)
 	{
@@ -281,13 +294,23 @@ int main(int argc, char** argv) {
 	command_t cmd; //< Command holder argument
 	  
 	start();
-	  
-	puts("hOi! Welcome to Quash!");
+	
+  //signal response;
+  struct sigaction sa;
+  sigset_t mask_set;
+  sigfillset(&mask_set);
+  sigdelset(&mask_set,SIGINT);
+  sigdelset(&mask_set,SIGTSTP);
+  sa.sa_handler = catchChild;
+  sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
+  
   //PATH[0] = '\0';
   //HOME[0] = '\0';
   strcpy( PATH, getenv("PATH") );
   strcpy( HOME, getenv("HOME") );
   strcpy( WKDIR, HOME );
+
+  puts("hOi! Welcome to Quash!");
 
 	// Main execution loop
 	while (is_running() && get_command(&cmd, stdin)) {

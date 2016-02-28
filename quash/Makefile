@@ -2,7 +2,7 @@ STUDENTID = 2298962-2213976
 PROGNAME = quash
 
 CC = gcc --std=c99
-CFLAGS = -Wall -g -Og
+CFLAGS = -Wall -D_XOPEN_SOURCE -g -Og
 
 
 ####################################################################

@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 
 int main(int argc, char** argv) 
 {
+	sleep(2);
 	if (argv[1] == NULL)
 	{
 		printf("\nI gots no arguments on me! Also %s\n", argv[0]);
