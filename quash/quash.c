@@ -42,6 +42,43 @@ static void start() {
 /**************************************************************************
  * Public Functions 
  **************************************************************************/
+
+void pwd()
+{
+  printf("%s\n",WKDIR);
+  return;
+}
+
+void cd(command_t cmd)
+{
+  char * temp;
+  //temp = strtok(cmd.cmdstr," ");
+  //temp = strtok(NULL," ");
+  if (cmd.execArgs[1] == NULL)
+  {
+    if (HOME[0] == '\0')
+    {
+      printf("HOME was NULL. No change made to the Working directory.");
+      return;
+    }
+    
+    printf("No directory specified\n");
+    strcpy( WKDIR, HOME );
+  }
+  else
+  {
+    strcat( WKDIR, "/");
+    strcat( WKDIR, cmd.execArgs[1] );
+  }
+  return;
+}
+
+void jobs()
+{
+  printf("Not Yet Implimented.\n");
+  return;
+}
+
 bool pathExists(char* path)
 { 
   FILE * file = fopen(path,"r");
@@ -62,16 +99,24 @@ void testPath(char * testPath, char * testReturn)
 
   strcpy(testReturn, testPath);
 
-  if(pathExists(testPath))
-  {
-    printf("pathExists\n");
-    return;
-  }
-  else if(testPath[0] == '/')
+
+  if(testPath[0] == '/')
   {
     printf("it was an absolute path\n");
     return;
   }
+
+  strcpy( tempPath, WKDIR );
+  strcat( tempPath, "/" );
+  strcat( tempPath, testPath );
+  printf(" tempPath: %s\n", tempPath );
+
+  if( pathExists( tempPath ) )
+  {
+    strcpy( testReturn, tempPath );
+    return;
+  }
+
   else
   {
     printf("I'm here\n");
@@ -86,9 +131,9 @@ void testPath(char * testPath, char * testReturn)
     while(temptok!=NULL)
     {
       strcpy(tempPath,temptok);
-
       strcat(tempPath,"/");
       strcat(tempPath, testPath);
+
       printf("Checking %s\n",tempPath);
       if(pathExists(tempPath))
       {
@@ -162,6 +207,10 @@ void echo(command_t cmd)
 	{
 		printf("%s\n", HOME);
 	}
+  else if( !strcmp(cmd.execArgs[1], "$WKDIR") )
+  {
+    printf("%s\n", WKDIR);
+  }
 	else
 	{
 		printf("Cannot echo %s\n", cmd.execArgs[1]);
@@ -176,10 +225,10 @@ void terminate() {
   running = false;
 }
 
-bool get_command(command_t* cmd, FILE* in) {
-
-  printf("meh : ");
-
+bool get_command(command_t* cmd, FILE* in) 
+{
+  printf( "     meh:~%s$ ", WKDIR );
+  
   if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) {
     size_t len = strlen(cmd->cmdstr);
     char last_char = cmd->cmdstr[len - 1];
@@ -233,9 +282,12 @@ int main(int argc, char** argv) {
 	  
 	start();
 	  
-	puts("Welcome to Qwash!");
-  PATH[0] = '\0';
-  HOME[0] = '\0';
+	puts("hOi! Welcome to Quash!");
+  //PATH[0] = '\0';
+  //HOME[0] = '\0';
+  strcpy( PATH, getenv("PATH") );
+  strcpy( HOME, getenv("HOME") );
+  strcpy( WKDIR, HOME );
 
 	// Main execution loop
 	while (is_running() && get_command(&cmd, stdin)) {
@@ -243,12 +295,18 @@ int main(int argc, char** argv) {
     // this while loop. It is just an example.
 
     // The commands should be parsed, then executed.
-    if (!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
+    if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
       	terminate(); // Exit Quash
   	else if(!strcmp(cmd.execArgs[0], "set"))
-  		set(cmd);
+  		set(cmd);//set globa variables
   	else if(!strcmp(cmd.execArgs[0], "echo"))
   		echo(cmd);
+    else if(!strcmp(cmd.execArgs[0], "pwd"))
+      pwd(cmd);
+    else if(!strcmp(cmd.execArgs[0], "cd"))
+      cd(cmd);
+    else if(!strcmp(cmd.execArgs[0], "jobs"))
+      jobs();
     else 
       	exec_cmd(cmd);
       	//puts(cmd.cmdstr); // Echo the input string

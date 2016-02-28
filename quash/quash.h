@@ -29,11 +29,16 @@ typedef struct command_t {
   	size_t cmdlen;                   ///< length of the cmdstr character buffer
   	// Extend with more fields if needed
   	char* execArgs[MAX_PATH_LENGTH] ;
-  	bool execBg;
+  	bool execBg;//true if this is a background execution
 } command_t;
 
+/**
+ * Global variables.
+ */
 char PATH[MAX_PATH_LENGTH];
 char HOME[MAX_PATH_LENGTH];
+
+char WKDIR[MAX_PATH_LENGTH];
 
 /**
  * Query if quash should accept more input or not.
@@ -46,6 +51,16 @@ bool is_running();
  * Causes the execution loop to end.
  */
 void terminate();
+
+/**
+ * Prints the working directory.
+ */
+void pwd();
+
+/**
+ * changes the workign directory.
+ */
+void cd(command_t cmd);
 
 /**
  * Tries to execute command
