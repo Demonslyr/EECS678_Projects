@@ -8,8 +8,8 @@
  * Included Files
  **************************************************************************/ 
 #include "quash.h" // Putting this above the other includes allows us to ensure
-                   // this file's headder's #include statements are self
-                   // contained.
+// this file's headder's #include statements are self
+// contained.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -67,103 +67,106 @@ void pwd()
 
 void cd(command_t cmd)
 {
-  if (cmd.execArgs[1] == NULL)
-  {
-    if (HOME[0] == '\0')
+    char * temp;
+    //temp = strtok(cmd.cmdstr," ");
+    //temp = strtok(NULL," ");
+    if (cmd.execArgs[1] == NULL)
     {
-      printf("HOME was NULL. No change made to the Working directory.");
-      return;
+        if (HOME[0] == '\0')
+        {
+            printf("HOME was NULL. No change made to the Working directory.");
+            return;
+        }
+
+        printf("No directory specified\n");
+        strcpy( WKDIR, HOME );
     }
-    
-    printf("No directory specified\n");
-    strcpy( WKDIR, HOME );
-  }
-  else
-  {
-    strcat( WKDIR, "/");
-    strcat( WKDIR, cmd.execArgs[1] );
-  }
-  return;
+    else
+    {
+        strcat( WKDIR, "/");
+        strcat( WKDIR, cmd.execArgs[1] );
+    }
+    return;
 }
 
 void jobs()
 {
-  printf("Not Yet Implimented.\n");
-  return;
+    printf("Not Yet Implimented.\n");
+    return;
 }
 
 bool pathExists(char* path)
 { 
-  FILE * file = fopen(path,"r");
-  if (file!=NULL)
-  {
-    fclose(file);
-    return true;
-  }
-  return false;
+    FILE * file = fopen(path,"r");
+    if (file!=NULL)
+    {
+        fclose(file);
+        return true;
+    }
+    return false;
 }
 
 void testPath(char * testPath, char * testReturn)
 {
-  printf(pathExists(testPath)? "true\n" : "false\n");
+    printf(pathExists(testPath)? "true\n" : "false\n");
 
-  char tempPath[MAX_PATH_LENGTH];
-  char * temptok;
+    char tempPath[MAX_PATH_LENGTH];
+    char * temptok;
 
-  strcpy(testReturn, testPath);
+    strcpy(testReturn, testPath);
 
 
-  if(testPath[0] == '/')
-  {
-    printf("it was an absolute path\n");
-    return;
-  }
-
-  strcpy( tempPath, WKDIR );
-  strcat( tempPath, "/" );
-  strcat( tempPath, testPath );
-  printf(" tempPath: %s\n", tempPath );
-
-  if( pathExists( tempPath ) )
-  {
-    strcpy( testReturn, tempPath );
-    return;
-  }
-
-  else
-  {
-    printf("I'm here\n");
-    printf("PATH: %s\n",PATH);
-    if (PATH[0] == '\0')
+    if(testPath[0] == '/')
     {
-      printf("PATH is NULL\n");
-      return;
-    }
-    temptok = strtok(PATH,":");
-    
-    while(temptok!=NULL)
-    {
-      strcpy(tempPath,temptok);
-      strcat(tempPath,"/");
-      strcat(tempPath, testPath);
-
-      printf("Checking %s\n",tempPath);
-      if(pathExists(tempPath))
-      {
-        strcpy(testReturn, tempPath);
-      }
-      temptok = strtok(NULL,":");
+        printf("it was an absolute path\n");
+        return;
     }
 
-  }
-return;
+    strcpy( tempPath, WKDIR );
+    strcat( tempPath, "/" );
+    strcat( tempPath, testPath );
+    printf(" tempPath: %s\n", tempPath );
+
+    if( pathExists( tempPath ) )
+    {
+        strcpy( testReturn, tempPath );
+        return;
+    }
+
+    else
+    {
+        printf("I'm here\n");
+        printf("PATH: %s\n",PATH);
+        if (PATH[0] == '\0')
+        {
+            printf("PATH is NULL\n");
+            return;
+        }
+        temptok = strtok(PATH,":");
+
+        while(temptok!=NULL)
+        {
+            strcpy(tempPath,temptok);
+            strcat(tempPath,"/");
+            strcat(tempPath, testPath);
+
+            printf("Checking %s\n",tempPath);
+            if(pathExists(tempPath))
+            {
+                strcpy(testReturn, tempPath);
+            }
+            temptok = strtok(NULL,":");
+        }
+
+    }
+    return;
 }
 
 int exec_cmd(command_t cmd)
 {
-  char test[MAX_PATH_LENGTH];
+    char test[MAX_PATH_LENGTH];
 
-  testPath(cmd.execArgs[0],test);
+    testPath(cmd.execArgs[0],test);
 
   strcpy(cmd.execArgs[0], test);
   //sigsetjmp(env,1);
@@ -180,107 +183,110 @@ int exec_cmd(command_t cmd)
 
 	printf("[%d] is running\n", pid);
 
-	if((waitpid(pid,&status,0))==-1)
-	{
-		fprintf(stderr, "Process encountered an error. ERROR%d", errno);
-		return EXIT_FAILURE;
-	}
+    printf("[%d] is running\n", pid);
 
-	return(0);
+    if((waitpid(pid,&status,0))==-1)
+    {
+        fprintf(stderr, "Process encountered an error. ERROR%d", errno);
+        return EXIT_FAILURE;
+    }
+
+    return(0);
 }
 
 void set(command_t cmd)
 {
-	char * temp;
-	temp = strtok(cmd.execArgs[1],"=");
+    char * temp;
+    temp = strtok(cmd.execArgs[1],"=");
 
-	if( !strcmp(temp, "PATH") )
-	{
-		strcpy(PATH, strtok(NULL, " "));
-		printf("PATH set to %s\n", PATH);
-	}
-	else if( !strcmp(temp, "HOME") )
-	{
-		strcpy(HOME, strtok(NULL, " "));
-		printf("HOME set to %s\n", HOME);
-	}
-	else
-	{
-		printf("Cannot set %s\n", temp);
-	}	
+    if( !strcmp(temp, "PATH") )
+    {
+        strcpy(PATH, strtok(NULL, " "));
+        printf("PATH set to %s\n", PATH);
+    }
+    else if( !strcmp(temp, "HOME") )
+    {
+        strcpy(HOME, strtok(NULL, " "));
+        printf("HOME set to %s\n", HOME);
+    }
+    else
+    {
+        printf("Cannot set %s\n", temp);
+    }	
 }
 
 void echo(command_t cmd)
 {
-	if( !strcmp(cmd.execArgs[1], "$PATH") )
-	{
-		printf("%s\n", PATH);
-	}
-	else if( !strcmp(cmd.execArgs[1], "$HOME") )
-	{
-		printf("%s\n", HOME);
-	}
-  else if( !strcmp(cmd.execArgs[1], "$WKDIR") )
-  {
-    printf("%s\n", WKDIR);
-  }
-	else
-	{
-		printf("Cannot echo %s\n", cmd.execArgs[1]);
-	}
+    if( !strcmp(cmd.execArgs[1], "$PATH") )
+    {
+        printf("%s\n", PATH);
+    }
+    else if( !strcmp(cmd.execArgs[1], "$HOME") )
+    {
+        printf("%s\n", HOME);
+    }
+    else if( !strcmp(cmd.execArgs[1], "$WKDIR") )
+    {
+        printf("%s\n", WKDIR);
+    }
+    else
+    {
+        printf("Cannot echo %s\n", cmd.execArgs[1]);
+    }
 }
 
 bool is_running() {
-  	return running;
+    return running;
 }
 
 void terminate() {
-  running = false;
+    running = false;
 }
 
 bool get_command(command_t* cmd, FILE* in) 
 {
-  printf( "     meh:~%s$ ", WKDIR );
-  
-  if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) {
-    size_t len = strlen(cmd->cmdstr);
-    char last_char = cmd->cmdstr[len - 1];
+    printf( "     meh:~%s$ ", WKDIR );
 
-    cmd->execBg = false;
+    if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) 
+    {
+        size_t len = strlen(cmd->cmdstr);
+        char last_char = cmd->cmdstr[len - 1];
 
-    if (last_char == '\n' || last_char == '\r') {
-      // Remove trailing new line character.
-      cmd->cmdstr[len - 1] = '\0';
-      cmd->cmdlen = len - 1;
-      len = len - 1;
-      last_char = cmd->cmdstr[len-1];
+        cmd->execBg = false;
+
+        if (last_char == '\n' || last_char == '\r') {
+            // Remove trailing new line character.
+            cmd->cmdstr[len - 1] = '\0';
+            cmd->cmdlen = len - 1;
+            len = len - 1;
+            last_char = cmd->cmdstr[len-1];
+        }
+        else
+            cmd->cmdlen = len;
+
+        if (last_char == '&')
+        {
+            cmd->cmdstr[len - 1] = '\0';
+            cmd->cmdlen = len - 1;
+            cmd->execBg = true;
+        }
+
+        char * temp;
+        temp = strtok(cmd->cmdstr," ");
+        cmd->execArgs[0] = temp;
+
+        int i = 1;
+        while((temp != NULL) && (i<255))
+        {
+            cmd->execArgs[i] = strtok(NULL," ");
+            i++;
+        }
+        cmd->execArgs [i+1] = "\0";
+
+        return true;
     }
     else
-      cmd->cmdlen = len;
-    
-    if (last_char == '&')
-    {
-    	cmd->cmdstr[len - 1] = '\0';
-      	cmd->cmdlen = len - 1;
-      	cmd->execBg = true;
-    }
-
-	char * temp;
-	temp = strtok(cmd->cmdstr," ");
-	cmd->execArgs[0] = temp;
-	    
-	int i = 1;
-	while((temp != NULL) && (i<255))
-	{
-	    cmd->execArgs[i] = strtok(NULL," ");
-	    i++;
-	}
-	cmd->execArgs [i+1] = "\0";
-    
-    return true;
-  }
-  else
-    return false;
+        return false;
 }
 
 /**
@@ -337,3 +343,4 @@ int main(int argc, char** argv) {
 
     return EXIT_SUCCESS;
 }
+
