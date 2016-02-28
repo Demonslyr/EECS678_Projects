@@ -1,4 +1,4 @@
-STUDENTID = XXXXXXX
+STUDENTID = 2298962-2213976
 PROGNAME = quash
 
 CC = gcc --std=c99
@@ -88,6 +88,6 @@ unsubmit: $(STUDENTID)-project1-quash.zip
 
 # Remove all generated files and directories
 clean:
-	-rm -rf $(PROGNAME) *.o *~ doc $(STUDENTID)-project1-quash*
+	-rm -rf $(PROGNAME) *.o *~ doc $(STUDENTID)-project1-quash* sTest
 
 .PHONY: all test doc submit unsubmit testsubmit clean
