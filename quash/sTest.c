@@ -6,7 +6,7 @@ int main(int argc, char** argv)
 {
 	if (argv[1] == NULL)
 	{
-		printf("\nI gots no arguments on me!\n");
+		printf("\nI gots no arguments on me! Also %s\n", argv[0]);
 
 	}
 	else if(argv[2] == NULL)

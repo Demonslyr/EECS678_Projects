@@ -43,18 +43,33 @@ static void start() {
 /**************************************************************************
  * Public Functions 
  **************************************************************************/
-void exec_cmd(command_t cmd)
+int exec_cmd(command_t cmd)
 {
-	int pid = 0;//fork();
+	int pid = fork();
 	if(!pid)
 	{
-		printf("%s\n",cmd.execName);
-		/*if((execl(,cmd.cmdstr,(char *)0))<0)
+    char* execArgs[256] ;
+    char * temp;
+    temp = strtok(cmd.cmdstr," ");
+    execArgs[0] = cmd.execName;
+    
+    int i = 1;
+    while((temp != NULL) && (i<255))
+    {
+      execArgs[i] = strtok(NULL," ");
+      i++;
+    }
+    execArgs [i+1] = "\0";
+
+		//printf("%s\n",cmd.execName);
+    fprintf(stderr, "Ename = %s, str = %s\n",cmd.execName, execArgs[1]);
+		if(execv(cmd.execName,execArgs)<0)
 		{
-			fprint(stderr, "\nError execing %s. Error# %d\n",cmd.cmdstr, errno);
+			fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
 			return EXIT_FAILURE;
-		}*/
-		//exit(0);
+		}
+		exit(0);
+    //return(0);
 	}
 	else
 	{
@@ -62,7 +77,7 @@ void exec_cmd(command_t cmd)
 		if((waitpid(pid,&status,0))==-1)
 		{
 			fprintf(stderr, "Process encountered an error. ERROR%d", errno);
-			//return EXIT_FAILURE;
+			return EXIT_FAILURE;
 		}
 	}
 }
