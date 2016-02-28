@@ -48,28 +48,13 @@ int exec_cmd(command_t cmd)
 	int pid = fork();
 	if(!pid)
 	{
-    char* execArgs[256] ;
-    char * temp;
-    temp = strtok(cmd.cmdstr," ");
-    execArgs[0] = cmd.execName;
-    
-    int i = 1;
-    while((temp != NULL) && (i<255))
-    {
-      execArgs[i] = strtok(NULL," ");
-      i++;
-    }
-    execArgs [i+1] = "\0";
-
-		//printf("%s\n",cmd.execName);
-    fprintf(stderr, "Ename = %s, str = %s\n",cmd.execName, execArgs[1]);
-		if(execv(cmd.execName,execArgs)<0)
+    	fprintf(stderr, "Ename = %s, str = %s\n",cmd.execArgs[0], cmd.execArgs[1]);
+		if(execv(cmd.execArgs[0],cmd.execArgs)<0)
 		{
 			fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
 			return EXIT_FAILURE;
 		}
 		exit(0);
-    //return(0);
 	}
 	else
 	{
@@ -80,6 +65,7 @@ int exec_cmd(command_t cmd)
 			return EXIT_FAILURE;
 		}
 	}
+	return(0);
 }
 
 void set(command_t cmd)
@@ -103,18 +89,36 @@ bool get_command(command_t* cmd, FILE* in) {
     size_t len = strlen(cmd->cmdstr);
     char last_char = cmd->cmdstr[len - 1];
 
+    cmd->execBg = false;
 
     if (last_char == '\n' || last_char == '\r') {
       // Remove trailing new line character.
       cmd->cmdstr[len - 1] = '\0';
       cmd->cmdlen = len - 1;
+      len = len - 1;
+      last_char = cmd->cmdstr[len-1];
     }
     else
       cmd->cmdlen = len;
     
-    int execLen = strcspn(cmd->cmdstr," ");
-	cmd->execName[execLen] = '\0';
-	strncpy(cmd->execName, cmd->cmdstr, execLen);
+    if (last_char == '&')
+    {
+    	cmd->cmdstr[len - 1] = '\0';
+      	cmd->cmdlen = len - 1;
+      	cmd->execBg = true;
+    }
+
+	char * temp;
+	temp = strtok(cmd->cmdstr," ");
+	cmd->execArgs[0] = temp;
+	    
+	int i = 1;
+	while((temp != NULL) && (i<255))
+	{
+	    cmd->execArgs[i] = strtok(NULL," ");
+	    i++;
+	}
+	cmd->execArgs [i+1] = "\0";
     
     return true;
   }

@@ -21,14 +21,15 @@
  * Holds information about a command.
  */
 typedef struct command_t {
-  char cmdstr[MAX_COMMAND_LENGTH]; ///< character buffer to store the
+  	char cmdstr[MAX_COMMAND_LENGTH]; ///< character buffer to store the
                                    ///< command string. You may want
                                    ///< to modify this to accept
                                    ///< arbitrarily long strings for
                                    ///< robustness.
-  size_t cmdlen;                   ///< length of the cmdstr character buffer
-  char execName[MAX_COMMAND_LENGTH];
-  // Extend with more fields if needed
+  	size_t cmdlen;                   ///< length of the cmdstr character buffer
+  	// Extend with more fields if needed
+  	char* execArgs[MAX_PATH_LENGTH] ;
+  	bool execBg;
 } command_t;
 
 char path[MAX_PATH_LENGTH];
