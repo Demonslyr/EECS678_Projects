@@ -48,7 +48,7 @@ void exec_cmd(command_t cmd)
 	int pid = 0;//fork();
 	if(!pid)
 	{
-		printf("\n%s\n",cmd.execName);
+		printf("%s\n",cmd.execName);
 		/*if((execl(,cmd.cmdstr,(char *)0))<0)
 		{
 			fprint(stderr, "\nError execing %s. Error# %d\n",cmd.cmdstr, errno);
