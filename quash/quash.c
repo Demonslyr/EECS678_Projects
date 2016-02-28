@@ -52,19 +52,18 @@ int exec_cmd(command_t cmd)
 		if(execv(cmd.execArgs[0],cmd.execArgs)<0)
 		{
 			fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
-			return EXIT_FAILURE;
+			exit(EXIT_FAILURE);
 		}
-		exit(0);
 	}
-	else
+
+	printf("[%d] is running\n", pid);
+
+	if((waitpid(pid,&status,0))==-1)
 	{
-		printf("[%d] is running\n", pid);
-		if((waitpid(pid,&status,0))==-1)
-		{
-			fprintf(stderr, "Process encountered an error. ERROR%d", errno);
-			return EXIT_FAILURE;
-		}
+		fprintf(stderr, "Process encountered an error. ERROR%d", errno);
+		return EXIT_FAILURE;
 	}
+
 	return(0);
 }
 

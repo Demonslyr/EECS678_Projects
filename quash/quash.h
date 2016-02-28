@@ -48,6 +48,18 @@ bool is_running();
 void terminate();
 
 /**
+ * Tries to execute command
+ *
+ * @return 0 if success and error number if failure
+ */
+int exec_cmd(command_t cmd);
+
+/**
+ * Sets global variables
+ */
+void set(command_t cmd);
+
+/**
  *  Read in a command and setup the #command_t struct. Also perform some minor
  *  modifications to the string to remove trailing newline characters.
  *
