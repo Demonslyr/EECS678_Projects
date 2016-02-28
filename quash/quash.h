@@ -32,8 +32,8 @@ typedef struct command_t {
   	bool execBg;
 } command_t;
 
-char * PATH;
-char * HOME;
+char PATH[MAX_PATH_LENGTH];
+char HOME[MAX_PATH_LENGTH];
 
 /**
  * Query if quash should accept more input or not.

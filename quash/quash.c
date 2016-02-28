@@ -74,30 +74,27 @@ void set(command_t cmd)
 
 	if( !strcmp(temp, "PATH") )
 	{
-		PATH = strtok(NULL, " ");
+		strcpy(PATH, strtok(NULL, " "));
 		printf("PATH set to %s\n", PATH);
 	}
 	else if( !strcmp(temp, "HOME") )
 	{
-		HOME = strtok(NULL, " ");
+		strcpy(HOME, strtok(NULL, " "));
+		printf("HOME set to %s\n", HOME);
 	}
 	else
 	{
 		printf("Cannot set %s\n", temp);
-	}
-
-	printf("PATH1= %s\n", PATH);	
+	}	
 }
 
 void echo(command_t cmd)
 {
-	printf("%s\n", PATH);
-	/*
-	if( !strcmp(cmd.execArgs[1], "PATH") )
+	if( !strcmp(cmd.execArgs[1], "$PATH") )
 	{
 		printf("%s\n", PATH);
 	}
-	else if( !strcmp(cmd.execArgs[1], "HOME") )
+	else if( !strcmp(cmd.execArgs[1], "$HOME") )
 	{
 		printf("%s\n", HOME);
 	}
@@ -105,7 +102,6 @@ void echo(command_t cmd)
 	{
 		printf("Cannot echo %s\n", cmd.execArgs[1]);
 	}
-	*/
 }
 
 bool is_running() {
@@ -181,8 +177,6 @@ int main(int argc, char** argv) {
 	    // NOTE: I would not recommend keeping anything inside the body of
 	    // this while loop. It is just an example.
 
-	    printf("PATH1= %s\n", PATH);
-
 	    // The commands should be parsed, then executed.
 	    if (!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
 	      	terminate(); // Exit Quash
@@ -193,8 +187,6 @@ int main(int argc, char** argv) {
 	    else 
 	      	exec_cmd(cmd);
 	      	//puts(cmd.cmdstr); // Echo the input string
-
-	    printf("PATH2= %s\n", PATH);
     }
 
     return EXIT_SUCCESS;
