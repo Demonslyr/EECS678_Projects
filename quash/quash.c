@@ -61,8 +61,8 @@ void catchChild(int signum)//child return or terminate callback
 
 void pwd()
 {
-    printf("%s\n",WKDIR);
-    return;
+  printf("%s\n",WKDIR);
+  return;
 }
 
 void cd(command_t cmd)
