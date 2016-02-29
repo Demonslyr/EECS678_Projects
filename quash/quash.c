@@ -170,8 +170,63 @@ int exec_cmd(command_t cmd)
 
 	int pid = fork();
 	if(!pid)
-	{
-        if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '>'))
+    {
+        if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
+        {          
+            char string[MAX_COMMAND_LENGTH];
+            FILE * file = fopen(cmd.execArgs[cmd.execNumArgs-1], "r");
+
+            while(fgets(string, MAX_COMMAND_LENGTH, file) != NULL)
+            {
+                char* args[MAX_PATH_LENGTH];
+
+                size_t len = strlen(string);
+                char last_char = string[len - 1];
+
+                if (last_char == '\n' || last_char == '\r')
+                {
+                    // Remove trailing new line character.
+                    string[len - 1] = '\0';
+                    len = len - 1;
+                }
+
+                args[0] = test;
+
+                char * temp;
+                temp = strtok(string," ");
+                args[1] = temp;
+                
+                int i = 2;
+                while(((temp = strtok(NULL," ")) != NULL) && (i<255))
+                {
+                    args[i] = temp;
+                    i++;
+                }
+                args[i] = NULL;
+
+                int pid2 = fork();
+                if(!pid2)
+                {
+                    //fprintf(stderr,"in fork2 %s\n", args[1]);
+                    if(execv(test,args)<0)
+                    {
+                        fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
+                        exit(EXIT_FAILURE);
+                    }
+                }
+                else
+                {
+                    if((waitpid(pid2,&status,0))==-1)
+                    {
+                        fprintf(stderr, "Process encountered an error. ERROR%d", errno);
+                        return EXIT_FAILURE;
+                    }
+                }
+                
+            }
+            
+        }
+        else if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '>'))
         {
             cmd.execArgs[cmd.execNumArgs-2] = NULL;
             //replace text.txt with last argument
@@ -308,7 +363,6 @@ bool get_command(command_t* cmd, FILE* in)
         int i = 1;
         while(((temp = strtok(NULL," ")) != NULL) && (i<255))
         {
-
             cmd->execArgs[i] = temp;
             i++;
         }
