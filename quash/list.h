@@ -111,13 +111,14 @@ int delete_from_list(int job_pid)
         if(prev != NULL)
             prev->next = del->next;
 
-        if(del == curr)
-        {
-            curr = prev;
-        }
-        else if(del == head)
+        if(del == head)
         {
             head = del->next;
+        printf("DelNext NULL\n");
+        }
+        else if(del == curr)
+        {
+            curr = prev;
         }
     }
 
@@ -138,50 +139,3 @@ void print_list(void)
     }
     return;
 }
-
-// int main(void)
-// {
-//     int i = 0, ret = 0;
-//     struct test_struct *ptr = NULL;
-
-//     print_list();
-
-//     for(i = 5; i<10; i++)
-//         add_to_list(i,true);
-
-//     print_list();
-
-//     for(i = 4; i>0; i--)
-//         add_to_list(i,false);
-
-//     print_list();
-
-//     for(i = 1; i<10; i += 4)
-//     {
-//         ptr = search_in_list(i, NULL);
-//         if(NULL == ptr)
-//         {
-//             printf("\n Search [val = %d] failed, no such element found\n",i);
-//         }
-//         else
-//         {
-//             printf("\n Search passed [val = %d]\n",ptr->val);
-//         }
-
-//         print_list();
-
-//         ret = delete_from_list(i);
-//         if(ret != 0)
-//         {
-//             printf("\n delete [val = %d] failed, no such element found\n",i);
-//         }
-//         else
-//         {
-//             printf("\n delete [val = %d]  passed \n",i);
-//         }
-
-//         print_list();
-//     }
-
-//     return 0;
-// }

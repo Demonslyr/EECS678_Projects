@@ -142,13 +142,13 @@ void testPath(char * testPath, char * testReturn)
             return;
         }
         temptok = strtok(pathHolder,":");
-        printf("PATH = %s\n",PATH);
+
         while(temptok!=NULL)
         {
             strcpy(tempPath,temptok);
             strcat(tempPath,"/");
             strcat(tempPath, testPath);
-            printf("tempPath: %s\n",tempPath);
+
             if(pathExists(tempPath))
             {
                 strcpy(testReturn, tempPath);
