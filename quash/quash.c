@@ -171,7 +171,7 @@ int exec_cmd(command_t cmd)
 	int pid = fork();
 	if(!pid)
 	{
-        if (!strcmp(cmd.execArgs[cmd.execNumArgs-2], ">"))
+        if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '>'))
         {
             cmd.execArgs[cmd.execNumArgs-2] = NULL;
             //replace text.txt with last argument
