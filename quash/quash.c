@@ -86,6 +86,13 @@ void cd(command_t cmd)
     return;
 }
 
+void reapChild()
+{
+    int pid = waitpid(-1,NULL, WNOHANG);
+    printf("PID: %1d Finished",pid);
+    return;
+}
+
 void jobs()
 {
     printf("Not Yet Implimented.\n");
@@ -163,22 +170,26 @@ int exec_cmd(command_t cmd)
 	int pid = fork();
 	if(!pid)
 	{
-    	fprintf(stderr, "Ename = %s, str = %s\n",cmd.execArgs[0], cmd.execArgs[1]);
+    	//fprintf(stderr, "\nEname = %s, str = %s\n",cmd.execArgs[0], cmd.execArgs[1]);
 		if(execv(cmd.execArgs[0],cmd.execArgs)<0)
 		{
 			fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
 			exit(EXIT_FAILURE);
 		}
+        exit(0);
 	}
-
-	printf("[%d] is running\n", pid);
-    
-    if((waitpid(pid,&status,0))==-1)
-    {
-        fprintf(stderr, "Process encountered an error. ERROR%d", errno);
-        return EXIT_FAILURE;
+    else{
+        if(!cmd.execBg)
+        {
+            if((waitpid(pid,&status,0))==-1)
+            {
+                fprintf(stderr, "Process encountered an error. ERROR%d", errno);
+                return EXIT_FAILURE;
+            }
+        }
+        else
+            printf("[%d] is running\n", pid);
     }
-
     return(0);
 }
 
@@ -295,8 +306,8 @@ int main(int argc, char** argv) {
   sigfillset(&mask_set);
   sigdelset(&mask_set,SIGINT);
   sigdelset(&mask_set,SIGTSTP);
-  sa.sa_handler = catchChild;
-  sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
+  //sa.sa_handler = catchChild;
+  //sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
   
   strcpy( PATH, getenv("PATH") );
   strcpy( HOME, getenv("HOME") );
@@ -322,6 +333,8 @@ int main(int argc, char** argv) {
       cd(cmd);
     else if(!strcmp(cmd.execArgs[0], "jobs"))
       jobs();
+    else if(!strcmp(cmd.execArgs[0], "rch"))
+      reapChild();
     else 
       	exec_cmd(cmd);
       	//puts(cmd.cmdstr); // Echo the input string
