@@ -47,13 +47,13 @@ static void start() {
  **************************************************************************/
 void catchChild(int signum)//child return or terminate callback
 {
-    printf("Child died!%d\n",signum);
+    //printf("Child died!%d\n",signum);
     pid_t pid;
     int status;
     while((pid = waitpid(-1,&status,WNOHANG)) != -1)
     {
-         printf("I got in the while!\n");
-         //unregister_child(pid,status);
+        delete_from_list(pid);
+        //printf("I got in the while!\n");
         siglongjmp(env,1);
     }
     //printf("PID: %1d\n",pid);
@@ -113,11 +113,11 @@ bool pathExists(char* path)
 
 void testPath(char * testPath, char * testReturn)
 {
-    char tempPath[MAX_PATH_LENGTH];
+    char tempPath[MAX_PATH_LENGTH], pathHolder[MAX_PATH_LENGTH];
     char * temptok;
 
     strcpy(testReturn, testPath);
-
+    strcpy(pathHolder, PATH);
 
     if(testPath[0] == '/')
     {
@@ -136,22 +136,23 @@ void testPath(char * testPath, char * testReturn)
 
     else
     {
-        if (PATH[0] == '\0')
+        if (pathHolder == '\0')
         {
             printf("PATH is NULL\n");
             return;
         }
-        temptok = strtok(PATH,":");
-
+        temptok = strtok(pathHolder,":");
+        printf("PATH = %s\n",PATH);
         while(temptok!=NULL)
         {
             strcpy(tempPath,temptok);
             strcat(tempPath,"/");
             strcat(tempPath, testPath);
-
+            printf("tempPath: %s\n",tempPath);
             if(pathExists(tempPath))
             {
                 strcpy(testReturn, tempPath);
+                return;
             }
             temptok = strtok(NULL,":");
         }
@@ -339,8 +340,6 @@ int main(int argc, char** argv) {
         cd(cmd);
     else if(!strcmp(cmd.execArgs[0], "jobs"))
         jobs();
-    else if(!strcmp(cmd.execArgs[0], "rch"))
-        reapChild();
     else 
         exec_cmd(cmd);
     //puts(cmd.cmdstr); // Echo the input string

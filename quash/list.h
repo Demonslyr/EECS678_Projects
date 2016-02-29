@@ -66,7 +66,7 @@ struct test_struct* search_in_list(int job_pid, struct test_struct **prev)
     struct test_struct *tmp = NULL;
     bool found = false;
 
-    printf("\n Searching the list for value [%d] \n",job_pid);
+    //printf("\n Searching the list for value [%d] \n",job_pid);
 
     while(ptr != NULL)
     {
@@ -99,7 +99,6 @@ int delete_from_list(int job_pid)
     struct test_struct *prev = NULL;
     struct test_struct *del = NULL;
 
-    printf("\n Deleting value [%d] from list\n",job_pid);
 
     del = search_in_list(job_pid,&prev);
     if(del == NULL)
@@ -108,6 +107,7 @@ int delete_from_list(int job_pid)
     }
     else
     {
+        printf("\n [%d] %d %s Finished!",del->job_id,del->job_pid,del->job_name);
         if(prev != NULL)
             prev->next = del->next;
 
@@ -133,7 +133,7 @@ void print_list(void)
     
     while(ptr != NULL)
     {
-        printf("\n[%d] %d %s\n",ptr->job_id,ptr->job_pid,ptr->job_name);
+        printf("\n[%d] %d %s",ptr->job_id,ptr->job_pid,ptr->job_name);
         ptr = ptr->next;
     }
     return;
