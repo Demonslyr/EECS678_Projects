@@ -480,29 +480,32 @@ int pipeParse(command_t cmd, command_t * cmdArr)
         else
             cmdArr[i].cmdlen = len;
         
-        fprintf(stderr, "cmdString: %s\n", cmdArr[i].cmdstr);
+        if (last_char == '&')
+        {
+            cmdArr[i].cmdstr[len - 1] = '\0';
+            cmdArr[i].cmdlen = len - 1;
+            cmdArr[i].execBg = true;
+        }
+
+        char * temp2;
+        temp2 = strtok(cmdArr[i].cmdstr," ");
+        cmdArr[i].execArgs[0] = temp2;
+
+        int j = 1;
+        while(((temp2 = strtok(NULL," ")) != NULL) && (j<255))
+        {
+            cmdArr[i].execArgs[j] = temp2;
+            j++;
+        }
+        cmdArr[i].execArgs[j] = NULL;
+
+        cmdArr[i].execNumArgs = j;
+
+        //fprintf(stderr, "cmdString: %s\n", cmdArr[i].cmdstr);
+        //fprintf(stderr, "cmdString: %s %s %s\n", cmdArr[i].execArgs[0], cmdArr[i].execArgs[1], cmdArr[i].execArgs[2]);
     }
 
-    // if (last_char == '&')
-    // {
-    //     cmd->cmdstr[len - 1] = '\0';
-    //     cmd->cmdlen = len - 1;
-    //     cmd->execBg = true;
-    // }
 
-    // char * temp;
-    // temp = strtok(cmd->cmdstr," ");
-    // cmd->execArgs[0] = temp;
-
-    // int i = 1;
-    // while(((temp = strtok(NULL," ")) != NULL) && (i<255))
-    // {
-    //     cmd->execArgs[i] = temp;
-    //     i++;
-    // }
-    // cmd->execArgs [i] = NULL;
-    // //printf("i: %d",i);
-    // cmd->execNumArgs = i;
     return numCommands;
 }
 
