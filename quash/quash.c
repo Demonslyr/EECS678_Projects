@@ -171,7 +171,40 @@ int exec_cmd(command_t cmd)
 	int pid = fork();
 	if(!pid)
     {
-        if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
+        if ((cmd.execNumArgs > 2)&& (strchr(cmd.cmdstr,'|')!= NULL)){
+            char tmpcmdstr [MAX_COMMAND_LENGTH];
+            strcpy(tmpcmdstr,cmdstr);
+
+//             
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+
+
+
+            printf("There was a | in the cmd str\n");
+        }
+        else if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
         {          
             char string[MAX_COMMAND_LENGTH];
             FILE * file = fopen(cmd.execArgs[cmd.execNumArgs-1], "r");
@@ -355,9 +388,10 @@ bool get_command(command_t* cmd, FILE* in)
             cmd->cmdlen = len - 1;
             cmd->execBg = true;
         }
-
+        char tempcmd[MAX_COMMAND_LENGTH];
+        strcpy(tempcmd,cmd->cmdstr);
         char * temp;
-        temp = strtok(cmd->cmdstr," ");
+        temp = strtok(tempcmd," ");
         cmd->execArgs[0] = temp;
 
         int i = 1;
