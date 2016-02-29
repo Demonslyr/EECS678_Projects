@@ -179,26 +179,26 @@ int exec_cmd(command_t cmd)
 // 
 // 
 // 
+// int npipes;
+// int status;
+// char buf[4096];
+// pid_t * pid_a[npipes+1];
+// int * fd_a[(npipes+1)*2];
+// int rsize;
+// 
+// for(int  = 0; i<pipes+1;){pipe(fd_a[i]);i=i+2;}
+// 
+// for(int i=0;i<(npipes+1);i++){
+//  pid_a[i]=fork();
+//  if(!pid_a[i]){
+//      dup2();
+//      dup2();
+//      for(int j = 0;j<[(npipes+1)*2],j++){close(fd_a[j])}
 // 
 // 
 // 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
+//  }
+// }
 
 
 
