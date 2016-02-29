@@ -95,6 +95,11 @@ void testPath(char * testPath, char * testReturn);
 void set(command_t cmd);
 
 /**
+ * Breaks command into array of piped commands
+ */
+int pipeParse(command_t cmd, command_t * cmdArr);
+
+/**
  *  Read in a command and setup the #command_t struct. Also perform some minor
  *  modifications to the string to remove trailing newline characters.
  *

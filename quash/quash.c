@@ -195,7 +195,7 @@ int exec_cmd(command_t cmd)
                 char * temp;
                 temp = strtok(string," ");
                 args[1] = temp;
-                
+
                 int i = 2;
                 while(((temp = strtok(NULL," ")) != NULL) && (i<255))
                 {
@@ -328,7 +328,7 @@ void terminate() {
 
 bool get_command(command_t* cmd, FILE* in) 
 {
-    if (isatty(fileno(stdin)))
+    if (isatty(fileno(in)))
         printf( "     meh:~%s$ ", WKDIR );
     
     sigsetjmp(env,1);
@@ -373,6 +373,49 @@ bool get_command(command_t* cmd, FILE* in)
     }
     else
         return false;
+}
+
+int pipeParse(command_t cmd, command_t * cmdArr)
+{
+    char * temp;
+    temp = strtok(cmd.cmdstr,"|");
+    strcpy(cmdArr[0].cmdstr, temp);
+
+    // cmd->execBg = false;
+    // size_t len = strlen(cmd->cmdstr);
+    // char last_char = cmd->cmdstr[len - 1];
+
+    // if (last_char == '\n' || last_char == '\r') {
+    //     // Remove trailing new line character.
+    //     cmd->cmdstr[len - 1] = '\0';
+    //     cmd->cmdlen = len - 1;
+    //     len = len - 1;
+    //     last_char = cmd->cmdstr[len-1];
+    // }
+    // else
+    //     cmd->cmdlen = len;
+
+    // if (last_char == '&')
+    // {
+    //     cmd->cmdstr[len - 1] = '\0';
+    //     cmd->cmdlen = len - 1;
+    //     cmd->execBg = true;
+    // }
+
+    // char * temp;
+    // temp = strtok(cmd->cmdstr," ");
+    // cmd->execArgs[0] = temp;
+
+    // int i = 1;
+    // while(((temp = strtok(NULL," ")) != NULL) && (i<255))
+    // {
+    //     cmd->execArgs[i] = temp;
+    //     i++;
+    // }
+    // cmd->execArgs [i] = NULL;
+    // //printf("i: %d",i);
+    // cmd->execNumArgs = i;
+    return 0;
 }
 
 /**
