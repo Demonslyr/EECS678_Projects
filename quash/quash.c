@@ -12,6 +12,7 @@
 // contained.
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
@@ -181,6 +182,7 @@ int exec_cmd(command_t cmd)
     else{
         if(!cmd.execBg)
         {
+            //add pid and command w/o path to jobs structure
             if((waitpid(pid,&status,0))==-1)
             {
                 fprintf(stderr, "Process encountered an error. ERROR%d", errno);
