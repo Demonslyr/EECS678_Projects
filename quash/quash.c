@@ -171,9 +171,17 @@ int exec_cmd(command_t cmd)
 	int pid = fork();
 	if(!pid)
     {
-        if ((cmd.execNumArgs > 2)&& (strchr(cmd.cmdstr,'|')!= NULL)){
+        if (strchr(cmd.cmdstr,'|')!= NULL){
             char tmpcmdstr [MAX_COMMAND_LENGTH];
-            strcpy(tmpcmdstr,cmdstr);
+            
+            command_t cmdArr[MAX_PATH_LENGTH];
+            
+            strcpy(tmpcmdstr, cmd.cmdstr);
+
+            int numCommands = pipeParse(cmd, cmdArr);
+            
+            fprintf(stderr, "numCommands: %d\n", numCommands);
+
 
 //             
 // 
@@ -202,7 +210,7 @@ int exec_cmd(command_t cmd)
 
 
 
-            printf("There was a | in the cmd str\n");
+            //printf("There was a | in the cmd str\n");
         }
         else if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
         {          
@@ -388,6 +396,7 @@ bool get_command(command_t* cmd, FILE* in)
             cmd->cmdlen = len - 1;
             cmd->execBg = true;
         }
+
         char tempcmd[MAX_COMMAND_LENGTH];
         strcpy(tempcmd,cmd->cmdstr);
         char * temp;
@@ -411,23 +420,40 @@ bool get_command(command_t* cmd, FILE* in)
 
 int pipeParse(command_t cmd, command_t * cmdArr)
 {
+    int numCommands = 0;
+
     char * temp;
+
     temp = strtok(cmd.cmdstr,"|");
-    strcpy(cmdArr[0].cmdstr, temp);
 
-    // cmd->execBg = false;
-    // size_t len = strlen(cmd->cmdstr);
-    // char last_char = cmd->cmdstr[len - 1];
+    strcpy(cmdArr[numCommands].cmdstr, temp);
 
-    // if (last_char == '\n' || last_char == '\r') {
-    //     // Remove trailing new line character.
-    //     cmd->cmdstr[len - 1] = '\0';
-    //     cmd->cmdlen = len - 1;
-    //     len = len - 1;
-    //     last_char = cmd->cmdstr[len-1];
-    // }
-    // else
-    //     cmd->cmdlen = len;
+    numCommands++;
+
+    while(((temp = strtok(NULL,"|")) != NULL) && (numCommands<255))
+    {
+        strcpy(cmdArr[numCommands].cmdstr, temp+1);
+        numCommands++;
+    }
+
+    for(int i = 0; i < numCommands; i++)
+    {
+        cmdArr[i].execBg = false;
+        size_t len = strlen(cmdArr[i].cmdstr);
+        char last_char = cmdArr[i].cmdstr[len - 1];
+
+        if (last_char == '\n' || last_char == '\r') {
+            // Remove trailing new line character.
+            cmdArr[i].cmdstr[len - 1] = '\0';
+            cmdArr[i].cmdlen = len - 1;
+            len = len - 1;
+            last_char = cmdArr[i].cmdstr[len-1];
+        }
+        else
+            cmdArr[i].cmdlen = len;
+        
+        fprintf(stderr, "cmdString: %s\n", cmdArr[i].cmdstr);
+    }
 
     // if (last_char == '&')
     // {
@@ -449,7 +475,7 @@ int pipeParse(command_t cmd, command_t * cmdArr)
     // cmd->execArgs [i] = NULL;
     // //printf("i: %d",i);
     // cmd->execNumArgs = i;
-    return 0;
+    return numCommands;
 }
 
 /**
