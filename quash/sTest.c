@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv) 
 {
-	sleep(20);
+	sleep(5);
 	if (argv[1] == NULL)
 	{
 		printf("\nI gots no arguments on me! Also %s\n", argv[0]);

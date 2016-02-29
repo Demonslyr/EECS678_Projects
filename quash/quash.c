@@ -251,7 +251,9 @@ void terminate() {
 
 bool get_command(command_t* cmd, FILE* in) 
 {
-    printf( "     meh:~%s$ ", WKDIR );
+    if(!cmd->fromFile)
+        printf( "     meh:~%s$ ", WKDIR );
+    
     sigsetjmp(env,1);
 
     if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) 
@@ -259,7 +261,6 @@ bool get_command(command_t* cmd, FILE* in)
         cmd->execBg = false;
         size_t len = strlen(cmd->cmdstr);
         char last_char = cmd->cmdstr[len - 1];
-
 
         if (last_char == '\n' || last_char == '\r') {
             // Remove trailing new line character.
@@ -323,26 +324,32 @@ int main(int argc, char** argv) {
     puts("hOi! Welcome to Quash!");
 
     // Main execution loop
-    while (is_running() && get_command(&cmd, stdin)) {
-    // NOTE: I would not recommend keeping anything inside the body of
-    // this while loop. It is just an example.
+    while (is_running() && get_command(&cmd, stdin)) 
+    {
+        // NOTE: I would not recommend keeping anything inside the body of
+        // this while loop. It is just an example.
 
-    // The commands should be parsed, then executed.
-    if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
-        terminate(); // Exit Quash
-    else if(!strcmp(cmd.execArgs[0], "set"))
-        set(cmd);//set globa variables
-    else if(!strcmp(cmd.execArgs[0], "echo"))
-        echo(cmd);
-    else if(!strcmp(cmd.execArgs[0], "pwd"))
-        pwd(cmd);
-    else if(!strcmp(cmd.execArgs[0], "cd"))
-        cd(cmd);
-    else if(!strcmp(cmd.execArgs[0], "jobs"))
-        jobs();
-    else 
-        exec_cmd(cmd);
-    //puts(cmd.cmdstr); // Echo the input string
+        // The commands should be parsed, then executed.
+        if(!strcmp(cmd.execArgs[0], "#!meh"))
+        {
+            printf("fromFile");
+            cmd.fromFile = true;
+        }
+        else if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
+            terminate(); // Exit Quash
+        else if(!strcmp(cmd.execArgs[0], "set"))
+            set(cmd);//set globa variables
+        else if(!strcmp(cmd.execArgs[0], "echo"))
+            echo(cmd);
+        else if(!strcmp(cmd.execArgs[0], "pwd"))
+            pwd(cmd);
+        else if(!strcmp(cmd.execArgs[0], "cd"))
+            cd(cmd);
+        else if(!strcmp(cmd.execArgs[0], "jobs"))
+            jobs();
+        else 
+            exec_cmd(cmd);
+        //puts(cmd.cmdstr); // Echo the input string
     }
 
     return EXIT_SUCCESS;

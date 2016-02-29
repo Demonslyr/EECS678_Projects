@@ -107,14 +107,13 @@ int delete_from_list(int job_pid)
     }
     else
     {
-        printf("\n [%d] %d %s Finished!",del->job_id,del->job_pid,del->job_name);
+        printf("[%d] %d %s Finished!\n",del->job_id,del->job_pid,del->job_name);
         if(prev != NULL)
             prev->next = del->next;
 
         if(del == head)
         {
             head = del->next;
-        printf("DelNext NULL\n");
         }
         else if(del == curr)
         {
