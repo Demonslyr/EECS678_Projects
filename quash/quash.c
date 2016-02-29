@@ -12,6 +12,7 @@
 // contained.
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
@@ -167,17 +168,38 @@ int exec_cmd(command_t cmd)
 
     testPath(cmd.execArgs[0],test);
 
-    //strcpy(cmd.execArgs[0], test);
-    //sigsetjmp(env,1);
 	int pid = fork();
 	if(!pid)
 	{
-    	//fprintf(stderr, "\nEname = %s, str = %s\n",cmd.execArgs[0], cmd.execArgs[1]);
-		if(execv(test,cmd.execArgs)<0)
-		{
-			fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
-			exit(EXIT_FAILURE);
-		}
+        if (!strcmp(cmd.execArgs[cmd.execNumArgs-2], ">"))
+        {
+            cmd.execArgs[cmd.execNumArgs-2] = NULL;
+            //replace text.txt with last argument
+            //remove text.txt and > arg
+            //call exec as normal
+            int file = open(cmd.execArgs[cmd.execNumArgs-1],O_CREAT|O_WRONLY,S_IRWXU);
+            dup2(file, 1);
+
+            if(execv(test,cmd.execArgs)<0)
+            {
+                fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
+                exit(EXIT_FAILURE);
+            }
+            
+            //puting things back the way they were.
+            close(file);
+            dup2(1,1);
+
+            //fprintf(stderr, "\nEname = %s, str = %s\n",cmd.execArgs[0], cmd.execArgs[1]);
+        }
+        else
+        {
+            if(execv(test,cmd.execArgs)<0)
+            {
+                fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
+                exit(EXIT_FAILURE);
+            }
+        }
         exit(0);
 	}
     else{
@@ -283,13 +305,15 @@ bool get_command(command_t* cmd, FILE* in)
         cmd->execArgs[0] = temp;
 
         int i = 1;
-        while((temp != NULL) && (i<255))
+        while(((temp = strtok(NULL," ")) != NULL) && (i<255))
         {
-            cmd->execArgs[i] = strtok(NULL," ");
+
+            cmd->execArgs[i] = temp;
             i++;
         }
-        cmd->execArgs [i+1] = NULL;
-
+        cmd->execArgs [i] = NULL;
+        //printf("i: %d",i);
+        cmd->execNumArgs = i;
         return true;
     }
     else
