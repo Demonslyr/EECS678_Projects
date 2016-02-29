@@ -22,7 +22,7 @@
  * Holds information about a command.
  */
 typedef struct command_t {
-  	char cmdstr[MAX_COMMAND_LENGTH]; ///< character buffer to store the
+    char cmdstr[MAX_COMMAND_LENGTH]; ///< character buffer to store the
                                    ///< command string. You may want
                                    ///< to modify this to accept
                                    ///< arbitrarily long strings for
@@ -30,7 +30,7 @@ typedef struct command_t {
     int execNumArgs;
     size_t cmdlen;     
     // Extend with more fields if needed
-  	bool execBg;//true if this is a background execution
+    bool execBg;//true if this is a background execution
     char* execArgs[MAX_PATH_LENGTH] ;
 } command_t;
 
