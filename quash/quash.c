@@ -251,7 +251,7 @@ void terminate() {
 
 bool get_command(command_t* cmd, FILE* in) 
 {
-    if(!cmd->fromFile)
+    if (isatty(fileno(stdin)))
         printf( "     meh:~%s$ ", WKDIR );
     
     sigsetjmp(env,1);
@@ -330,12 +330,7 @@ int main(int argc, char** argv) {
         // this while loop. It is just an example.
 
         // The commands should be parsed, then executed.
-        if(!strcmp(cmd.execArgs[0], "#!meh"))
-        {
-            printf("fromFile");
-            cmd.fromFile = true;
-        }
-        else if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
+        if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
             terminate(); // Exit Quash
         else if(!strcmp(cmd.execArgs[0], "set"))
             set(cmd);//set globa variables

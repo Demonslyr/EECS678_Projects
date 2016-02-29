@@ -133,7 +133,7 @@ void print_list(void)
     
     while(ptr != NULL)
     {
-        printf("\n[%d] %d %s",ptr->job_id,ptr->job_pid,ptr->job_name);
+        printf("[%d] %d %s\n",ptr->job_id,ptr->job_pid,ptr->job_name);
         ptr = ptr->next;
     }
     return;

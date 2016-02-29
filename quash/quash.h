@@ -29,7 +29,6 @@ typedef struct command_t {
                                    ///< robustness.
     size_t cmdlen;                   ///< length of the cmdstr character buffer
     // Extend with more fields if needed
-    bool fromFile;
     bool execBg;//true if this is a background execution
     char* execArgs[MAX_PATH_LENGTH] ;
 } command_t;
