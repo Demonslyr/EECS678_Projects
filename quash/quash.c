@@ -174,39 +174,67 @@ int exec_cmd(command_t cmd)
         if (strchr(cmd.cmdstr,'|')!= NULL){
             char tmpcmdstr [MAX_COMMAND_LENGTH];
             
-            command_t cmdArr[MAX_PATH_LENGTH];
+            command_t cmd_a[MAX_COMMAND_LENGTH];
+            
+            int numCommands = pipeParse(cmd,cmd_a);
             
             strcpy(tmpcmdstr, cmd.cmdstr);
-
-            int numCommands = pipeParse(cmd, cmdArr);
             
             fprintf(stderr, "numCommands: %d\n", numCommands);
 
 
-// command_t cmd_a[MAX_COMMAND_LENGTH];
-// int numcommands = pipeParse(cmd,cmd_a);
-// int npipes = numcommands-1;
-// int status;
-// char buf[4096];
-// pid_t * pid_a[npipes+1];
-// int * fd_a[(npipes+1)*2];
-// int rsize;
-// for(int  = 0; i<pipes+1;){pipe(fd_a[i]);i=i+2;}
-// for(int i=0;i<(npipes+1);i++){
-//  pid_a[i]=fork();
-//  if(!pid_a[i]){
-//      dup2();
-//      dup2();
-//      for(int j = 0;j<[(npipes+1)*2],j++){close(fd_a[j])}
-//      if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs))<0){fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);exit(EXIT_FAILURE);}
-//      exit(0);
-//  }
-// }
-//             
-// for(int i=0;i<(npipes+1);i++){
-//   if((waitpid(pid_a[i],&status,0))==-1){fprintf(stderr, "Process encountered an error. ERROR%d", errno);return EXIT_FAILURE;}            
-// }
-//  
+            int npipes = numCommands-1;
+            int status;
+            char buf[4096];
+            pid_t * pid_a[npipes+1];
+            int * fd_a[(npipes+1)*2];
+            int rsize;
+            // for(int  = 0; i<pipes+1;)
+            // {
+            //     pipe(fd_a[i]);
+            //     i=i+2;
+            // }
+            // for(int i=0;i<(npipes+1);i++)
+            // {
+            //     printf("doing stuff!\n");
+            //     pid_a[i]=fork();
+            //     if(!pid_a[i]){
+            //         if(i == 0)
+            //         {
+            //             //dup2();
+            //             dup2(fd_a[i],1);
+            //         }
+            //         else if(i = npipes)
+            //         {
+            //             //dup2();
+            //             dup2(fd_a[i],0);
+            //         }
+            //         else
+            //         {
+            //             dup2(fd_a[wat],0);
+            //             dup2(fd_a[wat+1],1);
+            //         }
+            //         for(int j = 0;j<[(npipes+1)*2],j++)
+            //         {
+            //             close(fd_a[j]);
+            //         }
+            //         if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs))<0)
+            //         {
+            //             fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
+            //             exit(EXIT_FAILURE);
+            //         }
+            //         exit(0);
+            //     }
+            // }
+             
+            // for(int i=0;i<(npipes+1);i++){
+            //     if((waitpid(pid_a[i],&status,0))==-1)
+            //     {
+            //         fprintf(stderr, "Process encountered an error. ERROR%d", errno);
+            //         return EXIT_FAILURE;
+            //     }            
+            // }
+  
 
 
 
