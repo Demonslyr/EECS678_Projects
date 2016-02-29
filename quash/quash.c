@@ -12,7 +12,6 @@
 // contained.
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
@@ -96,7 +95,8 @@ void reapChild()
 
 void jobs()
 {
-    printf("Not Yet Implimented.\n");
+    print_list();
+    //printf("Not Yet Implimented.\n");
     return;
 }
 
@@ -166,13 +166,13 @@ int exec_cmd(command_t cmd)
 
     testPath(cmd.execArgs[0],test);
 
-    strcpy(cmd.execArgs[0], test);
+    //strcpy(cmd.execArgs[0], test);
     //sigsetjmp(env,1);
 	int pid = fork();
 	if(!pid)
 	{
     	//fprintf(stderr, "\nEname = %s, str = %s\n",cmd.execArgs[0], cmd.execArgs[1]);
-		if(execv(cmd.execArgs[0],cmd.execArgs)<0)
+		if(execv(test,cmd.execArgs)<0)
 		{
 			fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
 			exit(EXIT_FAILURE);
@@ -190,7 +190,11 @@ int exec_cmd(command_t cmd)
             }
         }
         else
+        {
             printf("[%d] is running\n", pid);
+
+            add_to_list(pid, cmd.execArgs[0]);
+        }
     }
     return(0);
 }
@@ -302,20 +306,20 @@ int main(int argc, char** argv) {
 	  
 	start();
 	
-  //signal response;
-  struct sigaction sa;
-  sigset_t mask_set;
-  sigfillset(&mask_set);
-  sigdelset(&mask_set,SIGINT);
-  sigdelset(&mask_set,SIGTSTP);
-  //sa.sa_handler = catchChild;
-  //sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
-  
-  strcpy( PATH, getenv("PATH") );
-  strcpy( HOME, getenv("HOME") );
-  strcpy( WKDIR, HOME );
+    //signal response;
+    //struct sigaction sa;
+    sigset_t mask_set;
+    sigfillset(&mask_set);
+    sigdelset(&mask_set,SIGINT);
+    sigdelset(&mask_set,SIGTSTP);
+    //sa.sa_handler = catchChild;
+    //sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
 
-  puts("hOi! Welcome to Quash!");
+    strcpy( PATH, getenv("PATH") );
+    strcpy( HOME, getenv("HOME") );
+    strcpy( WKDIR, HOME );
+
+    puts("hOi! Welcome to Quash!");
 
 	// Main execution loop
 	while (is_running() && get_command(&cmd, stdin)) {
@@ -324,22 +328,22 @@ int main(int argc, char** argv) {
 
     // The commands should be parsed, then executed.
     if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
-      	terminate(); // Exit Quash
-  	else if(!strcmp(cmd.execArgs[0], "set"))
-  		set(cmd);//set globa variables
-  	else if(!strcmp(cmd.execArgs[0], "echo"))
-  		echo(cmd);
+        terminate(); // Exit Quash
+    else if(!strcmp(cmd.execArgs[0], "set"))
+        set(cmd);//set globa variables
+    else if(!strcmp(cmd.execArgs[0], "echo"))
+        echo(cmd);
     else if(!strcmp(cmd.execArgs[0], "pwd"))
-      pwd(cmd);
+        pwd(cmd);
     else if(!strcmp(cmd.execArgs[0], "cd"))
-      cd(cmd);
+        cd(cmd);
     else if(!strcmp(cmd.execArgs[0], "jobs"))
-      jobs();
+        jobs();
     else if(!strcmp(cmd.execArgs[0], "rch"))
-      reapChild();
+        reapChild();
     else 
-      	exec_cmd(cmd);
-      	//puts(cmd.cmdstr); // Echo the input string
+        exec_cmd(cmd);
+    //puts(cmd.cmdstr); // Echo the input string
     }
 
     return EXIT_SUCCESS;

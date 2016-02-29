@@ -7,6 +7,7 @@
 #ifndef QUASH_H
 #define QUASH_H
 
+#include "list.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -31,6 +32,8 @@ typedef struct command_t {
   	bool execBg;//true if this is a background execution
     char* execArgs[MAX_PATH_LENGTH] ;
 } command_t;
+
+struct test_struct *ptr = NULL;
 
 /**
  * Global variables.
