@@ -29,7 +29,7 @@
 // compilation unit (this file and all files that include it). This is similar
 // to private in other languages.
 static bool running;
-//sigjmp_buf env;
+sigjmp_buf env;
 int status;
 
 /**************************************************************************
@@ -52,11 +52,11 @@ void catchChild(int signum)//child return or terminate callback
     int status;
     while((pid = waitpid(-1,&status,WNOHANG)) != -1)
     {
-        printf("I got in the while!\n");
-        //unregister_child(pid,status);
+         printf("I got in the while!\n");
+         //unregister_child(pid,status);
+        siglongjmp(env,1);
     }
-    printf("PID: %1d\n",pid);
-    //siglongjmp(env,1);
+    //printf("PID: %1d\n",pid);
 }
 
 void pwd()
@@ -251,6 +251,7 @@ void terminate() {
 bool get_command(command_t* cmd, FILE* in) 
 {
     printf( "     meh:~%s$ ", WKDIR );
+    sigsetjmp(env,1);
 
     if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) 
     {
@@ -302,18 +303,17 @@ bool get_command(command_t* cmd, FILE* in)
  * @return program exit status
  */
 int main(int argc, char** argv) { 
-	command_t cmd; //< Command holder argument
-	  
-	start();
-	
-    //signal response;
-    //struct sigaction sa;
+    command_t cmd; //< Command holder argument
+      
+    start();
+    
+    struct sigaction sa;
     sigset_t mask_set;
     sigfillset(&mask_set);
     sigdelset(&mask_set,SIGINT);
     sigdelset(&mask_set,SIGTSTP);
-    //sa.sa_handler = catchChild;
-    //sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
+    sa.sa_handler = catchChild;
+    sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
 
     strcpy( PATH, getenv("PATH") );
     strcpy( HOME, getenv("HOME") );
@@ -321,8 +321,8 @@ int main(int argc, char** argv) {
 
     puts("hOi! Welcome to Quash!");
 
-	// Main execution loop
-	while (is_running() && get_command(&cmd, stdin)) {
+    // Main execution loop
+    while (is_running() && get_command(&cmd, stdin)) {
     // NOTE: I would not recommend keeping anything inside the body of
     // this while loop. It is just an example.
 
