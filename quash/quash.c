@@ -196,7 +196,6 @@ int exec_cmd(command_t cmd)
                 
                 if(!pid_a[i])
                 {
-                    printf("Trying this cmd string: %s\nWith this execArg[0]: %s\n",cmd_a[i].cmdstr,cmd_a[i].execArgs[0]);
                     if(i == 0)
                         dup2(fd_a[i],1);
                     else if(i == npipes)
@@ -209,7 +208,7 @@ int exec_cmd(command_t cmd)
 
                     for(int j = 0;j<((npipes+1)*2);j++)
                         close(fd_a[j]);
-                    
+                    printf("Trying this cmd string: %s\n",cmd_a[i].cmdstr);
                     if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs))<0)
                     {
                         fprintf(stderr, "Error execing %s. Error# %d\n",cmd_a[i].cmdstr, errno);
