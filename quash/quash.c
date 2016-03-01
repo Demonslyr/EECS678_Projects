@@ -248,7 +248,6 @@ int exec_cmd(command_t cmd)
 
                 if (last_char == '\n' || last_char == '\r')
                 {
-                    // Remove trailing new line character.
                     string[len - 1] = '\0';
                     len = len - 1;
                 }
@@ -270,7 +269,6 @@ int exec_cmd(command_t cmd)
                 int pid2 = fork();
                 if(!pid2)
                 {
-                    //fprintf(stderr,"in fork2 %s\n", args[1]);
                     if(execv(test,args)<0)
                     {
                         fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
@@ -417,8 +415,13 @@ bool get_command(command_t* cmd, FILE* in)
             cmd->execBg = true;
         }
 
+        if ( !strcmp(cmd->cmdstr, "") )
+        {
+            return false;
+        }
+
         char tempcmd[MAX_COMMAND_LENGTH];
-        strcpy(tempcmd,cmd->cmdstr);
+        strcpy(tempcmd, cmd->cmdstr);
         char * temp;
         temp = strtok(tempcmd," ");
         cmd->execArgs[0] = temp;
@@ -497,7 +500,6 @@ int pipeParse(command_t cmd, command_t * cmdArr)
         //fprintf(stderr, "cmdString: %s %s %s\n", cmdArr[i].execArgs[0], cmdArr[i].execArgs[1], cmdArr[i].execArgs[2]);
     }
 
-
     return numCommands;
 }
 
@@ -534,7 +536,7 @@ int main(int argc, char** argv) {
         // this while loop. It is just an example.
 
         // The commands should be parsed, then executed.
-        if(!get_command(&cmd, stdin))
+        if( !get_command(&cmd, stdin) )
             printf("null command\n");
         else if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
             terminate(); // Exit Quash
