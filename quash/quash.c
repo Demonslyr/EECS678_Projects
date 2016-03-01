@@ -164,7 +164,7 @@ int exec_cmd(command_t cmd)
 
     testPath(cmd.execArgs[0],test);
 
-	int pid = fork();
+	pid_t pid = fork();
 	if(!pid)
     {
         if (strchr(cmd.cmdstr,'|')!= NULL){
@@ -174,67 +174,65 @@ int exec_cmd(command_t cmd)
             
             int numCommands = pipeParse(cmd,cmd_a);
             
-            strcpy(tmpcmdstr, cmd.cmdstr);
+            // strcpy(tmpcmdstr, cmd.cmdstr);
             
-            fprintf(stderr, "numCommands: %d\n", numCommands);
+            // fprintf(stderr, "numCommands: %d\n", numCommands);
 
 
-            int npipes = numCommands-1;
-            int status;
-            char buf[4096];
-            pid_t * pid_a[npipes+1];
-            int * fd_a[(npipes+1)*2];
-            int rsize;
-            // for(int  = 0; i<pipes+1;)
+            // int npipes = numCommands-1;
+            // int status;
+            // //char buf[4096];
+            // pid_t pid_a[npipes+1];
+            // int fd_a[(npipes+1)*2];
+            // //int rsize;
+            // for(int  i = 0; i<npipes;)
             // {
-            //     pipe(fd_a[i]);
+            //     pipe(fd_a+i);
             //     i=i+2;
             // }
             // for(int i=0;i<(npipes+1);i++)
             // {
-            //     printf("doing stuff!\n");
             //     pid_a[i]=fork();
-            //     if(!pid_a[i]){
+                
+            //     if(!pid_a[i])
+            //     {
             //         if(i == 0)
-            //         {
-            //             //dup2();
             //             dup2(fd_a[i],1);
-            //         }
-            //         else if(i = npipes)
-            //         {
-            //             //dup2();
-            //             dup2(fd_a[i],0);
-            //         }
+            //         else if(i == npipes)
+            //             dup2(fd_a[((i*2)-2)],0);
             //         else
             //         {
-            //             dup2(fd_a[wat],0);
-            //             dup2(fd_a[wat+1],1);
+            //             dup2(fd_a[((i*2)-2)],0);
+            //             dup2(fd_a[((i*2)+1)],1);
             //         }
-            //         for(int j = 0;j<[(npipes+1)*2],j++)
-            //         {
+
+            //         for(int j = 0;j<((npipes+1)*2);j++)
             //             close(fd_a[j]);
-            //         }
+
             //         if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs))<0)
             //         {
-            //             fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
+            //             fprintf(stderr, "Error execing %s. Error# %d\n",cmd_a[i].cmdstr, errno);
             //             exit(EXIT_FAILURE);
             //         }
             //         exit(0);
             //     }
+            //     else
+            //     {
+            //         printf("Beginning process [%d]\n",pid_a[i]);
+            //     }
             // }
              
-            // for(int i=0;i<(npipes+1);i++){
+            // for(int i=0;i<(npipes+1);i++)
+            // {
+            //     printf("going to wait for process [%d]",pid_a[i]);
             //     if((waitpid(pid_a[i],&status,0))==-1)
             //     {
             //         fprintf(stderr, "Process encountered an error. ERROR%d", errno);
-            //         return EXIT_FAILURE;
-            //     }            
+            //         exit (EXIT_FAILURE);
+            //     }
+            //     else{printf("process returned!");}            
             // }
-  
-
-
-
-            //printf("There was a | in the cmd str\n");
+            // exit(0);
         }
         else if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
         {          
