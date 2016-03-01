@@ -398,7 +398,8 @@ bool get_command(command_t* cmd, FILE* in)
         size_t len = strlen(cmd->cmdstr);
         char last_char = cmd->cmdstr[len - 1];
 
-        if (last_char == '\n' || last_char == '\r') {
+        if (last_char == '\n' || last_char == '\r') 
+        {
             // Remove trailing new line character.
             cmd->cmdstr[len - 1] = '\0';
             cmd->cmdlen = len - 1;
@@ -413,6 +414,14 @@ bool get_command(command_t* cmd, FILE* in)
             cmd->cmdstr[len - 1] = '\0';
             cmd->cmdlen = len - 1;
             cmd->execBg = true;
+        }
+
+        while ( cmd->cmdstr[0] == ' ' )
+        {
+            char temp[MAX_COMMAND_LENGTH];
+
+            strcpy(temp, cmd->cmdstr+1);
+            strcpy(cmd->cmdstr, temp);
         }
 
         if ( !strcmp(cmd->cmdstr, "") )
@@ -433,8 +442,8 @@ bool get_command(command_t* cmd, FILE* in)
             i++;
         }
         cmd->execArgs [i] = NULL;
-        //printf("i: %d",i);
         cmd->execNumArgs = i;
+
         return true;
     }
     else
