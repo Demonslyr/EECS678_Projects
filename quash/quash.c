@@ -59,8 +59,8 @@ void catchChild(int signum)//child return or terminate callback
 
 void pwd()
 {
-  printf("%s\n",WKDIR);
-  return;
+    printf("%s\n",WKDIR);
+    return;
 }
 
 void cd(command_t cmd)
@@ -269,6 +269,7 @@ int exec_cmd(command_t cmd)
                 int pid2 = fork();
                 if(!pid2)
                 {
+                    fprintf(stderr,"PATH: %s\n",getenv("PATH"));
                     if(execv(test,args)<0)
                     {
                         fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
@@ -346,12 +347,14 @@ void set(command_t cmd)
     if( !strcmp(temp, "PATH") )
     {
         strcpy(PATH, strtok(NULL, " "));
-        printf("PATH set to %s\n", PATH);
+        if(setenv("PATH", PATH, 1) == 0)
+            printf("PATH set to %s\n", PATH);
     }
     else if( !strcmp(temp, "HOME") )
     {
         strcpy(HOME, strtok(NULL, " "));
-        printf("HOME set to %s\n", HOME);
+        if(setenv("HOME", HOME, 1) == 0)
+            printf("HOME set to %s\n", HOME);
     }
     else
     {
@@ -470,6 +473,12 @@ int pipeParse(command_t cmd, command_t * cmdArr)
 
     for(int i = 0; i < numCommands; i++)
     {
+        char test[MAX_PATH_LENGTH];
+
+        testPath(cmd.execArgs[i],test);
+
+        strcpy(cmd.execArgs[i],test);
+
         cmdArr[i].execBg = false;
         size_t len = strlen(cmdArr[i].cmdstr);
         char last_char = cmdArr[i].cmdstr[len - 1];
@@ -489,6 +498,14 @@ int pipeParse(command_t cmd, command_t * cmdArr)
             cmdArr[i].cmdstr[len - 1] = '\0';
             cmdArr[i].cmdlen = len - 1;
             cmdArr[i].execBg = true;
+        }
+
+        while ( cmdArr[i].cmdstr[0] == ' ' )
+        {
+            char temp[MAX_COMMAND_LENGTH];
+
+            strcpy(temp, cmdArr[i].cmdstr+1);
+            strcpy(cmdArr[i].cmdstr, temp);
         }
 
         char * temp2;
@@ -545,8 +562,7 @@ int main(int argc, char** argv) {
         // this while loop. It is just an example.
 
         // The commands should be parsed, then executed.
-        if( !get_command(&cmd, stdin) )
-            printf("null command\n");
+        if( !get_command(&cmd, stdin) );
         else if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
             terminate(); // Exit Quash
         else if(!strcmp(cmd.execArgs[0], "set"))
