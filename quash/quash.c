@@ -225,13 +225,13 @@ int exec_cmd(command_t cmd)
              
             for(int i=0;i<(npipes+1);i++)
             {
-                printf("going to wait for process [%d]",pid_a[i]);
+                printf("going to wait for process [%d]\n",pid_a[i]);
                 if((waitpid(pid_a[i],&status,WNOHANG))==-1)
                 {
                     fprintf(stderr, "%dProcess encountered an error. ERROR%d", pid_a[i], errno);
                     exit (EXIT_FAILURE);
                 }
-                else{printf("process returned!");}            
+                else{printf("process returned!\n");}            
             }
             exit(0);
         }
