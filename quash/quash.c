@@ -73,7 +73,6 @@ void cd(command_t cmd)
             return;
         }
 
-        printf("No directory specified\n");
         strcpy( WKDIR, HOME );
     }
     else
@@ -171,9 +170,90 @@ int exec_cmd(command_t cmd)
             char tmpcmdstr [MAX_COMMAND_LENGTH];
             
             command_t cmd_a[MAX_COMMAND_LENGTH];
+
+            ////////////////////////////////////////////
+            strcpy(tmpcmdstr, cmd.cmdstr);
+
+            char * temp;
+
+            int numCommands = 0;
+            temp = strtok(tmpcmdstr,"|");
+            strcpy(cmd_a[numCommands].cmdstr, temp);
+
+            numCommands++;
+            while((temp = strtok(NULL,"|")) != NULL)
+            {
+                strcpy(cmd_a[numCommands].cmdstr, temp);
+                numCommands++;
+            }
             
-            int numCommands = pipeParse(cmd,cmd_a);
-            
+            for(int i = 0; i < numCommands; i++)
+            {
+                cmd_a[i].execBg = false;
+                size_t len = strlen(cmd_a[i].cmdstr);
+                char last_char = cmd_a[i].cmdstr[len - 1];
+
+                if (last_char == '\n' || last_char == '\r') 
+                {
+                    // Remove trailing new line character.
+                    cmd_a[i].cmdstr[len - 1] = '\0';
+                    cmd_a[i].cmdlen = len - 1;
+                    len = len - 1;
+                    last_char = cmd_a[i].cmdstr[len-1];
+                }
+                else
+                    cmd_a[i].cmdlen = len;
+
+                if (last_char == '&')
+                {
+                    cmd_a[i].cmdstr[len - 1] = '\0';
+                    cmd_a[i].cmdlen = len - 1;
+                    cmd_a[i].execBg = true;
+                }
+
+                while ( cmd_a[i].cmdstr[0] == ' ' )
+                {
+                    char temp[MAX_COMMAND_LENGTH];
+
+                    strcpy(temp, cmd_a[i].cmdstr+1);
+                    strcpy(cmd_a[i].cmdstr, temp);
+                }
+
+                char tempcmd[MAX_COMMAND_LENGTH];
+                
+                
+                char * temp2;
+                char arg0[MAX_COMMAND_LENGTH];
+                
+                strcpy(tempcmd, cmd_a[i].cmdstr);
+                temp2 = strtok(tempcmd," ");
+
+                testPath(temp2, arg0);
+
+                cmd_a[i].execArgs[0] = arg0;
+
+                printf("temp[%d]:%s\nsize:%d\n", i,temp2,sizeof(temp2));
+                //printf("arg0[%d]:%s size:%d\n", i,arg0,sizeof(arg0));
+                printf("cmd_a[%d]:%s\nsize:%d\n", i,cmd_a[i].execArgs[0],sizeof(cmd_a[i].execArgs[0]));
+
+                int i = 1;
+                while(((temp2 = strtok(NULL," ")) != NULL) && (i<255))
+                {
+                    cmd_a[i].execArgs[i] = temp2;
+                    i++;
+                }
+                cmd_a[i].execArgs [i] = NULL;
+                cmd_a[i].execNumArgs = i;
+
+            }
+
+            for(int i = 0; i < numCommands; i++)
+            {
+                printf("Cmdarg[%d]:%s\n", i,cmd_a[i].execArgs[0]);
+            }
+
+            ////////////////////////////////////////////
+            /*
             strcpy(tmpcmdstr, cmd.cmdstr);
             
             fprintf(stderr, "numCommands: %d\n", numCommands);
@@ -233,6 +313,7 @@ int exec_cmd(command_t cmd)
                 }
                 else{printf("process returned!\n");}            
             }
+            */
             exit(0);
         }
         else if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
@@ -320,7 +401,8 @@ int exec_cmd(command_t cmd)
         }
         exit(0);
 	}
-    else{
+    else
+    {
         if(!cmd.execBg)
         {
             //add pid and command w/o path to jobs structure
@@ -383,11 +465,13 @@ void echo(command_t cmd)
     }
 }
 
-bool is_running() {
+bool is_running() 
+{
     return running;
 }
 
-void terminate() {
+void terminate() 
+{
     running = false;
 }
 
