@@ -171,97 +171,11 @@ int exec_cmd(command_t cmd)
             
             command_t cmd_a[MAX_COMMAND_LENGTH];
 
-            ////////////////////////////////////////////
-            strcpy(tmpcmdstr, cmd.cmdstr);
-
-            char * temp;
-            char argStore[MAX_PATH_LENGTH][MAX_PATH_LENGTH];
-            int argIter = 0;
-
-            int numCommands = 0;
-            temp = strtok(tmpcmdstr,"|");
-            strcpy(cmd_a[numCommands].cmdstr, temp);
-
-            numCommands++;
-            while((temp = strtok(NULL,"|")) != NULL)
-            {
-                strcpy(cmd_a[numCommands].cmdstr, temp);
-                numCommands++;
-            }
+            int numCommands = pipeParse(cmd, cmd_a);
             
-            for(int i = 0; i < numCommands; i++)
-            {
-                cmd_a[i].execBg = false;
-                size_t len = strlen(cmd_a[i].cmdstr);
-                char last_char = cmd_a[i].cmdstr[len - 1];
-
-                if (last_char == '\n' || last_char == '\r') 
-                {
-                    // Remove trailing new line character.
-                    cmd_a[i].cmdstr[len - 1] = '\0';
-                    cmd_a[i].cmdlen = len - 1;
-                    len = len - 1;
-                    last_char = cmd_a[i].cmdstr[len-1];
-                }
-                else
-                    cmd_a[i].cmdlen = len;
-
-                if (last_char == '&')
-                {
-                    cmd_a[i].cmdstr[len - 1] = '\0';
-                    cmd_a[i].cmdlen = len - 1;
-                    cmd_a[i].execBg = true;
-                }
-
-                while ( cmd_a[i].cmdstr[0] == ' ' )
-                {
-                    char temp[MAX_COMMAND_LENGTH];
-
-                    strcpy(temp, cmd_a[i].cmdstr+1);
-                    strcpy(cmd_a[i].cmdstr, temp);
-                }
-
-                char tempcmd[MAX_COMMAND_LENGTH];
-                
-                char * temp2;
-                char arg0[MAX_COMMAND_LENGTH];
-                
-                strcpy(tempcmd, cmd_a[i].cmdstr);
-                temp2 = strtok(tempcmd," ");
-
-                testPath(temp2, arg0);
-
-                printf("temp[%d]:%s\nsize:%d\n", i,temp2,sizeof(temp2));
-                //printf("arg0[%d]:%s size:%d\n", i,arg0,sizeof(arg0));
-                //printf("cmd_a[%d]:%s\nsize:%d\n", i,cmd_a[i].execArgs[0],sizeof(cmd_a[i].execArgs[0]));
-                
-                int numArgs = 0;
-                strcpy(argStore[argIter], arg0);
-                cmd_a[i].execArgs[numArgs] = argStore[argIter];
-                argIter++;
-                numArgs++;
-
-                while((temp2 = strtok(NULL," ")) != NULL)
-                {
-                    strcpy(argStore[argIter], temp2);
-                    cmd_a[i].execArgs[numArgs] = argStore[argIter];
-                    argIter++;
-                    numArgs++;
-                }
-            }
-
-            for(int i = 0; i < numCommands; i++)
-            {
-                printf("cmdstr:%s\n", cmd_a[i].cmdstr);
-                printf("Cmdarg[%d]:%s\n", i,cmd_a[i].execArgs[0]);
-            }
-
-            ////////////////////////////////////////////
-            /*
             strcpy(tmpcmdstr, cmd.cmdstr);
             
             fprintf(stderr, "numCommands: %d\n", numCommands);
-
 
             int npipes = numCommands-1;
             int status;
@@ -276,11 +190,11 @@ int exec_cmd(command_t cmd)
             }
             for(int i=0;i<(npipes+1);i++)
             {
+                printf("Trying this cmd string: %s\nexecArg[0]: %s\n execArg[1]: %s\n",cmd_a[i].cmdstr,cmd_a[i].execArgs[0],cmd_a[i].execArgs[1]);
                 pid_a[i]=fork();
                 
                 if(!pid_a[i])
                 {
-                    printf("Trying this cmd string: %s\nWith this execArg[0]: %s\n",cmd_a[i].cmdstr,cmd_a[i].execArgs[0]);
                     if(i == 0)
                         dup2(fd_a[i],1);
                     else if(i == npipes)
@@ -317,7 +231,7 @@ int exec_cmd(command_t cmd)
                 }
                 else{printf("process returned!\n");}            
             }
-            */
+            
             exit(0);
         }
         else if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
@@ -542,78 +456,92 @@ bool get_command(command_t* cmd, FILE* in)
         return false;
 }
 
-int pipeParse(command_t cmd, command_t * cmdArr)
+int pipeParse(command_t cmd, command_t * cmd_a)
 {
-    int numCommands = 0;
+    char tmpcmdstr [MAX_COMMAND_LENGTH];
+
+    strcpy(tmpcmdstr, cmd.cmdstr);
 
     char * temp;
+    char argStore[MAX_PATH_LENGTH][MAX_PATH_LENGTH];
+    int argIter = 0;
 
-    temp = strtok(cmd.cmdstr,"|");
+    int numCommands = 0;
+    temp = strtok(tmpcmdstr,"|");
+    strcpy(cmd_a[numCommands].cmdstr, temp);
 
-    strcpy(cmdArr[numCommands].cmdstr, temp);
-
-    numCommands++; 
-
-    while(((temp = strtok(NULL,"|")) != NULL) && (numCommands<255))
+    numCommands++;
+    while((temp = strtok(NULL,"|")) != NULL)
     {
-        strcpy(cmdArr[numCommands].cmdstr, temp+1);
+        strcpy(cmd_a[numCommands].cmdstr, temp);
         numCommands++;
+    }
+    
+    for(int i = 0; i < numCommands; i++)
+    {
+        cmd_a[i].execBg = false;
+        size_t len = strlen(cmd_a[i].cmdstr);
+        char last_char = cmd_a[i].cmdstr[len - 1];
+
+        if (last_char == '\n' || last_char == '\r') 
+        {
+            // Remove trailing new line character.
+            cmd_a[i].cmdstr[len - 1] = '\0';
+            cmd_a[i].cmdlen = len - 1;
+            len = len - 1;
+            last_char = cmd_a[i].cmdstr[len-1];
+        }
+        else
+            cmd_a[i].cmdlen = len;
+
+        if (last_char == '&')
+        {
+            cmd_a[i].cmdstr[len - 1] = '\0';
+            cmd_a[i].cmdlen = len - 1;
+            cmd_a[i].execBg = true;
+        }
+
+        while ( cmd_a[i].cmdstr[0] == ' ' )
+        {
+            char temp[MAX_COMMAND_LENGTH];
+
+            strcpy(temp, cmd_a[i].cmdstr+1);
+            strcpy(cmd_a[i].cmdstr, temp);
+        }
+
+        char tempcmd[MAX_COMMAND_LENGTH];
+        
+        char * temp2;
+        char arg0[MAX_COMMAND_LENGTH];
+        
+        strcpy(tempcmd, cmd_a[i].cmdstr);
+        temp2 = strtok(tempcmd," ");
+
+        testPath(temp2, arg0);
+
+        printf("temp[%d]:%s\n", i,temp2);
+        
+        int numArgs = 0;
+        strcpy(argStore[argIter], arg0);
+        cmd_a[i].execArgs[numArgs] = argStore[argIter];
+        argIter++;
+        numArgs++;
+
+        while((temp2 = strtok(NULL," ")) != NULL)
+        {
+            strcpy(argStore[argIter], temp2);
+            cmd_a[i].execArgs[numArgs] = argStore[argIter];
+            argIter++;
+            numArgs++;
+        }
+        cmd_a[i].execArgs[numArgs] = NULL;
+        cmd_a[i].execNumArgs = numArgs;
     }
 
     for(int i = 0; i < numCommands; i++)
     {
-        char test[MAX_PATH_LENGTH];
-
-        testPath(cmd.execArgs[i],test);
-
-        strcpy(cmd.execArgs[i],test);
-
-        cmdArr[i].execBg = false;
-        size_t len = strlen(cmdArr[i].cmdstr);
-        char last_char = cmdArr[i].cmdstr[len - 1];
-
-        if (last_char == '\n' || last_char == '\r') {
-            // Remove trailing new line character.
-            cmdArr[i].cmdstr[len - 1] = '\0';
-            cmdArr[i].cmdlen = len - 1;
-            len = len - 1;
-            last_char = cmdArr[i].cmdstr[len-1];
-        }
-        else
-            cmdArr[i].cmdlen = len;
-        
-        if (last_char == '&')
-        {
-            cmdArr[i].cmdstr[len - 1] = '\0';
-            cmdArr[i].cmdlen = len - 1;
-            cmdArr[i].execBg = true;
-        }
-
-        while ( cmdArr[i].cmdstr[0] == ' ' )
-        {
-            char temp[MAX_COMMAND_LENGTH];
-
-            strcpy(temp, cmdArr[i].cmdstr+1);
-            strcpy(cmdArr[i].cmdstr, temp);
-        }
-
-        char * temp2;
-        temp2 = strtok(cmdArr[i].cmdstr," ");
-        cmdArr[0].execArgs[0] = temp2;
-        //testPath(temp2, cmdArr[i].execArgs[0]);//I BREAK THINGS!
-
-        int j = 1;
-        while(((temp2 = strtok(NULL," ")) != NULL) && (j<255))
-        {
-            cmdArr[i].execArgs[j] = temp2;
-            j++;
-        }
-        cmdArr[i].execArgs[j] = NULL;
-
-        cmdArr[i].execNumArgs = j;
-
-        //fprintf(stderr, "cmdString: %s\n", cmdArr[i].cmdstr);
-        //fprintf(stderr, "cmdString: %s %s %s\n", cmdArr[i].execArgs[0], cmdArr[i].execArgs[1], cmdArr[i].execArgs[2]);
+        printf("cmdstr:%s\n", cmd_a[i].cmdstr);
+        printf("Cmdarg[%d]:%s\n", i,cmd_a[i].execArgs[0]);
     }
 
     return numCommands;
