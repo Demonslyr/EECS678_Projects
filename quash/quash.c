@@ -175,6 +175,8 @@ int exec_cmd(command_t cmd)
             strcpy(tmpcmdstr, cmd.cmdstr);
 
             char * temp;
+            char argStore[MAX_PATH_LENGTH][MAX_PATH_LENGTH];
+            int argIter = 0;
 
             int numCommands = 0;
             temp = strtok(tmpcmdstr,"|");
@@ -221,7 +223,6 @@ int exec_cmd(command_t cmd)
 
                 char tempcmd[MAX_COMMAND_LENGTH];
                 
-                
                 char * temp2;
                 char arg0[MAX_COMMAND_LENGTH];
                 
@@ -230,25 +231,28 @@ int exec_cmd(command_t cmd)
 
                 testPath(temp2, arg0);
 
-                cmd_a[i].execArgs[0] = arg0;
-
                 printf("temp[%d]:%s\nsize:%d\n", i,temp2,sizeof(temp2));
                 //printf("arg0[%d]:%s size:%d\n", i,arg0,sizeof(arg0));
-                printf("cmd_a[%d]:%s\nsize:%d\n", i,cmd_a[i].execArgs[0],sizeof(cmd_a[i].execArgs[0]));
+                //printf("cmd_a[%d]:%s\nsize:%d\n", i,cmd_a[i].execArgs[0],sizeof(cmd_a[i].execArgs[0]));
+                
+                int numArgs = 0;
+                strcpy(argStore[argIter], arg0);
+                cmd_a[i].execArgs[numArgs] = argStore[argIter];
+                argIter++;
+                numArgs++;
 
-                int i = 1;
-                while(((temp2 = strtok(NULL," ")) != NULL) && (i<255))
+                while((temp2 = strtok(NULL," ")) != NULL)
                 {
-                    cmd_a[i].execArgs[i] = temp2;
-                    i++;
+                    strcpy(argStore[argIter], temp2);
+                    cmd_a[i].execArgs[numArgs] = argStore[argIter];
+                    argIter++;
+                    numArgs++;
                 }
-                cmd_a[i].execArgs [i] = NULL;
-                cmd_a[i].execNumArgs = i;
-
             }
 
             for(int i = 0; i < numCommands; i++)
             {
+                printf("cmdstr:%s\n", cmd_a[i].cmdstr);
                 printf("Cmdarg[%d]:%s\n", i,cmd_a[i].execArgs[0]);
             }
 

@@ -31,7 +31,7 @@ typedef struct command_t {
     size_t cmdlen;     
     // Extend with more fields if needed
     bool execBg;//true if this is a background execution
-    char* execArgs[MAX_PATH_LENGTH] ;
+    char * execArgs[MAX_PATH_LENGTH] ;
 } command_t;
 
 struct test_struct *ptr = NULL;
