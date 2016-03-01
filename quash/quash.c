@@ -174,65 +174,65 @@ int exec_cmd(command_t cmd)
             
             int numCommands = pipeParse(cmd,cmd_a);
             
-            // strcpy(tmpcmdstr, cmd.cmdstr);
+            strcpy(tmpcmdstr, cmd.cmdstr);
             
-            // fprintf(stderr, "numCommands: %d\n", numCommands);
+            fprintf(stderr, "numCommands: %d\n", numCommands);
 
 
-            // int npipes = numCommands-1;
-            // int status;
-            // //char buf[4096];
-            // pid_t pid_a[npipes+1];
-            // int fd_a[(npipes+1)*2];
-            // //int rsize;
-            // for(int  i = 0; i<npipes;)
-            // {
-            //     pipe(fd_a+i);
-            //     i=i+2;
-            // }
-            // for(int i=0;i<(npipes+1);i++)
-            // {
-            //     pid_a[i]=fork();
+            int npipes = numCommands-1;
+            int status;
+            //char buf[4096];
+            pid_t pid_a[npipes+1];
+            int fd_a[(npipes+1)*2];
+            //int rsize;
+            for(int  i = 0; i<npipes;)
+            {
+                pipe(fd_a+i);
+                i=i+2;
+            }
+            for(int i=0;i<(npipes+1);i++)
+            {
+                pid_a[i]=fork();
                 
-            //     if(!pid_a[i])
-            //     {
-            //         if(i == 0)
-            //             dup2(fd_a[i],1);
-            //         else if(i == npipes)
-            //             dup2(fd_a[((i*2)-2)],0);
-            //         else
-            //         {
-            //             dup2(fd_a[((i*2)-2)],0);
-            //             dup2(fd_a[((i*2)+1)],1);
-            //         }
+                if(!pid_a[i])
+                {
+                    if(i == 0)
+                        dup2(fd_a[i],1);
+                    else if(i == npipes)
+                        dup2(fd_a[((i*2)-2)],0);
+                    else
+                    {
+                        dup2(fd_a[((i*2)-2)],0);
+                        dup2(fd_a[((i*2)+1)],1);
+                    }
 
-            //         for(int j = 0;j<((npipes+1)*2);j++)
-            //             close(fd_a[j]);
-
-            //         if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs))<0)
-            //         {
-            //             fprintf(stderr, "Error execing %s. Error# %d\n",cmd_a[i].cmdstr, errno);
-            //             exit(EXIT_FAILURE);
-            //         }
-            //         exit(0);
-            //     }
-            //     else
-            //     {
-            //         printf("Beginning process [%d]\n",pid_a[i]);
-            //     }
-            // }
+                    for(int j = 0;j<((npipes+1)*2);j++)
+                        close(fd_a[j]);
+                    printf("Trying this cmd string: %s\n",cmd_a[i].cmdstr);
+                    if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs))<0)
+                    {
+                        fprintf(stderr, "Error execing %s. Error# %d\n",cmd_a[i].cmdstr, errno);
+                        exit(EXIT_FAILURE);
+                    }
+                    exit(0);
+                }
+                else
+                {
+                    printf("Beginning process [%d]\n",pid_a[i]);
+                }
+            }
              
-            // for(int i=0;i<(npipes+1);i++)
-            // {
-            //     printf("going to wait for process [%d]",pid_a[i]);
-            //     if((waitpid(pid_a[i],&status,0))==-1)
-            //     {
-            //         fprintf(stderr, "Process encountered an error. ERROR%d", errno);
-            //         exit (EXIT_FAILURE);
-            //     }
-            //     else{printf("process returned!");}            
-            // }
-            // exit(0);
+            for(int i=0;i<(npipes+1);i++)
+            {
+                printf("going to wait for process [%d]\n",pid_a[i]);
+                if((waitpid(pid_a[i],&status,WNOHANG))==-1)
+                {
+                    fprintf(stderr, "Process [%d] encountered an error. ERROR %d\n", pid_a[i], errno);
+                    //(EXIT_FAILURE);
+                }
+                else{printf("process returned!\n");}            
+            }
+            exit(0);
         }
         else if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
         {          
