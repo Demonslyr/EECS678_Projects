@@ -208,7 +208,7 @@ int exec_cmd(command_t cmd)
 
                     for(int j = 0;j<((npipes+1)*2);j++)
                         close(fd_a[j]);
-                    printf("Trying this cmd string: %s\n",cmd_a[i].cmdstr);
+
                     if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs))<0)
                     {
                         fprintf(stderr, "Error execing %s. Error# %d\n",cmd_a[i].cmdstr, errno);
@@ -224,13 +224,13 @@ int exec_cmd(command_t cmd)
              
             for(int i=0;i<(npipes+1);i++)
             {
-                printf("going to wait for process [%d]\n",pid_a[i]);
-                if((waitpid(pid_a[i],&status,WNOHANG))==-1)
+                printf("going to wait for process [%d]",pid_a[i]);
+                if((waitpid(pid_a[i],&status,0))==-1)
                 {
-                    fprintf(stderr, "Process [%d] encountered an error. ERROR %d\n", pid_a[i], errno);
-                    //(EXIT_FAILURE);
+                    fprintf(stderr, "%dProcess encountered an error. ERROR%d", pid_a[i], errno);
+                    exit (EXIT_FAILURE);
                 }
-                else{printf("process returned!\n");}            
+                else{printf("process returned!");}            
             }
             exit(0);
         }
