@@ -477,8 +477,6 @@ int pipeParse(command_t cmd, command_t * cmdArr)
 
         testPath(cmd.execArgs[i],test);
 
-        strcpy(cmd.execArgs[i],test);
-
         cmdArr[i].execBg = false;
         size_t len = strlen(cmdArr[i].cmdstr);
         char last_char = cmdArr[i].cmdstr[len - 1];
@@ -510,7 +508,7 @@ int pipeParse(command_t cmd, command_t * cmdArr)
 
         char * temp2;
         temp2 = strtok(cmdArr[i].cmdstr," ");
-        cmdArr[i].execArgs[0] = temp2;
+        testPath(temp2, cmdArr[i].execArgs[0]);
 
         int j = 1;
         while(((temp2 = strtok(NULL," ")) != NULL) && (j<255))
