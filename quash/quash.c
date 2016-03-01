@@ -227,7 +227,7 @@ int exec_cmd(command_t cmd)
                 printf("going to wait for process [%d]",pid_a[i]);
                 if((waitpid(pid_a[i],&status,0))==-1)
                 {
-                    fprintf(stderr, "%dProcess encountered an error. ERROR%d", pid_a, errno);
+                    fprintf(stderr, "%dProcess encountered an error. ERROR%d", pid_a[i], errno);
                     exit (EXIT_FAILURE);
                 }
                 else{printf("process returned!");}            
