@@ -54,10 +54,7 @@ void catchChild(int signum)//child return or terminate callback
     while((pid = waitpid(-1,&status,WNOHANG)) != -1)
     {
         delete_from_list(pid);
-        //printf("I got in the while!\n");
-        siglongjmp(env,1);
     }
-    //printf("PID: %1d\n",pid);
 }
 
 void pwd()
@@ -97,7 +94,6 @@ void reapChild()
 void jobs()
 {
     print_list();
-    //printf("Not Yet Implimented.\n");
     return;
 }
 
@@ -399,8 +395,6 @@ bool get_command(command_t* cmd, FILE* in)
 {
     if (isatty(fileno(in)))
         printf( "     meh:~%s$ ", WKDIR );
-    
-    sigsetjmp(env,1);
 
     if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) 
     {
@@ -456,7 +450,7 @@ int pipeParse(command_t cmd, command_t * cmdArr)
 
     strcpy(cmdArr[numCommands].cmdstr, temp);
 
-    numCommands++;
+    numCommands++; 
 
     while(((temp = strtok(NULL,"|")) != NULL) && (numCommands<255))
     {
@@ -536,13 +530,15 @@ int main(int argc, char** argv) {
     puts("hOi! Welcome to Quash!");
 
     // Main execution loop
-    while (is_running() && get_command(&cmd, stdin)) 
+    while (is_running()) 
     {
         // NOTE: I would not recommend keeping anything inside the body of
         // this while loop. It is just an example.
 
         // The commands should be parsed, then executed.
-        if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
+        if(!get_command(&cmd, stdin))
+            printf("null command\n");
+        else if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
             terminate(); // Exit Quash
         else if(!strcmp(cmd.execArgs[0], "set"))
             set(cmd);//set globa variables
