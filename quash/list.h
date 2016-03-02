@@ -94,6 +94,36 @@ struct test_struct* search_in_list(int job_pid, struct test_struct **prev)
     }
 }
 
+int search_by_job_id(int job_id)
+{
+    struct test_struct *ptr = head;
+    bool found = false;
+
+    //printf("\n Searching the list for value [%d] \n",job_pid);
+
+    while(ptr != NULL)
+    {
+        if(ptr->job_id == job_id)
+        {
+            found = true;
+            break;
+        }
+        else
+        {
+            ptr = ptr->next;
+        }
+    }
+
+    if(true == found)
+    {
+        return ptr->job_pid;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 int delete_from_list(int job_pid)
 {
     struct test_struct *prev = NULL;

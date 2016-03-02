@@ -49,12 +49,16 @@ static void start() {
 void catchChild(int signum)//child return or terminate callback
 {
     //printf("Child died!%d\n",signum);
-    pid_t pid;
+    //pid_t pid;
     int status;
+    delete_from_list(waitpid(-1,&status,WNOHANG));
+    /*
     while((pid = waitpid(-1,&status,WNOHANG)) != -1)
     {
         delete_from_list(pid);
     }
+    //siglongjmp( env, 1 );
+    */
 }
 
 void pwd()
@@ -398,6 +402,8 @@ bool get_command(command_t* cmd, FILE* in)
     if (isatty(fileno(in)))
         printf( "     meh:~%s$ ", WKDIR );
 
+    //sigsetjmp( env, 1 );
+
     if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) 
     {
         cmd->execBg = false;
@@ -547,6 +553,23 @@ int pipeParse(command_t cmd, command_t * cmd_a)
     return numCommands;
 }
 
+bool killChild(command_t cmd)
+{
+    int job_id = atoi(cmd.execArgs[2]);
+    int pid = search_by_job_id( job_id );
+
+    if(pid == 0)
+    {
+        printf( "Job ID %d not found in current jobs\n", job_id );
+        return false;
+    }
+    else
+    {
+        kill(pid, atoi(cmd.execArgs[1]) );
+        return true;
+    }
+}
+
 /**
  * Quash entry point
  *
@@ -593,6 +616,8 @@ int main(int argc, char** argv) {
             cd(cmd);
         else if(!strcmp(cmd.execArgs[0], "jobs"))
             jobs();
+        else if(!strcmp(cmd.execArgs[0], "kill"))
+            killChild(cmd);
         else 
             exec_cmd(cmd);
         //puts(cmd.cmdstr); // Echo the input string
