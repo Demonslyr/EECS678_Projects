@@ -157,17 +157,10 @@ void testPath(char * testPath, char * testReturn)
     return;
 }
 
-int exec_cmd(command_t cmd)
+int exec_pipes(command_t cmd)
 {
-    char test[MAX_PATH_LENGTH];
 
-    testPath(cmd.execArgs[0],test);
-
-	pid_t pid = fork();
-	if(!pid)
-    {
-        if (strchr(cmd.cmdstr,'|')!= NULL){
-            char tmpcmdstr [MAX_COMMAND_LENGTH];
+char tmpcmdstr [MAX_COMMAND_LENGTH];
             
             command_t cmd_a[MAX_COMMAND_LENGTH];
 
@@ -177,64 +170,105 @@ int exec_cmd(command_t cmd)
             
             fprintf(stderr, "numCommands: %d\n", numCommands);
 
-            int npipes = numCommands-1;
-            int status;
-            //char buf[4096];
-            pid_t pid_a[npipes+1];
-            int fd_a[(npipes+1)*2];
-            //int rsize;
-            for(int  i = 0; i<npipes;)
+            if (numCommands == 2)
             {
-                pipe(fd_a+i);
-                i=i+2;
-            }
-            for(int i=0;i<(npipes+1);i++)
-            {
-                printf("Trying this cmd string: %s\nexecArg[0]: %s\n execArg[1]: %s\n",cmd_a[i].cmdstr,cmd_a[i].execArgs[0],cmd_a[i].execArgs[1]);
-                pid_a[i]=fork();
+
                 
-                if(!pid_a[i])
-                {
-                    if(i == 0)
-                        dup2(fd_a[i],1);
-                    else if(i == npipes)
-                        dup2(fd_a[((i*2)-2)],0);
-                    else
-                    {
-                        dup2(fd_a[((i*2)-2)],0);
-                        dup2(fd_a[((i*2)+1)],1);
-                    }
 
-                    for(int j = 0;j<((npipes+1)*2);j++)
-                        close(fd_a[j]);
-
-                    if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs))<0)
-                    {
-                        fprintf(stderr, "Error execing %s. Error# %d\n",cmd_a[i].cmdstr, errno);
-                        exit(EXIT_FAILURE);
-                    }
-                    exit(0);
-                }
-                else
-                {
-                    printf("Beginning process [%d]\n",pid_a[i]);
-                }
             }
-             
-            for(int i=0;i<(npipes+1);i++)
+            else
             {
-                printf("going to wait for process [%d]\n",pid_a[i]);
-                if((waitpid(pid_a[i],&status,WNOHANG))==-1)
-                {
-                    fprintf(stderr, "%dProcess encountered an error. ERROR%d", pid_a[i], errno);
-                    exit (EXIT_FAILURE);
-                }
-                else{printf("process returned!\n");}            
+                printf("Please visit our website to upgrade to the Pro version!");
             }
+
+}
+
+int exec_cmd(command_t cmd)
+{
+    char test[MAX_PATH_LENGTH];
+
+    testPath(cmd.execArgs[0],test);
+
+	pid_t pid = fork();
+	if(!pid)
+    {
+        // if (strchr(cmd.cmdstr,'|')!= NULL){
+        //     char tmpcmdstr [MAX_COMMAND_LENGTH];
             
-            exit(0);
-        }
-        else if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
+        //     command_t cmd_a[MAX_COMMAND_LENGTH];
+
+        //     int numCommands = pipeParse(cmd, cmd_a);
+            
+        //     strcpy(tmpcmdstr, cmd.cmdstr);
+            
+        //     fprintf(stderr, "numCommands: %d\n", numCommands);
+
+        //     int npipes = numCommands-1;
+        //     int status;
+        //     //char buf[4096];
+        //     pid_t pid_a[npipes+1];
+        //     int fd_a[(npipes+1)*2];
+        //     //int rsize;
+        //     for(int  i = 0; i<npipes;)
+        //     {
+        //         pipe(fd_a+i);
+        //         i=i+2;
+        //     }
+        //     for(int i=0;i<(npipes+1);i++)
+        //     {
+        //         printf("Trying this cmd string: %s\nexecArg[0]: %s\nexecArg[1]: %s\n",cmd_a[i].cmdstr,cmd_a[i].execArgs[0],cmd_a[i].execArgs[1]);
+        //         pid_a[i]=fork();
+                
+        //         if(!pid_a[i])
+        //         {
+        //             if(i == 0)
+        //             {
+        //                 dup2(fd_a[i],1);
+        //                 fprintf(stderr,"%s: Duping output to fd_a[%d]",cmd_a[i].execArgs[0],i);
+        //             }
+        //             else if(i == npipes)
+        //             {
+        //                 dup2(fd_a[((i*2)-2)],0);
+        //                 fprintf(stderr,"%s: Duping input to fd_a[%d]",cmd_a[i].execArgs[0],((i*2)-2));
+        //             }
+        //             else
+        //             {
+        //                 dup2(fd_a[((i*2)-2)],0);
+        //                 fprintf(stderr,"%s: Duping input to fd_a[%d]",cmd_a[i].execArgs[0],((i*2)-2));
+        //                 dup2(fd_a[((i*2)+1)],1);
+        //                 fprintf(stderr,"%s: Duping output to fd_a[%d]",cmd_a[i].execArgs[0],((i*2)+1));
+        //             }
+
+        //             for(int j = 0;j<((npipes+1)*2);j++)
+        //                 close(fd_a[j]);
+
+        //             if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs))<0)
+        //             {
+        //                 fprintf(stderr, "Error execing %s. Error# %d\n",cmd_a[i].cmdstr, errno);
+        //                 exit(EXIT_FAILURE);
+        //             }
+        //             exit(0);
+        //         }
+        //         else
+        //         {
+        //             printf("Beginning process [%d]\n",pid_a[i]);
+        //         }
+        //     }
+             
+        //     for(int i=0;i<(npipes+1);i++)
+        //     {
+        //         printf("going to wait for process [%d]\n",pid_a[i]);
+        //         if((waitpid(pid_a[i],&status,WNOHANG))==-1)
+        //         {
+        //             fprintf(stderr, "%dProcess encountered an error. ERROR%d", pid_a[i], errno);
+        //             exit (EXIT_FAILURE);
+        //         }
+        //         else{printf("process returned!\n");}            
+        //     }
+            
+        //     exit(0);
+        // }
+        if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
         {          
             char string[MAX_COMMAND_LENGTH];
             FILE * file = fopen(cmd.execArgs[cmd.execNumArgs-1], "r");
@@ -593,6 +627,8 @@ int main(int argc, char** argv) {
             cd(cmd);
         else if(!strcmp(cmd.execArgs[0], "jobs"))
             jobs();
+        else if (strchr(cmd.cmdstr,'|')!= NULL)
+            exec_pipes(cmd);
         else 
             exec_cmd(cmd);
         //puts(cmd.cmdstr); // Echo the input string
