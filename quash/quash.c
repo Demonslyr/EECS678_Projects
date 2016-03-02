@@ -70,26 +70,30 @@ void catchChild(int signum)//child return or terminate callback
 
 void pwd()
 {
-    printf("%s\n",WKDIR);
+    printf("%s\n",getenv("WKDIR"));
     return;
 }
 
 void cd(command_t cmd)
 {
+    char WKDIR[MAX_PATH_LENGTH];
+
     if (cmd.execArgs[1] == NULL)
     {
-        if (HOME[0] == '\0')
+        if (getenv("WKDIR") == NULL)
         {
             printf("HOME was NULL. No change made to the Working directory.");
             return;
         }
 
-        strcpy( WKDIR, HOME );
+        setenv("WKDIR",getenv("HOME"),1);
     }
     else
     {
+        strcpy( WKDIR, getenv("WKDIR"));
         strcat( WKDIR, "/");
         strcat( WKDIR, cmd.execArgs[1] );
+        setenv("WKDIR", WKDIR, 1);
     }
     return;
 }
@@ -124,14 +128,14 @@ void testPath(char * testPath, char * testReturn)
     char * temptok;
 
     strcpy(testReturn, testPath);
-    strcpy(pathHolder, PATH);
+    strcpy(pathHolder, getenv("PATH"));
 
     if(testPath[0] == '/')
     {
         return;
     }
 
-    strcpy( tempPath, WKDIR );
+    strcpy( tempPath, getenv("WKDIR") );
     strcat( tempPath, "/" );
     strcat( tempPath, testPath );
 
@@ -357,15 +361,15 @@ void set(command_t cmd)
 
     if( !strcmp(temp, "PATH") )
     {
-        strcpy(PATH, strtok(NULL, " "));
-        if(setenv("PATH", PATH, 1) == 0)
-            printf("PATH set to %s\n", PATH);
+        //strcpy(PATH, strtok(NULL, " "));
+        if(setenv("PATH", strtok(NULL, " "), 1) == 0)
+            printf("PATH set to %s\n", getenv("PATH"));
     }
     else if( !strcmp(temp, "HOME") )
     {
-        strcpy(HOME, strtok(NULL, " "));
-        if(setenv("HOME", HOME, 1) == 0)
-            printf("HOME set to %s\n", HOME);
+        //strcpy(HOME, strtok(NULL, " "));
+        if(setenv("HOME", strtok(NULL, " "), 1) == 0)
+            printf("HOME set to %s\n", getenv("HOME"));
     }
     else
     {
@@ -377,15 +381,15 @@ void echo(command_t cmd)
 {
     if( !strcmp(cmd.execArgs[1], "$PATH") )
     {
-        printf("%s\n", PATH);
+        printf("%s\n", getenv("PATH"));
     }
     else if( !strcmp(cmd.execArgs[1], "$HOME") )
     {
-        printf("%s\n", HOME);
+        printf("%s\n", getenv("HOME"));
     }
     else if( !strcmp(cmd.execArgs[1], "$WKDIR") )
     {
-        printf("%s\n", WKDIR);
+        printf("%s\n", getenv("WKDIR"));
     }
     else
     {
@@ -406,7 +410,7 @@ void terminate()
 bool get_command(command_t* cmd, FILE* in) 
 {
     if (isatty(fileno(in)))
-        printf( "     meh:~%s$ ", WKDIR );
+        printf( "     meh:~%s$ ", getenv("WKDIR") );
 
     //sigsetjmp( env, 1 );
 
@@ -588,9 +592,9 @@ int main(int argc, char** argv) {
     sa.sa_handler = catchChild;
     sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
 
-    strcpy( PATH, getenv("PATH") );
-    strcpy( HOME, getenv("HOME") );
-    strcpy( WKDIR, HOME );
+    //strcpy( PATH, getenv("PATH") );
+    //strcpy( HOME, getenv("HOME") );
+    setenv( "WKDIR", getenv("HOME"), 1 );
 
     puts("hOi! Welcome to Quash!");
 

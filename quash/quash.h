@@ -29,20 +29,13 @@ typedef struct command_t {
                                    ///< robustness.
     int execNumArgs;
     size_t cmdlen;     
-    // Extend with more fields if needed
     bool execBg;//true if this is a background execution
-    char * execArgs[MAX_PATH_LENGTH] ;
+    char * execArgs[MAX_PATH_LENGTH];
+    //FILE * inputFile;
+    //FILE * outputFile;
 } command_t;
 
 struct test_struct *ptr = NULL;
-
-/**
- * Global variables.
- */
-char PATH[MAX_PATH_LENGTH];
-char HOME[MAX_PATH_LENGTH];
-
-char WKDIR[MAX_PATH_LENGTH];
 
 /**
 *SIGCHLD handler
