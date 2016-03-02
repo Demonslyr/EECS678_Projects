@@ -488,14 +488,13 @@ bool get_command(command_t* cmd, FILE* in)
 
                 if( temp != NULL )
                 {
-                    printf("Error: incorrect command format");
+                    printf("Error: incorrect command format\n");
                     return false;
                 }
 
                 printf("final temp:%s\n", temp);
 
-                cmd->execArgs[i]=temp;
-                i++;
+                cmd->execArgs[i] = NULL;
                 cmd->execNumArgs = i;
 
                 printf("numArgs:%d\n", cmd->execNumArgs );
