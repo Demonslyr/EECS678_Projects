@@ -173,75 +173,84 @@ int exec_pipes(command_t cmd)
 
 char tmpcmdstr [MAX_COMMAND_LENGTH];
             
-            command_t cmd_a[MAX_COMMAND_LENGTH];
+    command_t cmd_a[MAX_COMMAND_LENGTH];
 
-            int numCommands = pipeParse(cmd, cmd_a);
-            
-            strcpy(tmpcmdstr, cmd.cmdstr);
-            
-            fprintf(stderr, "numCommands: %d\n", numCommands);
+    int numCommands = pipeParse(cmd, cmd_a);
+    
+    strcpy(tmpcmdstr, cmd.cmdstr);
+    
+    fprintf(stderr, "numCommands: %d\n", numCommands);
 
-            if (numCommands == 2)
+    int status;
+    pid_t pid_a[numCommands];
+    int fd_a[numCommands*2];
+    for (int i =0;i<numCommands;i++)
+    {
+        pipe(fd_a+(i*2));
+    }
+    //pipe(fd_2);
+    for(int i = 0;i<numCommands;i++)
+    {
+        pid_a[i] = fork();
+        
+        if(pid_a[i] == 0)
+        {
+            if(i == 0)
             {
-
-                int status;
-                pid_t p_1, p_2;
-                int fd_1[2], fd_2[2];
-                pipe(fd_1);
-                //pipe(fd_2);
-
-                p_1 = fork();
-                
-                if(p_1 == 0)
-                {
-                    dup2(fd_1[1],1);
-                    close(fd_1[0]);
-                    close(fd_1[1]);
-                    if((execv(cmd_a[0].execArgs[0],cmd_a[0].execArgs)) < 0)
-                    {
-                        fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[0].execArgs[0],errno);
-                    }
-                    exit(0);
-                }
-
-                p_2 = fork();
-
-                if(p_2 == 0)
-                {
-                    dup2(fd_1[0],0);
-                    dup2(STDOUT_FILENO,1);
-                    close(fd_1[0]);
-                    close(fd_1[1]);
-                    if((execv(cmd_a[1].execArgs[0],cmd_a[1].execArgs)) < 0)
-                    {
-                        fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[1].execArgs[0],errno);
-                    }
-                    exit(0);
-                }
-                
-                close(fd_1[0]);
-                close(fd_1[1]);
-
-                if((waitpid(p_1,&status,0)) == -1)
-                {
-                    fprintf(stderr, "process 1 encountered an error. ERROR %d", errno);
-                    return EXIT_FAILURE;
-                }
-                if((waitpid(p_2,&status,0)) == -1)
-                {
-                    fprintf(stderr, "process 2 encountered an error. ERROR %d", errno);
-                    return EXIT_FAILURE;
-                }
-                return 0;
-
-
+                dup2(fd_a[1],1);//out
+            }
+            else if(i == numCommands-1)
+            {
+                dup2(fd_a[(i-1)*2],0);//in
+                dup2(STDOUT_FILENO,1);//out
             }
             else
             {
-                printf("Please visit our website to upgrade to the Pro version!");
-                return 0;
+                dup2(fd_a[(i-1)*2],0);//in
+                dup2(fd_a[(i*2)+1],1);//out
             }
 
+            for(int j = 0; j<(2*numCommands);j++)
+            {
+                close(fd_a[j]);
+            }
+            if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs)) < 0)
+            {
+                fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[i].execArgs[0],errno);
+            }
+            exit(0);
+        }
+
+    //     p_2 = fork();
+
+    //     if(p_2 == 0)
+    //     {
+    //         dup2(fd_1[0],0);
+    //         dup2(STDOUT_FILENO,1);
+    //         close(fd_1[0]);
+    //         close(fd_1[1]);
+    //         if((execv(cmd_a[1].execArgs[0],cmd_a[1].execArgs)) < 0)
+    //         {
+    //             fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[1].execArgs[0],errno);
+    //         }
+    //         exit(0);
+    //     }
+    }
+
+    for(int j = 0; j<(2*numCommands);j++)
+    {
+        close(fd_a[j]);
+    }
+
+    for(int i =0; i<numCommands;i++)
+    {
+        if((waitpid(pid_a[i],&status,0)) == -1)
+        {
+            fprintf(stderr, "%s encountered an error. ERROR %d",cmd_a[i].execArgs[0], errno);
+            return EXIT_FAILURE;
+        }
+    }
+    return 0;
 }
 
 int exec_cmd(command_t cmd)
