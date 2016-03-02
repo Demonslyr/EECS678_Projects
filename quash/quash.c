@@ -170,7 +170,6 @@ void testPath(char * testPath, char * testReturn)
 
 int exec_pipes(command_t cmd)
 {
-
 char tmpcmdstr [MAX_COMMAND_LENGTH];
             
     command_t cmd_a[MAX_COMMAND_LENGTH];
@@ -178,8 +177,6 @@ char tmpcmdstr [MAX_COMMAND_LENGTH];
     int numCommands = pipeParse(cmd, cmd_a);
     
     strcpy(tmpcmdstr, cmd.cmdstr);
-    
-    fprintf(stderr, "numCommands: %d\n", numCommands);
 
     int status;
     pid_t pid_a[numCommands];
@@ -533,8 +530,6 @@ int pipeParse(command_t cmd, command_t * cmd_a)
         temp2 = strtok(tempcmd," ");
 
         testPath(temp2, arg0);
-
-        printf("temp[%d]:%s\n", i,temp2);
         
         int numArgs = 0;
         strcpy(argStore[argIter], arg0);
@@ -551,12 +546,6 @@ int pipeParse(command_t cmd, command_t * cmd_a)
         }
         cmd_a[i].execArgs[numArgs] = NULL;
         cmd_a[i].execNumArgs = numArgs;
-    }
-
-    for(int i = 0; i < numCommands; i++)
-    {
-        printf("cmdstr:%s\n", cmd_a[i].cmdstr);
-        printf("Cmdarg[%d]:%s\n", i,cmd_a[i].execArgs[0]);
     }
 
     return numCommands;
