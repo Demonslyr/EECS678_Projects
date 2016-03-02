@@ -31,6 +31,8 @@ typedef struct command_t {
     size_t cmdlen;     
     bool execBg;//true if this is a background execution
     char * execArgs[MAX_PATH_LENGTH];
+    char inputFile[MAX_PATH_LENGTH];
+    char outputFile[MAX_PATH_LENGTH];
     //FILE * inputFile;
     //FILE * outputFile;
 } command_t;

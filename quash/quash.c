@@ -410,13 +410,16 @@ void terminate()
 bool get_command(command_t* cmd, FILE* in) 
 {
     if (isatty(fileno(in)))
-        printf( "     meh:~%s$ ", getenv("WKDIR") );
+        printf( "meh:~%s$ ", getenv("WKDIR") );
 
     //sigsetjmp( env, 1 );
 
     if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) 
     {
         cmd->execBg = false;
+        cmd->inputFile[0] = '\0';
+        cmd->outputFile[0] = '\0';
+
         size_t len = strlen(cmd->cmdstr);
         char last_char = cmd->cmdstr[len - 1];
 
@@ -460,6 +463,45 @@ bool get_command(command_t* cmd, FILE* in)
         int i = 1;
         while(((temp = strtok(NULL," ")) != NULL) && (i<255))
         {
+            if( !strcmp(temp, "<") || !strcmp(temp, ">") )
+            {
+                if(cmd->inputFile[0] == '\0' && cmd->outputFile[0] == '\0')
+                    printf("inputFile:%s\noutputFile:%s\n",cmd->inputFile,cmd->outputFile);
+
+                if( !strcmp(temp, "<") )
+                {
+                    printf("detected:%s\n", temp);
+                    temp = strtok(NULL, " ");
+                    strcpy( cmd->inputFile, temp );
+                    printf("inputFile:%s\n", cmd->inputFile);
+                    temp = strtok(NULL, " ");
+                }
+
+                if( !strcmp(temp, ">") )
+                {
+                    printf("detected:%s\n", temp);
+                    temp = strtok(NULL, " ");
+                    strcpy( cmd->outputFile, temp );
+                    printf("inputFile:%s\n", cmd->outputFile);
+                    temp = strtok(NULL, " ");
+                }
+
+                if( temp != NULL )
+                {
+                    printf("Error: incorrect command format");
+                    return false;
+                }
+
+                printf("final temp:%s\n", temp);
+
+                cmd->execArgs[i]=temp;
+                i++;
+                cmd->execNumArgs = i;
+
+                printf("numArgs:%d\n", cmd->execNumArgs );
+
+                return true;
+            }
             cmd->execArgs[i] = temp;
             i++;
         }
@@ -592,8 +634,6 @@ int main(int argc, char** argv) {
     sa.sa_handler = catchChild;
     sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
 
-    //strcpy( PATH, getenv("PATH") );
-    //strcpy( HOME, getenv("HOME") );
     setenv( "WKDIR", getenv("HOME"), 1 );
 
     puts("hOi! Welcome to Quash!");
@@ -624,7 +664,6 @@ int main(int argc, char** argv) {
             exec_pipes(cmd);
         else 
             exec_cmd(cmd);
-        //puts(cmd.cmdstr); // Echo the input string
     }
 
     return EXIT_SUCCESS;
