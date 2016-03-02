@@ -184,12 +184,62 @@ char tmpcmdstr [MAX_COMMAND_LENGTH];
             if (numCommands == 2)
             {
 
+                int status;
+                pid_t p_1, p_2;
+                int fd_1[2], fd_2[2];
+                pipe(fd_1);
+                //pipe(fd_2);
+
+                p_1 = fork();
                 
+                if(p_1 == 0)
+                {
+                    dup2(fd_1[1],1);
+                    close(fd_1[0]);
+                    close(fd_1[1]);
+                    if((execv(cmd_a[0].execArgs[0],cmd_a[0].execArgs)) < 0)
+                    {
+                        fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[0].execArgs[0],errno);
+                    }
+                    exit(0);
+                }
+
+                p_2 = fork();
+
+                if(p_2 == 0)
+                {
+                    dup2(fd_1[0],0);
+                    dup2(STDOUT_FILENO,1);
+                    close(fd_1[0]);
+                    close(fd_1[1]);
+                    if((execv(cmd_a[1].execArgs[0],cmd_a[1].execArgs)) < 0)
+                    {
+                        fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[1].execArgs[0],errno);
+                    }
+                    exit(0);
+                }
+                
+                close(fd_1[0]);
+                close(fd_1[1]);
+
+                if((waitpid(p_1,&status,0)) == -1)
+                {
+                    fprintf(stderr, "process 1 encountered an error. ERROR %d", errno);
+                    return EXIT_FAILURE;
+                }
+                if((waitpid(p_2,&status,0)) == -1)
+                {
+                    fprintf(stderr, "process 2 encountered an error. ERROR %d", errno);
+                    return EXIT_FAILURE;
+                }
+                return 0;
+
 
             }
             else
             {
                 printf("Please visit our website to upgrade to the Pro version!");
+                return 0;
             }
 
 }
@@ -657,10 +707,10 @@ int main(int argc, char** argv) {
             cd(cmd);
         else if(!strcmp(cmd.execArgs[0], "jobs"))
             jobs();
-        else if (strchr(cmd.cmdstr,'|')!= NULL)
-            exec_pipes(cmd);
         else if(!strcmp(cmd.execArgs[0], "kill"))
             killChild(cmd);
+        else if (strchr(cmd.cmdstr,'|')!= NULL)
+            exec_pipes(cmd);
         else 
             exec_cmd(cmd);
         //puts(cmd.cmdstr); // Echo the input string
