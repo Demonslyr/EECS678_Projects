@@ -220,21 +220,6 @@ char tmpcmdstr [MAX_COMMAND_LENGTH];
             }
             exit(0);
         }
-
-    //     p_2 = fork();
-
-    //     if(p_2 == 0)
-    //     {
-    //         dup2(fd_1[0],0);
-    //         dup2(STDOUT_FILENO,1);
-    //         close(fd_1[0]);
-    //         close(fd_1[1]);
-    //         if((execv(cmd_a[1].execArgs[0],cmd_a[1].execArgs)) < 0)
-    //         {
-    //             fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[1].execArgs[0],errno);
-    //         }
-    //         exit(0);
-    //     }
     }
 
     for(int j = 0; j<(2*numCommands);j++)
@@ -493,7 +478,7 @@ int pipeParse(command_t cmd, command_t * cmd_a)
     strcpy(tmpcmdstr, cmd.cmdstr);
 
     char * temp;
-    char argStore[MAX_PATH_LENGTH][MAX_PATH_LENGTH];
+    char argStore[MAX_COMMAND_LENGTH][MAX_PATH_LENGTH];
     int argIter = 0;
 
     int numCommands = 0;
