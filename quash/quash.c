@@ -49,16 +49,23 @@ static void start() {
 void catchChild(int signum)//child return or terminate callback
 {
     //printf("Child died!%d\n",signum);
-    //pid_t pid;
+    pid_t pid;
     int status;
     delete_from_list(waitpid(-1,&status,WNOHANG));
-    /*
-    while((pid = waitpid(-1,&status,WNOHANG)) != -1)
+    
+    while((pid = waitpid(-1,&status,WNOHANG|WUNTRACED)) != -1)
     {
         delete_from_list(pid);
+        return;
+
+        // if (WIFEXITED(status))
+        //     printf("Child ended normally.n");
+        // else if (WIFSIGNALED(status))
+        //     printf("Child ended because of an uncaught signal.n");
+        // else if (WIFSTOPPED(status))
+        //     printf("Child process has stopped.n");
     }
-    //siglongjmp( env, 1 );
-    */
+    //siglongjmp( env, 1 );   
 }
 
 void pwd()
