@@ -465,7 +465,7 @@ bool get_command(command_t* cmd, FILE* in)
         {
             if( !strcmp(temp, "<") || !strcmp(temp, ">") )
             {
-                if(cmd->inputFile[0] == '\0' && cmd->outputFile[0] == '\0')
+                if( !strcmp(cmd->inputFile,"") && !strcmp(cmd->outputFile,"") )
                     printf("inputFile:%s\noutputFile:%s\n",cmd->inputFile,cmd->outputFile);
 
                 if( !strcmp(temp, "<") )
@@ -477,7 +477,7 @@ bool get_command(command_t* cmd, FILE* in)
                     temp = strtok(NULL, " ");
                 }
 
-                if( !strcmp(temp, ">") )
+                if( temp != NULL && !strcmp(temp, ">") )
                 {
                     printf("detected:%s\n", temp);
                     temp = strtok(NULL, " ");
