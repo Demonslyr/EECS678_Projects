@@ -302,13 +302,13 @@ int exec_cmd(command_t cmd)
             }
             
         }
-        else if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '>'))
+        else if (!strcmp(cmd.outputFile,""))
         {
             cmd.execArgs[cmd.execNumArgs-2] = NULL;
             //replace text.txt with last argument
             //remove text.txt and > arg
             //call exec as normal
-            int file = open(cmd.execArgs[cmd.execNumArgs-1],O_CREAT|O_WRONLY,S_IRWXU);
+            int file = open(cmd.outputFile,O_CREAT|O_WRONLY,S_IRWXU);
             dup2(file, 1);
 
             if(execv(test,cmd.execArgs)<0)
@@ -319,7 +319,7 @@ int exec_cmd(command_t cmd)
             
             //puting things back the way they were.
             close(file);
-            dup2(1,1);
+            //dup2(1,1);
 
             //fprintf(stderr, "\nEname = %s, str = %s\n",cmd.execArgs[0], cmd.execArgs[1]);
         }
@@ -465,7 +465,7 @@ bool get_command(command_t* cmd, FILE* in)
         {
             if( !strcmp(temp, "<") || !strcmp(temp, ">") )
             {
-                if(cmd->inputFile[0] == '\0' && cmd->outputFile[0] == '\0')
+                if( !strcmp(cmd->inputFile,"") && !strcmp(cmd->outputFile,"") )
                     printf("inputFile:%s\noutputFile:%s\n",cmd->inputFile,cmd->outputFile);
 
                 if( !strcmp(temp, "<") )
@@ -477,7 +477,7 @@ bool get_command(command_t* cmd, FILE* in)
                     temp = strtok(NULL, " ");
                 }
 
-                if( !strcmp(temp, ">") )
+                if( temp != NULL && !strcmp(temp, ">") )
                 {
                     printf("detected:%s\n", temp);
                     temp = strtok(NULL, " ");
