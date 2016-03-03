@@ -242,9 +242,10 @@ char tmpcmdstr [MAX_COMMAND_LENGTH];
 int exec_cmd(command_t cmd)
 {
     char test[MAX_PATH_LENGTH];
-
+    char origCmd [MAX_PATH_LENGTH];
     testPath(cmd.execArgs[0],test);
-
+    strcpy(origCmd,cmd.execArgs[0]);
+    strcpy(cmd.execArgs[0],test);
 	pid_t pid = fork();
 	if(!pid)
     {
@@ -266,7 +267,7 @@ int exec_cmd(command_t cmd)
                     len = len - 1;
                 }
 
-                args[0] = test;
+                args[0] = cmd.execArgs[0];
 
                 char * temp;
                 temp = strtok(string," ");
@@ -284,7 +285,7 @@ int exec_cmd(command_t cmd)
                 if(!pid2)
                 {
                     fprintf(stderr,"PATH: %s\n",getenv("PATH"));
-                    if(execv(test,args)<0)
+                    if(execv(cmd.execArgs[0],args)<0)
                     {
                         fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
                         exit(EXIT_FAILURE);
@@ -304,28 +305,11 @@ int exec_cmd(command_t cmd)
         }
         else if (strcmp(cmd.outputFile,""))
         {
-            cmd.execArgs[cmd.execNumArgs-2] = NULL;
-            //replace text.txt with last argument
-            //remove text.txt and > arg
-            //call exec as normal
-            int file = open(cmd.outputFile,O_CREAT|O_WRONLY,S_IRWXU);
-            dup2(file, 1);
-
-            if(execv(test,cmd.execArgs)<0)
-            {
-                fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
-                exit(EXIT_FAILURE);
-            }
-            
-            //puting things back the way they were.
-            close(file);
-            //dup2(1,1);
-
-            //fprintf(stderr, "\nEname = %s, str = %s\n",cmd.execArgs[0], cmd.execArgs[1]);
+            execToFile(cmd);
         }
         else
         {
-            if(execv(test,cmd.execArgs)<0)
+            if(execv(cmd.execArgs[0],cmd.execArgs)<0)
             {
                 fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
                 exit(EXIT_FAILURE);
@@ -348,10 +332,27 @@ int exec_cmd(command_t cmd)
         {
             printf("[%d] is running\n", pid);
 
-            add_to_list(pid, cmd.execArgs[0]);
+            add_to_list(pid, origCmd);
         }
     }
     return(0);
+}
+
+void execToFile(command_t cmd)
+{
+    cmd.execArgs[cmd.execNumArgs-2] = NULL;
+    //call exec as normal
+    int file = open(cmd.outputFile,O_CREAT|O_WRONLY,S_IRWXU);
+    dup2(file, 1);
+
+    if(execv(cmd.execArgs[0],cmd.execArgs)<0)
+    {
+        fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
+        exit(EXIT_FAILURE);
+    }
+    
+    //puting things back the way they were.
+    close(file);
 }
 
 void set(command_t cmd)

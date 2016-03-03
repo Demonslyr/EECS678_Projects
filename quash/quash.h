@@ -50,7 +50,10 @@ void catchChild();
  * @return True if Quash should accept more input and false otherwise
  */
 bool is_running();
-
+/**
+ * Outputs STDIO to a file.
+ */
+void execToFile(command_t cmd);
 
 /**
  * Causes the execution loop to end.
