@@ -302,7 +302,7 @@ int exec_cmd(command_t cmd)
             }
             
         }
-        else if (!strcmp(cmd.outputFile,""))
+        else if (strcmp(cmd.outputFile,""))
         {
             cmd.execArgs[cmd.execNumArgs-2] = NULL;
             //replace text.txt with last argument
@@ -417,8 +417,8 @@ bool get_command(command_t* cmd, FILE* in)
     if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) 
     {
         cmd->execBg = false;
-        cmd->inputFile[0] = '\0';
-        cmd->outputFile[0] = '\0';
+        strcpy(cmd->inputFile,"");
+        strcpy(cmd->outputFile,"");
 
         size_t len = strlen(cmd->cmdstr);
         char last_char = cmd->cmdstr[len - 1];
