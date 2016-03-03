@@ -249,10 +249,10 @@ int exec_cmd(command_t cmd)
 	pid_t pid = fork();
 	if(!pid)
     {
-        if ((cmd.execNumArgs > 2) && (cmd.execArgs[cmd.execNumArgs-2][0] == '<'))
+        if( strcmp(cmd.inputFile,"") )
         {          
             char string[MAX_COMMAND_LENGTH];
-            FILE * file = fopen(cmd.execArgs[cmd.execNumArgs-1], "r");
+            FILE * file = fopen(cmd.inputFile, "r");
 
             while(fgets(string, MAX_COMMAND_LENGTH, file) != NULL)
             {
@@ -285,10 +285,18 @@ int exec_cmd(command_t cmd)
                 if(!pid2)
                 {
                     fprintf(stderr,"PATH: %s\n",getenv("PATH"));
-                    if(execv(cmd.execArgs[0],args)<0)
+
+                    if(strcmp(cmd.outputFile,""))
                     {
-                        fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
-                        exit(EXIT_FAILURE);
+                        execToFile(args, cmd.outputFile);
+                    }
+                    else
+                    {
+                        if(execv(cmd.execArgs[0],args)<0)
+                        {
+                            fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
+                            exit(EXIT_FAILURE);
+                        }
                     }
                 }
                 else
