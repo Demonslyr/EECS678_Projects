@@ -474,24 +474,19 @@ bool get_command(command_t* cmd, FILE* in)
         {
             if( !strcmp(temp, "<") || !strcmp(temp, ">") )
             {
-                if( !strcmp(cmd->inputFile,"") && !strcmp(cmd->outputFile,"") )
-                    printf("inputFile:%s\noutputFile:%s\n",cmd->inputFile,cmd->outputFile);
+                usleep(250);//fixes race condition
 
                 if( !strcmp(temp, "<") )
                 {
-                    printf("detected:%s\n", temp);
                     temp = strtok(NULL, " ");
                     strcpy( cmd->inputFile, temp );
-                    printf("inputFile:%s\n", cmd->inputFile);
                     temp = strtok(NULL, " ");
                 }
 
                 if( temp != NULL && !strcmp(temp, ">") )
                 {
-                    printf("detected:%s\n", temp);
                     temp = strtok(NULL, " ");
                     strcpy( cmd->outputFile, temp );
-                    printf("outputFile:%s\n", cmd->outputFile);
                     temp = strtok(NULL, " ");
                 }
 
@@ -501,12 +496,8 @@ bool get_command(command_t* cmd, FILE* in)
                     return false;
                 }
 
-                printf("final temp:%s\n", temp);
-
                 cmd->execArgs[i] = NULL;
                 cmd->execNumArgs = i;
-
-                printf("numArgs:%d\n", cmd->execNumArgs );
 
                 return true;
             }
