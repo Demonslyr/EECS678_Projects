@@ -219,10 +219,18 @@ int exec_pipes(command_t cmd)
                 {
                     close(fd_a[j]);
                 }
-                if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs)) < 0)
+                if(strcmp(cmd.outputFile,""))
                 {
-                    fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[i].execArgs[0],errno);
+                    execToFile(cmd_a[i].execArgs, cmd.outputFile);
                 }
+                else
+                {
+                    if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs)) < 0)
+                    {
+                        fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[i].execArgs[0],errno);
+                    }
+                }
+                
                 exit(0);
             }
         }
