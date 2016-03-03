@@ -174,69 +174,88 @@ void testPath(char * testPath, char * testReturn)
 
 int exec_pipes(command_t cmd)
 {
-char tmpcmdstr [MAX_COMMAND_LENGTH];
-            
-    command_t cmd_a[MAX_COMMAND_LENGTH];
+    int ppid;
+    ppid = fork();
+    if(!ppid){
 
-    int numCommands = pipeParse(cmd, cmd_a);
-    
-    strcpy(tmpcmdstr, cmd.cmdstr);
+        char tmpcmdstr [MAX_COMMAND_LENGTH];
+                
+        command_t cmd_a[MAX_COMMAND_LENGTH];
 
-    int status;
-    pid_t pid_a[numCommands];
-    int fd_a[numCommands*2];
-    for (int i =0;i<numCommands;i++)
-    {
-        pipe(fd_a+(i*2));
-    }
-    //pipe(fd_2);
-    for(int i = 0;i<numCommands;i++)
-    {
-        pid_a[i] = fork();
+        int numCommands = pipeParse(cmd, cmd_a);
         
-        if(pid_a[i] == 0)
-        {
-            if(i == 0)
-            {
-                dup2(fd_a[1],1);//out
-            }
-            else if(i == numCommands-1)
-            {
-                dup2(fd_a[(i-1)*2],0);//in
-                dup2(STDOUT_FILENO,1);//out
-            }
-            else
-            {
-                dup2(fd_a[(i-1)*2],0);//in
-                dup2(fd_a[(i*2)+1],1);//out
-            }
+        strcpy(tmpcmdstr, cmd.cmdstr);
 
-            for(int j = 0; j<(2*numCommands);j++)
-            {
-                close(fd_a[j]);
-            }
-            if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs)) < 0)
-            {
-                fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[i].execArgs[0],errno);
-            }
-            exit(0);
+        int status;
+        pid_t pid_a[numCommands];
+        int fd_a[numCommands*2];
+        for (int i =0;i<numCommands;i++)
+        {
+            pipe(fd_a+(i*2));
         }
-    }
-
-    for(int j = 0; j<(2*numCommands);j++)
-    {
-        close(fd_a[j]);
-    }
-
-    for(int i =0; i<numCommands;i++)
-    {
-        if((waitpid(pid_a[i],&status,0)) == -1)
+        //pipe(fd_2);
+        for(int i = 0;i<numCommands;i++)
         {
-            fprintf(stderr, "%s encountered an error. ERROR %d",cmd_a[i].execArgs[0], errno);
+            pid_a[i] = fork();
+            
+            if(pid_a[i] == 0)
+            {
+                if(i == 0)
+                {
+                    dup2(fd_a[1],1);//out
+                }
+                else if(i == numCommands-1)
+                {
+                    dup2(fd_a[(i-1)*2],0);//in
+                    dup2(STDOUT_FILENO,1);//out
+                }
+                else
+                {
+                    dup2(fd_a[(i-1)*2],0);//in
+                    dup2(fd_a[(i*2)+1],1);//out
+                }
+
+                for(int j = 0; j<(2*numCommands);j++)
+                {
+                    close(fd_a[j]);
+                }
+                if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs)) < 0)
+                {
+                    fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[i].execArgs[0],errno);
+                }
+                exit(0);
+            }
+        }
+
+        for(int j = 0; j<(2*numCommands);j++)
+        {
+            close(fd_a[j]);
+        }
+
+        for(int i =0; i<numCommands;i++)
+        {
+            if((waitpid(pid_a[i],&status,0)) == -1)
+            {
+                fprintf(stderr, "%s encountered an error. ERROR %d",cmd_a[i].execArgs[0], errno);
+                exit(EXIT_FAILURE);
+            }
+        }
+        exit(0);
+    }
+    else
+    {
+        if(cmd.execBg){
+
+            add_to_list(ppid, cmd.cmdstr);
+            return 0;
+        }
+        if((waitpid(ppid,&status,0)) == -1)
+        {
+            fprintf(stderr, "%s encountered an error. ERROR %d",cmd.cmdstr, errno);
             return EXIT_FAILURE;
         }
+        return 0;
     }
-    return 0;
 }
 
 int exec_cmd(command_t cmd)
