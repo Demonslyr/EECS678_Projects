@@ -305,7 +305,7 @@ int exec_cmd(command_t cmd)
         }
         else if (strcmp(cmd.outputFile,""))
         {
-            execToFile(cmd);
+            execToFile(cmd.execArgs, cmd.outputFile);
         }
         else
         {
@@ -338,16 +338,16 @@ int exec_cmd(command_t cmd)
     return(0);
 }
 
-void execToFile(command_t cmd)
+void execToFile(char ** execArgs, char * outputFile)
 {
-    cmd.execArgs[cmd.execNumArgs-2] = NULL;
+    //cmd.execArgs[cmd.execNumArgs-2] = NULL;
     //call exec as normal
-    int file = open(cmd.outputFile,O_CREAT|O_WRONLY,S_IRWXU);
+    int file = open(outputFile,O_CREAT|O_APPEND|O_WRONLY,S_IRWXU);
     dup2(file, 1);
 
-    if(execv(cmd.execArgs[0],cmd.execArgs)<0)
+    if(execv(execArgs[0],execArgs)<0)
     {
-        fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
+        fprintf(stderr, "Error execing %s. Error# %d\n",execArgs[0], errno);
         exit(EXIT_FAILURE);
     }
     
