@@ -482,7 +482,7 @@ bool get_command(command_t* cmd, FILE* in)
                     printf("detected:%s\n", temp);
                     temp = strtok(NULL, " ");
                     strcpy( cmd->outputFile, temp );
-                    printf("inputFile:%s\n", cmd->outputFile);
+                    printf("outputFile:%s\n", cmd->outputFile);
                     temp = strtok(NULL, " ");
                 }
 
