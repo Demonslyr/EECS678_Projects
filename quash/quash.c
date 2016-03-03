@@ -284,7 +284,7 @@ int exec_cmd(command_t cmd)
                 int pid2 = fork();
                 if(!pid2)
                 {
-                    fprintf(stderr,"PATH: %s\n",getenv("PATH"));
+                    //fprintf(stderr,"PATH: %s\n",getenv("PATH"));
 
                     if(strcmp(cmd.outputFile,""))
                     {
