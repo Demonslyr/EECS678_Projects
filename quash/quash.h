@@ -53,7 +53,7 @@ bool is_running();
 /**
  * Outputs STDIO to a file.
  */
-void execToFile(command_t cmd);
+void execToFile(char ** execArgs, char * outputFile);
 
 /**
  * Causes the execution loop to end.
