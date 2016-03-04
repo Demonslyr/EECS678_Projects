@@ -1,4 +1,4 @@
-STUDENTID = 2298962-2213976
+STUDENTID = 2298962
 PROGNAME = quash
 
 CC = gcc --std=c99
@@ -14,7 +14,7 @@ CFLAGS = -Wall -D_XOPEN_SOURCE -w -g -Og
 # NOTE: The submission scripts assume all files in `CFILES` end with
 # .c and all files in `HFILES` end in .h
 CFILES = quash.c
-HFILES = quash.h debug.h
+HFILES = quash.h debug.h list.h
 
 # Add libraries that need linked as needed (e.g. -lm -lpthread)
 LIBS =
@@ -29,7 +29,7 @@ RAWH = $(patsubst %.h,%,$(HFILES))
 
 
 # Build the documentation and the quash executable
-all: clean doc $(PROGNAME) sTest
+all: doc $(PROGNAME) sTest
 
 # Build the quash program
 $(PROGNAME): $(OBJFILES)

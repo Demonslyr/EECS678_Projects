@@ -450,6 +450,8 @@ bool get_command(command_t* cmd, FILE* in)
 
     if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) 
     {
+        char tmpArgs [MAX_COMMAND_LENGTH][MAX_PATH_LENGTH];
+
         cmd->execBg = false;
         strcpy(cmd->inputFile,"");
         strcpy(cmd->outputFile,"");
@@ -487,19 +489,23 @@ bool get_command(command_t* cmd, FILE* in)
         {
             return false;
         }
+        
+        int i = 0;
 
         char tempcmd[MAX_COMMAND_LENGTH];
         strcpy(tempcmd, cmd->cmdstr);
         char * temp;
         temp = strtok(tempcmd," ");
-        cmd->execArgs[0] = temp;
+        strcpy(tmpArgs[i], temp);
+        cmd->execArgs[i] = tmpArgs[i];
 
-        int i = 1;
+        i++;
+
         while(((temp = strtok(NULL," ")) != NULL) && (i<255))
         {
             if( !strcmp(temp, "<") || !strcmp(temp, ">") )
             {
-                usleep(250);//fixes race condition
+                //usleep(250);//fixes race condition
 
                 if( !strcmp(temp, "<") )
                 {
@@ -526,9 +532,13 @@ bool get_command(command_t* cmd, FILE* in)
 
                 return true;
             }
-            cmd->execArgs[i] = temp;
+            
+            strcpy( tmpArgs[i], temp );
+            
+            cmd->execArgs[i] = tmpArgs[i];
             i++;
         }
+
         cmd->execArgs [i] = NULL;
         cmd->execNumArgs = i;
 
