@@ -139,6 +139,7 @@ int exec_pipes(command_t cmd)
             
             if(pid_a[i] == 0)
             {
+                usleep(500000);
                 if(i == 0)
                 {
                     dup2(fd_a[1],1);//out
@@ -158,7 +159,7 @@ int exec_pipes(command_t cmd)
                 {
                     close(fd_a[j]);
                 }
-                if(strcmp(cmd.outputFile,""))
+                if(strcmp(cmd.outputFile,"")&&(i==numCommands-1))
                 {
                     execToFile(cmd_a[i].execArgs, cmd.outputFile);
                 }
@@ -545,9 +546,10 @@ int pipeParse(command_t cmd, command_t * cmd_a)
 
         while((arg = strtok(NULL," ")) != NULL)
         {
-            if( !strcmp(temp, "<") || !strcmp(temp, ">") )
+            if( !strcmp(arg, "<") || !strcmp(arg, ">") )
             {
-                return numCommands;
+                //numArgs++;
+                break;
             }
 
             strcpy(argStore[argIter], arg);
