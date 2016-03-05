@@ -122,7 +122,7 @@ int exec_pipes(command_t cmd)
         command_t cmd_a[MAX_COMMAND_LENGTH];
 
         int numCommands = pipeParse(cmd, cmd_a);
-        
+        printf("numCommands: %d\n",numCommands );
         strcpy(tmpcmdstr, cmd.cmdstr);
 
         int status;
@@ -139,7 +139,6 @@ int exec_pipes(command_t cmd)
             
             if(pid_a[i] == 0)
             {
-                usleep(500000);
                 if(i == 0)
                 {
                     dup2(fd_a[1],1);//out
@@ -181,10 +180,11 @@ int exec_pipes(command_t cmd)
         }
 
         for(int i =0; i<numCommands;i++)
-        {
+        {   
+
             if((waitpid(pid_a[i],&status,0)) == -1)
             {
-                fprintf(stderr, "%s encountered an error. ERROR %d",cmd_a[i].execArgs[0], errno);
+                fprintf(stderr, "%s encountered an error._1 ERROR %d",cmd_a[i].execArgs[0], errno);
                 exit(EXIT_FAILURE);
             }
         }
@@ -199,7 +199,7 @@ int exec_pipes(command_t cmd)
         }
         if((waitpid(ppid,&status,0)) == -1)
         {
-            fprintf(stderr, "%s encountered an error. ERROR %d",cmd.cmdstr, errno);
+            fprintf(stderr, "%s encountered an error._2 ERROR %d",cmd.cmdstr, errno);
             return EXIT_FAILURE;
         }
         return 0;
@@ -263,7 +263,7 @@ int exec_cmd(command_t cmd)
                 {
                     if((waitpid(pid2,&status,0))==-1)
                     {
-                        fprintf(stderr, "Process encountered an error. ERROR%d", errno);
+                        fprintf(stderr, "Process encountered an error._3 ERROR%d", errno);
                         return EXIT_FAILURE;
                     }
                 }
@@ -292,7 +292,7 @@ int exec_cmd(command_t cmd)
             //add pid and command w/o path to jobs structure
             if((waitpid(pid,&status,0))==-1)
             {
-                fprintf(stderr, "Process encountered an error. ERROR%d", errno);
+                fprintf(stderr, "Process encountered an error._4 ERROR%d", errno);
                 return EXIT_FAILURE;
             }
         }
@@ -600,6 +600,7 @@ int main(int argc, char** argv) {
     sigdelset(&mask_set,SIGINT);
     sigdelset(&mask_set,SIGTSTP);
     sa.sa_handler = catchChild;
+    //TODO: this is involved withe the error 10 problem. Removing it remedies the issue for now but breaks other things.
     sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
 
     setenv( "WKDIR", getenv("HOME"), 1 );
