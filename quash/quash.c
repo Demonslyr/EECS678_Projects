@@ -111,67 +111,6 @@ void jobs()
     return;
 }
 
-bool pathExists(char* path)
-{ 
-    FILE * file = fopen(path,"r");
-    if (file!=NULL)
-    {
-        fclose(file);
-        return true;
-    }
-    return false;
-}
-
-void testPath(char * testPath, char * testReturn)
-{
-    char tempPath[MAX_PATH_LENGTH], pathHolder[MAX_PATH_LENGTH];
-    char * temptok;
-
-    strcpy(testReturn, testPath);
-    strcpy(pathHolder, getenv("PATH"));
-
-    if(testPath[0] == '/')
-    {
-        return;
-    }
-
-    strcpy( tempPath, getenv("WKDIR") );
-    strcat( tempPath, "/" );
-    strcat( tempPath, testPath );
-
-    if( pathExists( tempPath ) )
-    {
-        strcpy( testReturn, tempPath );
-        return;
-    }
-
-    else
-    {
-        if (pathHolder == '\0')
-        {
-            printf("PATH is NULL\n");
-            return;
-        }
-        temptok = strtok(pathHolder,":");
-
-        while(temptok!=NULL)
-        {
-            strcpy(tempPath,temptok);
-            strcat(tempPath,"/");
-            strcat(tempPath, testPath);
-
-            if(pathExists(tempPath))
-            {
-                strcpy(testReturn, tempPath);
-                return;
-            }
-            temptok = strtok(NULL,":");
-        }
-
-    }
-    return;
-}
-
 int exec_pipes(command_t cmd)
 {
     int ppid;
@@ -606,7 +545,6 @@ int pipeParse(command_t cmd, command_t * cmd_a)
         int numArgs = 0;
         strcpy(argStore[argIter], arg);
         cmd_a[i].execArgs[numArgs] = argStore[argIter];
-        printf("arg[%d]%s\n",numArgs,arg);
         argIter++;
         numArgs++;
 
@@ -614,19 +552,12 @@ int pipeParse(command_t cmd, command_t * cmd_a)
         {
             strcpy(argStore[argIter], arg);
             cmd_a[i].execArgs[numArgs] = argStore[argIter];
-            printf("arg[%d]%s\n",numArgs,arg);
             argIter++;
             numArgs++;
         }
 
         cmd_a[i].execArgs[numArgs] = NULL;
         cmd_a[i].execNumArgs = numArgs;
-
-        for(int j = 0; j < cmd_a[i].execNumArgs; j++)
-        {
-            printf("[%d] %s  ", j, cmd_a[i].execArgs[j]);
-        }
-        printf("\n");
     }
 
     return numCommands;

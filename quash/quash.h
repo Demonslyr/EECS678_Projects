@@ -78,16 +78,6 @@ void cd(command_t cmd);
 int exec_cmd(command_t cmd);
 
 /**
- * Checks if the file at the path exists
- */
-bool pathExists(char * path);
-
-/**
- * Validates the execution path for a command
- */
-void testPath(char * testPath, char * testReturn);
-
-/**
  * Sets global variables
  */
 void set(command_t cmd);
