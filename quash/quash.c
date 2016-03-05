@@ -268,11 +268,6 @@ int exec_pipes(command_t cmd)
 
 int exec_cmd(command_t cmd)
 {
-    char test[MAX_PATH_LENGTH];
-    char origCmd [MAX_PATH_LENGTH];
-    testPath(cmd.execArgs[0],test);
-    strcpy(origCmd,cmd.execArgs[0]);
-    strcpy(cmd.execArgs[0],test);
 	pid_t pid = fork();
 	if(!pid)
     {
@@ -317,7 +312,7 @@ int exec_cmd(command_t cmd)
                     }
                     else
                     {
-                        if(execv(cmd.execArgs[0],args)<0)
+                        if(execvp(cmd.execArgs[0],args)<0)
                         {
                             fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
                             exit(EXIT_FAILURE);
@@ -342,7 +337,7 @@ int exec_cmd(command_t cmd)
         }
         else
         {
-            if(execv(cmd.execArgs[0],cmd.execArgs)<0)
+            if(execvp(cmd.execArgs[0],cmd.execArgs)<0)
             {
                 fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
                 exit(EXIT_FAILURE);
@@ -365,7 +360,7 @@ int exec_cmd(command_t cmd)
         {
             printf("[%d] is running\n", pid);
 
-            add_to_list(pid, origCmd);
+            add_to_list(pid, cmd.execArgs[0]);
         }
     }
     return(0);
