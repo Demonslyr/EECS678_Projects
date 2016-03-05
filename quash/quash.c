@@ -317,7 +317,6 @@ void execToFile(char ** execArgs, char * outputFile)
         fprintf(stderr, "Error execing %s. Error# %d\n",execArgs[0], errno);
         exit(EXIT_FAILURE);
     }
-    
     //puting things back the way they were.
     close(file);
 }
@@ -329,13 +328,11 @@ void set(command_t cmd)
 
     if( !strcmp(temp, "PATH") )
     {
-        //strcpy(PATH, strtok(NULL, " "));
         if(setenv("PATH", strtok(NULL, " "), 1) == 0)
             printf("PATH set to %s\n", getenv("PATH"));
     }
     else if( !strcmp(temp, "HOME") )
     {
-        //strcpy(HOME, strtok(NULL, " "));
         if(setenv("HOME", strtok(NULL, " "), 1) == 0)
             printf("HOME set to %s\n", getenv("HOME"));
     }
@@ -439,8 +436,6 @@ bool get_command(command_t* cmd, FILE* in)
         {
             if( !strcmp(temp, "<") || !strcmp(temp, ">") )
             {
-                //usleep(250);//fixes race condition
-
                 if( !strcmp(temp, "<") )
                 {
                     temp = strtok(NULL, " ");
@@ -550,6 +545,11 @@ int pipeParse(command_t cmd, command_t * cmd_a)
 
         while((arg = strtok(NULL," ")) != NULL)
         {
+            if( !strcmp(temp, "<") || !strcmp(temp, ">") )
+            {
+                return numCommands;
+            }
+
             strcpy(argStore[argIter], arg);
             cmd_a[i].execArgs[numArgs] = argStore[argIter];
             argIter++;
@@ -615,21 +615,21 @@ int main(int argc, char** argv) {
         else if (!strcmp(cmd.cmdstr, "q")||!strcmp(cmd.cmdstr, "exit")||!strcmp(cmd.cmdstr, "quit"))
             terminate(); // Exit Quash
         else if(!strcmp(cmd.execArgs[0], "set"))
-            set(cmd);//set globa variables
+            set(cmd);//set environment variables
         else if(!strcmp(cmd.execArgs[0], "echo"))
-            echo(cmd);
+            echo(cmd);//echos environment variables
         else if(!strcmp(cmd.execArgs[0], "pwd"))
-            pwd(cmd);
+            pwd(cmd);//prints current working directory
         else if(!strcmp(cmd.execArgs[0], "cd"))
-            cd(cmd);
+            cd(cmd);//changes the working directory
         else if(!strcmp(cmd.execArgs[0], "jobs"))
-            jobs();
+            jobs();//prints out a list of currently running jobs
         else if(!strcmp(cmd.execArgs[0], "kill"))
-            killChild(cmd);
+            killChild(cmd);//kills specified job
         else if (strchr(cmd.cmdstr,'|')!= NULL)
-            exec_pipes(cmd);
+            exec_pipes(cmd);//executes piped commands
         else 
-            exec_cmd(cmd);
+            exec_cmd(cmd);//executes normal commands
     }
 
     return EXIT_SUCCESS;
