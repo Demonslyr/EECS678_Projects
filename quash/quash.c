@@ -193,7 +193,7 @@ int exec_pipes(command_t cmd)
         {
             pipe(fd_a+(i*2));
         }
-        //pipe(fd_2);
+
         for(int i = 0;i<numCommands;i++)
         {
             pid_a[i] = fork();
@@ -225,7 +225,7 @@ int exec_pipes(command_t cmd)
                 }
                 else
                 {
-                    if((execv(cmd_a[i].execArgs[0],cmd_a[i].execArgs)) < 0)
+                    if((execvp(cmd_a[i].execArgs[0],cmd_a[i].execArgs)) < 0)
                     {
                         fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[i].execArgs[0],errno);
                     }
@@ -373,7 +373,7 @@ void execToFile(char ** execArgs, char * outputFile)
     int file = open(outputFile,O_CREAT|O_APPEND|O_WRONLY,S_IRWXU);
     dup2(file, 1);
 
-    if(execv(execArgs[0],execArgs)<0)
+    if(execvp(execArgs[0],execArgs)<0)
     {
         fprintf(stderr, "Error execing %s. Error# %d\n",execArgs[0], errno);
         exit(EXIT_FAILURE);
@@ -598,29 +598,35 @@ int pipeParse(command_t cmd, command_t * cmd_a)
 
         char tempcmd[MAX_COMMAND_LENGTH];
         
-        char * temp2;
-        char arg0[MAX_COMMAND_LENGTH];
+        char * arg;
         
         strcpy(tempcmd, cmd_a[i].cmdstr);
-        temp2 = strtok(tempcmd," ");
-
-        testPath(temp2, arg0);
+        arg = strtok(tempcmd," ");
         
         int numArgs = 0;
-        strcpy(argStore[argIter], arg0);
+        strcpy(argStore[argIter], arg);
         cmd_a[i].execArgs[numArgs] = argStore[argIter];
+        printf("arg[%d]%s\n",numArgs,arg);
         argIter++;
         numArgs++;
 
-        while((temp2 = strtok(NULL," ")) != NULL)
+        while((arg = strtok(NULL," ")) != NULL)
         {
-            strcpy(argStore[argIter], temp2);
+            strcpy(argStore[argIter], arg);
             cmd_a[i].execArgs[numArgs] = argStore[argIter];
+            printf("arg[%d]%s\n",numArgs,arg);
             argIter++;
             numArgs++;
         }
+
         cmd_a[i].execArgs[numArgs] = NULL;
         cmd_a[i].execNumArgs = numArgs;
+
+        for(int j = 0; j < cmd_a[i].execNumArgs; j++)
+        {
+            printf("[%d] %s  ", j, cmd_a[i].execArgs[j]);
+        }
+        printf("\n");
     }
 
     return numCommands;
