@@ -118,7 +118,7 @@ int exec_pipes(command_t cmd)
     sigdelset(&tmpSa,SIGINT);
     sigdelset(&tmpSa,SIGTSTP);
     sigprocmask(SIG_SETMASK, &tmpSa, NULL);
-    //TODO: Start blocking signals
+    //Start blocking signals
 
     int ppid;
     ppid = fork();
@@ -210,7 +210,7 @@ int exec_pipes(command_t cmd)
             sigdelset(&tmpSa,SIGTSTP);
             sigdelset(&tmpSa, SIGCHLD);
             sigprocmask(SIG_SETMASK, &tmpSa, NULL);
-            //TODO: stop blocking signals because we can return if we fail
+            //Stop blocking signals because we can return if we fail
             //one of the commands and we don't want signals to stay blocked
 
             return EXIT_FAILURE;
@@ -224,7 +224,7 @@ int exec_pipes(command_t cmd)
     sigdelset(&tmpSa,SIGTSTP);
     sigdelset(&tmpSa, SIGCHLD);
     sigprocmask(SIG_SETMASK, &tmpSa, NULL);
-    //TODO: stop blocking signals
+    //Stop blocking signals
 
     return 0;
 }
@@ -382,7 +382,9 @@ void echo(command_t cmd)
     }
     else
     {
-        printf("Cannot echo %s\n", cmd.execArgs[1]);
+        printf("%s\n", cmd.cmdstr+5);
+        //echo everything after the word echo
+        //& at the end of the string and < or > must be enclosed in parenthesis
     }
 }
 
