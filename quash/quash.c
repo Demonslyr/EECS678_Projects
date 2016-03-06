@@ -605,7 +605,6 @@ int pipeParse(command_t cmd, command_t * cmd_a)
         {
             if( !strcmp(arg, "<") || !strcmp(arg, ">") )
             {
-                //numArgs++;
                 break;
             }
 
