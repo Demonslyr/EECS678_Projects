@@ -113,6 +113,11 @@ void jobs()
 
 int exec_pipes(command_t cmd)
 {
+    sigset_t tmpSa;
+    sigfillset( &tmpSa);
+    sigdelset(&tmpSa,SIGINT);
+    sigdelset(&tmpSa,SIGTSTP);
+    sigprocmask(SIG_SETMASK, &tmpSa, NULL);
     //TODO: Start blocking signals
 
     int ppid;
@@ -200,7 +205,11 @@ int exec_pipes(command_t cmd)
         else if((waitpid(ppid,&status,0)) == -1)
         {
             fprintf(stderr, "%s encountered an error._2 ERROR %d",cmd.cmdstr, errno);
-
+            sigfillset( &tmpSa);
+            sigdelset(&tmpSa,SIGINT);
+            sigdelset(&tmpSa,SIGTSTP);
+            sigdelset(&tmpSa, SIGCHLD);
+            sigprocmask(SIG_SETMASK, &tmpSa, NULL);
             //TODO: stop blocking signals because we can return if we fail
             //one of the commands and we don't want signals to stay blocked
 
@@ -210,6 +219,11 @@ int exec_pipes(command_t cmd)
 
     }
     
+    sigfillset( &tmpSa);
+    sigdelset(&tmpSa,SIGINT);
+    sigdelset(&tmpSa,SIGTSTP);
+    sigdelset(&tmpSa, SIGCHLD);
+    sigprocmask(SIG_SETMASK, &tmpSa, NULL);
     //TODO: stop blocking signals
 
     return 0;
@@ -591,6 +605,10 @@ bool killChild(command_t cmd)
     }
 }
 
+void ignoreChild()
+{
+
+};
 /**
  * Quash entry point
  *
@@ -602,13 +620,14 @@ int main(int argc, char** argv) {
     command_t cmd; //< Command holder argument
       
     start();
-    
+    struct sigaction NULL_sa;
     struct sigaction sa;
     sigset_t mask_set;
     sigfillset(&mask_set);
     sigdelset(&mask_set,SIGINT);
     sigdelset(&mask_set,SIGTSTP);
     sa.sa_handler = catchChild;
+    sigprocmask(SIG_SETMASK, &mask_set, NULL);
     //TODO: this is involved withe the error 10 problem. Removing it remedies the issue for now but breaks other things.
     sigaction(SIGCHLD, &sa,NULL);//child termination calls catchChild;
 
