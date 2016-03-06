@@ -1,0 +1,3 @@
+/home/elise
+/home/elise/EECS678
+/home/elise/Desktop

@@ -1,0 +1,115 @@
+set PATH=/home/elise/EECS678_Quash/quash
+
+echo -------------------------------------
+echo ----Executables without arguments----
+echo -------------------------------------
+echo --test1--
+test1
+echo --test5--
+test5
+echo ----------------------------------
+echo ----Executables with arguments----
+echo ----------------------------------
+echo --test1 arg1--
+test1 arg1
+echo --test5 arg1 arg2--
+test5 arg1 arg2
+echo -------------------------
+echo ----Set HOME and PATH----
+echo -------------------------
+echo --set HOME=/home/elise/EECS678_Quash/quash--
+set HOME=/home/elise/EECS678_Quash/quash
+echo --echo $HOME--
+echo $HOME
+echo --set PATH=/null/null/null--
+set PATH=/null/null/null
+wait 1
+echo --echo $PATH--
+echo $PATH
+echo --set PATH=/home/elise/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games--
+set PATH=/home/elise/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+wait 1
+echo --echo $PATH--
+echo $PATH
+wait 1
+echo --cd EECS678_Quash/quash--
+cd EECS678_Quash/quash
+wait 1
+echo --pwd--
+pwd
+wait 1
+echo --cd--
+cd
+wait 1
+echo --pwd--
+pwd
+echo --------------------------------------------
+echo ----PATH works properly---------------------
+echo ----gives errors when commands not found----
+echo --------------------------------------------
+echo -
+wait 1
+echo -
+echo -
+echo -
+wait 1
+echo -
+echo -
+echo -
+
+wait 5
+echo          -----------------------------------
+wait 1
+echo          ----AND NOW FOR BIRTHDAY CODING----
+wait 1
+echo          -----------------------------------
+wait 1
+echo          -----------------------------------
+wait 1
+echo                         #,
+echo                         ###
+wait 1
+echo                        ## ##
+echo                       ##  ##
+wait 1
+echo                        ####
+echo                          :
+wait 1
+echo                         #####
+echo                        ######
+wait 1
+echo                        ##  ##
+echo                        ##  ##
+wait 1
+echo                        ##  ##
+echo                        ##  ##########
+wait 1
+echo                        ##  #############
+echo                   #######  ###############
+wait 1
+echo               #############################
+echo         .###################################
+wait 1
+echo        #####################################;
+echo        ##                                 ##.
+wait 1
+echo        ##                                 ##
+echo        #####################################
+wait 1
+echo        ##                                 ##
+echo        ##                                 ##
+wait 1
+echo        ##                                 ###
+echo     #####                                 #####
+wait 1
+echo    ### ##################################### ###
+echo   ###  ##                                 ##  ###
+wait 1
+echo   ##   ## ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, ##   ##
+echo    ##  #####################################  ##
+wait 1
+echo     ##                                       ##
+echo      ####                                 ####
+wait 1
+echo        ######                         ######
+echo           ###############################

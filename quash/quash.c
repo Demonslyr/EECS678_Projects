@@ -679,6 +679,8 @@ int main(int argc, char** argv) {
             jobs();//prints out a list of currently running jobs
         else if(!strcmp(cmd.execArgs[0], "kill"))
             killChild(cmd);//kills specified job
+        else if (!strcmp(cmd.execArgs[0], "wait"))
+            sleep(atoi(cmd.execArgs[1]));
         else if (strchr(cmd.cmdstr,'|')!= NULL)
             exec_pipes(cmd);//executes piped commands
         else 
