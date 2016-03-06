@@ -115,7 +115,7 @@ void checkWkdir(char* command, char* output)
         strcpy(temp, wkDir);
         output = temp;
     }
-    
+
     return;
 }
 
@@ -594,7 +594,6 @@ int pipeParse(command_t cmd, command_t * cmd_a)
         {
             if( !strcmp(arg, "<") || !strcmp(arg, ">") )
             {
-                //numArgs++;
                 break;
             }
 
