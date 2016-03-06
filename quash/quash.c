@@ -98,6 +98,27 @@ void cd(command_t cmd)
     return;
 }
 
+void checkWkdir(char* command, char* output)
+{
+    char wkDir[MAX_PATH_LENGTH]; 
+    char temp[MAX_PATH_LENGTH];
+    strcpy(wkDir, getenv("WKDIR"));
+    strcat(wkDir, "/");
+    strcat(wkDir, command);
+    FILE * file = fopen(command,"r");
+
+    output = command;
+
+    if (file!=NULL)
+    {
+        fclose(file);
+        strcpy(temp, wkDir);
+        output = temp;
+    }
+    
+    return;
+}
+
 void reapChild()
 {
     int pid = waitpid(-1,NULL, WNOHANG);
