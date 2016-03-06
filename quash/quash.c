@@ -98,24 +98,26 @@ void cd(command_t cmd)
     return;
 }
 
-void checkWkdir(char* command, char* output)
+void checkWkdir(char* command)
 {
     char wkDir[MAX_PATH_LENGTH]; 
     char temp[MAX_PATH_LENGTH];
     strcpy(wkDir, getenv("WKDIR"));
     strcat(wkDir, "/");
     strcat(wkDir, command);
-    FILE * file = fopen(command,"r");
-
-    output = command;
-
+    FILE * file = fopen(wkDir,"r");
+    // printf("pre cmd: %s\n",command);
+    // printf("pre out: %s\n",output);
+    //output = command;
     if (file!=NULL)
     {
         fclose(file);
-        strcpy(temp, wkDir);
-        output = temp;
+        strcpy(command, wkDir);
+        //output = wkDir;
     }
-
+    // printf("post cmd: %s\n",command);
+    // printf("post out: %s\n",output);
+    
     return;
 }
 
@@ -191,6 +193,7 @@ int exec_pipes(command_t cmd)
                 }
                 else
                 {
+                    checkWkdir(cmd.execArgs[0]);
                     if((execvp(cmd_a[i].execArgs[0],cmd_a[i].execArgs)) < 0)
                     {
                         fprintf(stderr,"\nError execing %s. ERROR# %d",cmd_a[i].execArgs[0],errno);
@@ -296,6 +299,7 @@ int exec_cmd(command_t cmd)
                     }
                     else
                     {
+                        checkWkdir(cmd.execArgs[0]);
                         if(execvp(cmd.execArgs[0],args)<0)
                         {
                             fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
@@ -321,6 +325,13 @@ int exec_cmd(command_t cmd)
         }
         else
         {
+            // char * tmpstr[MAX_PATH_LENGTH];
+            // strcpy(tmpstr,cmd.execArgs[0]);
+            // printf("arg0: %s\n",cmd.execArgs[0]);
+            // printf("tmpstr: %s\n",tmpstr);
+
+            //if(execvp(tmpstr,cmd.execArgs)<0)
+            checkWkdir(cmd.execArgs[0]);
             if(execvp(cmd.execArgs[0],cmd.execArgs)<0)
             {
                 fprintf(stderr, "Error execing %s. Error# %d\n",cmd.cmdstr, errno);
@@ -356,7 +367,7 @@ void execToFile(char ** execArgs, char * outputFile)
     //call exec as normal
     int file = open(outputFile,O_CREAT|O_APPEND|O_WRONLY,S_IRWXU);
     dup2(file, 1);
-
+    checkWkdir(execArgs[0]);
     if(execvp(execArgs[0],execArgs)<0)
     {
         fprintf(stderr, "Error execing %s. Error# %d\n",execArgs[0], errno);
@@ -627,10 +638,6 @@ bool killChild(command_t cmd)
     }
 }
 
-void ignoreChild()
-{
-
-};
 /**
  * Quash entry point
  *

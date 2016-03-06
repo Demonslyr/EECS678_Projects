@@ -56,6 +56,11 @@ bool is_running();
 void execToFile(char ** execArgs, char * outputFile);
 
 /**
+ * checks to see if the exec exists in the wkdir
+ */
+void checkWkdir(char* command);
+
+/**
  * Causes the execution loop to end.
  */
 void terminate();

@@ -29,7 +29,7 @@ RAWH = $(patsubst %.h,%,$(HFILES))
 
 
 # Build the documentation and the quash executable
-all: doc $(PROGNAME) test1 test5 test10 test20 test40 test60
+all: doc $(PROGNAME) test1
 
 # Build the quash program
 $(PROGNAME): $(OBJFILES)
