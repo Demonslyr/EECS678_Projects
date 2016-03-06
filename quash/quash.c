@@ -113,16 +113,17 @@ void jobs()
 
 int exec_pipes(command_t cmd)
 {
+    //TODO: Start blocking signals
+
     int ppid;
     ppid = fork();
-    if(!ppid){
-
+    if(!ppid)
+    {    
         char tmpcmdstr [MAX_COMMAND_LENGTH];
                 
         command_t cmd_a[MAX_COMMAND_LENGTH];
 
         int numCommands = pipeParse(cmd, cmd_a);
-        printf("numCommands: %d\n",numCommands );
         strcpy(tmpcmdstr, cmd.cmdstr);
 
         int status;
@@ -181,29 +182,37 @@ int exec_pipes(command_t cmd)
 
         for(int i =0; i<numCommands;i++)
         {   
-
             if((waitpid(pid_a[i],&status,0)) == -1)
             {
                 fprintf(stderr, "%s encountered an error._1 ERROR %d",cmd_a[i].execArgs[0], errno);
                 exit(EXIT_FAILURE);
             }
         }
+
         exit(0);
     }
     else
     {
-        if(cmd.execBg){
-
+        if(cmd.execBg)
+        {
             add_to_list(ppid, cmd.cmdstr);
-            return 0;
         }
-        if((waitpid(ppid,&status,0)) == -1)
+        else if((waitpid(ppid,&status,0)) == -1)
         {
             fprintf(stderr, "%s encountered an error._2 ERROR %d",cmd.cmdstr, errno);
+
+            //TODO: stop blocking signals because we can return if we fail
+            //one of the commands and we don't want signals to stay blocked
+
             return EXIT_FAILURE;
         }
-        return 0;
+
+
     }
+    
+    //TODO: stop blocking signals
+
+    return 0;
 }
 
 int exec_cmd(command_t cmd)
