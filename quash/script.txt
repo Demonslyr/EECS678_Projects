@@ -7,6 +7,7 @@ echo --test1--
 test1
 echo --test5--
 test5
+wait 10
 
 echo ----------------------------------
 echo ----Executables with arguments----
@@ -15,6 +16,7 @@ echo --test1 arg1--
 test1 arg1
 echo --test5 arg1 arg2--
 test5 arg1 arg2
+wait 10
 
 echo -------------------------
 echo ----Set HOME and PATH----
@@ -45,6 +47,7 @@ cd
 wait 1
 echo --pwd--
 pwd
+wait 10
 
 echo --------------------------------------------
 echo ----PATH works properly---------------------
@@ -64,23 +67,25 @@ test100
 wait 1
 echo --command blah--
 command blah
+wait 10
 
 echo --------------------------------------------------
 echo ----Allow background execution--------------------
 echo ----Printing/reporting of background processes----
 echo --------------------------------------------------
 wait 1
-echo --test10&--
-test10&
+echo --test5&--
+test5&
 echo --test5&--
 test5&
 echo --jobs--
 jobs
-echo --note:waiting 15 seconds for jobs to finish--
-echo --wait 15--
-wait 15
+echo --note:waiting 30 seconds for jobs to finish--
+echo --wait 30--
+wait 30
 echo --jobs--
 jobs
+wait 10
 
 echo --------------------------------------------------
 echo ----Allow file redirection (> and <)--------------
@@ -92,15 +97,65 @@ wait 1
 echo --test1 < test.txt--
 test1 < test.txt
 wait 1
-echo --test1 arg arg > out.txt--
-test1 > out.txt
+echo --test1 arg arg > out_1.txt--
+test1 > out_1.txt
 wait 1
-echo --ls < test.txt > out2.txt--
-ls < test.txt > out2.txt
+echo --ls < test.txt > out_2.txt--
+ls < test.txt > out_2.txt
+wait 10
 
-echo --------------------------------------------------
-echo ----Allow file redirection (> and <)--------------
-echo --------------------------------------------------
+echo -------------------
+echo ----Allow pipes----
+echo -------------------
+wait 1
+echo --find | head--
+find | head
+wait 1
+echo --EXTRA CREDIT MULTI-PIPES--
+echo --find | sort | head--
+find | sort | head
+wait 10
+
+echo --------------------
+echo ----Kill command----
+echo --------------------
+wait 1
+echo --test5&--
+test5&
+echo --test5&--
+test5&
+echo --test5&--
+test5&
+echo --jobs--
+jobs
+echo --kill 9 3--
+kill 9 3
+wait 1
+echo --jobs--
+jobs
+echo --kill 9 4--
+kill 9 4
+wait 1
+echo --jobs--
+jobs
+echo --note: waiting 10 seconds--
+echo --wait 10--
+echo --jobs--
+jobs
+wait 10
+
+echo ------------------
+echo --EXTRA CREDIT----
+echo ------------------
+echo --ls < test.txt > out_extra_credit_1.txt&--
+ls < test.txt > out_extra_credit_1.txt
+wait 1
+echo --find | sort | head&--
+find | sort | head
+wait 1
+echo --find | sort | head > out_extra_credit_2.out&--
+find | sort | head > out_extra_credit_2.out
+wait 10
 
 echo ---------------------
 echo ----exit and quit----

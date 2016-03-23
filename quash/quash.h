@@ -71,7 +71,7 @@ void terminate();
 void pwd();
 
 /**
- * changes the workign directory.
+ * changes the working directory.
  */
 void cd(command_t cmd);
 
