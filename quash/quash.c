@@ -255,7 +255,8 @@ int exec_pipes(command_t cmd)
 
 int exec_cmd(command_t cmd)
 {
-	pid_t pid = fork();
+
+    pid_t pid = fork();
 	if(!pid)
     {
         if( strcmp(cmd.inputFile,"") )
@@ -342,17 +343,43 @@ int exec_cmd(command_t cmd)
 	}
     else
     {
+
+        sigset_t tmpSa;
+        sigfillset( &tmpSa);
+        sigdelset(&tmpSa,SIGINT);
+        sigdelset(&tmpSa,SIGTSTP);
+        sigprocmask(SIG_SETMASK, &tmpSa, NULL);
+        //Start blocking signals
+
         if(!cmd.execBg)
         {
             //add pid and command w/o path to jobs structure
             if((waitpid(pid,&status,0))==-1)
             {
                 fprintf(stderr, "Process encountered an error._4 ERROR%d", errno);
+                sigfillset( &tmpSa);
+                sigdelset(&tmpSa,SIGINT);
+                sigdelset(&tmpSa,SIGTSTP);
+                sigdelset(&tmpSa, SIGCHLD);
+                sigprocmask(SIG_SETMASK, &tmpSa, NULL);
+                //Stop blocking                
                 return EXIT_FAILURE;
             }
+            sigfillset( &tmpSa);
+            sigdelset(&tmpSa,SIGINT);
+            sigdelset(&tmpSa,SIGTSTP);
+            sigdelset(&tmpSa, SIGCHLD);
+            sigprocmask(SIG_SETMASK, &tmpSa, NULL);
+            //Stop blocking            
         }
         else
         {
+            sigfillset( &tmpSa);
+            sigdelset(&tmpSa,SIGINT);
+            sigdelset(&tmpSa,SIGTSTP);
+            sigdelset(&tmpSa, SIGCHLD);
+            sigprocmask(SIG_SETMASK, &tmpSa, NULL);
+            //Stop blocking???
             printf("[%d] is running\n", pid);
 
             add_to_list(pid, cmd.execArgs[0]);
