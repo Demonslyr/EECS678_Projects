@@ -7,6 +7,7 @@ echo --test1--
 test1
 echo --test5--
 test5
+echo --end of section--
 wait 10
 
 echo ----------------------------------
@@ -16,6 +17,7 @@ echo --test1 arg1--
 test1 arg1
 echo --test5 arg1 arg2--
 test5 arg1 arg2
+echo --end of section--
 wait 10
 
 echo -------------------------
@@ -47,6 +49,7 @@ cd
 wait 1
 echo --pwd--
 pwd
+echo --end of section--
 wait 10
 
 echo --------------------------------------------
@@ -67,6 +70,7 @@ test100
 wait 1
 echo --command blah--
 command blah
+echo --end of section--
 wait 10
 
 echo --------------------------------------------------
@@ -85,6 +89,7 @@ echo --wait 30--
 wait 30
 echo --jobs--
 jobs
+echo --end of section--
 wait 10
 
 echo --------------------------------------------------
@@ -102,6 +107,7 @@ test1 > out_1.txt
 wait 1
 echo --ls < test.txt > out_2.txt--
 ls < test.txt > out_2.txt
+echo --end of section--
 wait 10
 
 echo -------------------
@@ -114,6 +120,7 @@ wait 1
 echo --EXTRA CREDIT MULTI-PIPES--
 echo --find | sort | head--
 find | sort | head
+echo --end of section--
 wait 10
 
 echo --------------------
@@ -138,10 +145,11 @@ kill 9 4
 wait 1
 echo --jobs--
 jobs
-echo --note: waiting 10 seconds--
-echo --wait 10--
+echo --note: waiting 30 seconds--
+echo --wait 30--
 echo --jobs--
 jobs
+echo --end of section--
 wait 10
 
 echo ------------------
@@ -155,6 +163,7 @@ find | sort | head
 wait 1
 echo --find | sort | head > out_extra_credit_2.out&--
 find | sort | head > out_extra_credit_2.out
+echo --end of section--
 wait 10
 
 echo ---------------------
