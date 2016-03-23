@@ -224,6 +224,13 @@ int exec_pipes(command_t cmd)
     {
         if(cmd.execBg)
         {
+            sigfillset( &tmpSa);
+            sigdelset(&tmpSa,SIGINT);
+            sigdelset(&tmpSa,SIGTSTP);
+            sigdelset(&tmpSa, SIGCHLD);
+            sigprocmask(SIG_SETMASK, &tmpSa, NULL);
+            //Stop blocking signals       
+                 
             add_to_list(ppid, cmd.cmdstr);
         }
         else if((waitpid(ppid,&status,0)) == -1)
