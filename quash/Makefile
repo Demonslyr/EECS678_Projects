@@ -29,7 +29,7 @@ RAWH = $(patsubst %.h,%,$(HFILES))
 
 
 # Build the documentation and the quash executable
-all: doc $(PROGNAME) test1
+all: doc $(PROGNAME) test1 test5 test10 read
 
 # Build the quash program
 $(PROGNAME): $(OBJFILES)
@@ -65,6 +65,8 @@ test40:
 	gcc --std=c99 -Wall -g -Og test40.c -o test40
 test60:
 	gcc --std=c99 -Wall -g -Og test60.c -o test60
+read:
+	gcc --std=c99 -Wall -g -Og read.c -o read
 
 # Build a safeassign friendly submission of the quash project
 submit: clean

@@ -652,7 +652,7 @@ bool killChild(command_t cmd)
 {
     int job_id = atoi(cmd.execArgs[2]);
     int pid = search_by_job_id( job_id );
-
+    //printf("\npid = %d",pid);
     if(pid == 0)
     {
         printf( "Job ID %d not found in current jobs\n", job_id );
@@ -660,6 +660,14 @@ bool killChild(command_t cmd)
     }
     else
     {
+        sigset_t tmpSa;
+        sigfillset( &tmpSa);
+        sigdelset(&tmpSa,SIGINT);
+        sigdelset(&tmpSa,SIGTSTP);
+        sigdelset(&tmpSa, SIGCHLD);
+        sigprocmask(SIG_SETMASK, &tmpSa, NULL);
+        //Stop blocking 
+        //printf("\nexcArg1 = %s",cmd.execArgs[1]);
         kill(pid, atoi(cmd.execArgs[1]) );
         return true;
     }
