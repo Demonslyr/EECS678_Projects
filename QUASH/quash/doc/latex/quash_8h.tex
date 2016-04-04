@@ -1,0 +1,186 @@
+\hypertarget{quash_8h}{\section{quash.\-h File Reference}
+\label{quash_8h}\index{quash.\-h@{quash.\-h}}
+}
+{\ttfamily \#include \char`\"{}list.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\\*
+{\ttfamily \#include $<$stdio.\-h$>$}\\*
+{\ttfamily \#include $<$stdbool.\-h$>$}\\*
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structcommand__t}{command\-\_\-t}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{quash_8h_af1abcb51a4aa27a5a5a7958c03448134}{M\-A\-X\-\_\-\-C\-O\-M\-M\-A\-N\-D\-\_\-\-L\-E\-N\-G\-T\-H}~(1024)
+\item 
+\hypertarget{quash_8h_a9eb6992d76f02128388ae95c0415604a}{\#define {\bfseries M\-A\-X\-\_\-\-P\-A\-T\-H\-\_\-\-L\-E\-N\-G\-T\-H}~(256)}\label{quash_8h_a9eb6992d76f02128388ae95c0415604a}
+
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structcommand__t}{command\-\_\-t} \hyperlink{quash_8h_a20f5b1a21ae7103e01c4d62f74f5825b}{command\-\_\-t}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{quash_8h_a4cb1c46bafec7d7dac230824230a43f6}{catch\-Child} ()
+\item 
+bool \hyperlink{quash_8h_a61da580fc69a74f3ef17956ba5fd88a0}{is\-\_\-running} ()
+\item 
+void \hyperlink{quash_8h_ac4683dbc9b044b157fd5b124ac3aadb3}{exec\-To\-File} (char $\ast$$\ast$exec\-Args, char $\ast$output\-File)
+\item 
+void \hyperlink{quash_8h_aea602e5c134151d56b0c4dedba9754c0}{check\-Wkdir} (char $\ast$command)
+\item 
+void \hyperlink{quash_8h_a74a45d2648335936561898c390281a6a}{terminate} ()
+\item 
+void \hyperlink{quash_8h_a54dcfda54fd3632f5c5ac3351da9a98f}{pwd} ()
+\item 
+void \hyperlink{quash_8h_ac8f073dd6c9d3d38e0e2da7f5730a0bd}{cd} (\hyperlink{structcommand__t}{command\-\_\-t} cmd)
+\item 
+int \hyperlink{quash_8h_ad9be69faa1909d85e171bdefa7e94269}{exec\-\_\-cmd} (\hyperlink{structcommand__t}{command\-\_\-t} cmd)
+\item 
+void \hyperlink{quash_8h_a3a82e2a567df9af9a2d60e12d7211595}{set} (\hyperlink{structcommand__t}{command\-\_\-t} cmd)
+\item 
+int \hyperlink{quash_8h_a1d0717781241a9cfd6697089b5ef2b26}{pipe\-Parse} (\hyperlink{structcommand__t}{command\-\_\-t} cmd, \hyperlink{structcommand__t}{command\-\_\-t} $\ast$cmd\-Arr)
+\item 
+bool \hyperlink{quash_8h_ad6ef63fe851131a17cb0291df6ffb079}{kill\-Child} (\hyperlink{structcommand__t}{command\-\_\-t} cmd)
+\item 
+bool \hyperlink{quash_8h_ae14462b385c206052e16514b52ed900c}{get\-\_\-command} (\hyperlink{structcommand__t}{command\-\_\-t} $\ast$cmd, F\-I\-L\-E $\ast$in)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{quash_8h_ae8464b412052a72de8da9b3645a020d7}{struct \hyperlink{structtest__struct}{test\-\_\-struct} $\ast$ {\bfseries ptr} = N\-U\-L\-L}\label{quash_8h_ae8464b412052a72de8da9b3645a020d7}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Quash essential functions and structures. 
+
+\subsection{Macro Definition Documentation}
+\hypertarget{quash_8h_af1abcb51a4aa27a5a5a7958c03448134}{\index{quash.\-h@{quash.\-h}!M\-A\-X\-\_\-\-C\-O\-M\-M\-A\-N\-D\-\_\-\-L\-E\-N\-G\-T\-H@{M\-A\-X\-\_\-\-C\-O\-M\-M\-A\-N\-D\-\_\-\-L\-E\-N\-G\-T\-H}}
+\index{M\-A\-X\-\_\-\-C\-O\-M\-M\-A\-N\-D\-\_\-\-L\-E\-N\-G\-T\-H@{M\-A\-X\-\_\-\-C\-O\-M\-M\-A\-N\-D\-\_\-\-L\-E\-N\-G\-T\-H}!quash.h@{quash.\-h}}
+\subsubsection[{M\-A\-X\-\_\-\-C\-O\-M\-M\-A\-N\-D\-\_\-\-L\-E\-N\-G\-T\-H}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-A\-X\-\_\-\-C\-O\-M\-M\-A\-N\-D\-\_\-\-L\-E\-N\-G\-T\-H~(1024)}}\label{quash_8h_af1abcb51a4aa27a5a5a7958c03448134}
+Specify the maximum number of characters accepted by the command string 
+
+\subsection{Typedef Documentation}
+\hypertarget{quash_8h_a20f5b1a21ae7103e01c4d62f74f5825b}{\index{quash.\-h@{quash.\-h}!command\-\_\-t@{command\-\_\-t}}
+\index{command\-\_\-t@{command\-\_\-t}!quash.h@{quash.\-h}}
+\subsubsection[{command\-\_\-t}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf command\-\_\-t}  {\bf command\-\_\-t}}}\label{quash_8h_a20f5b1a21ae7103e01c4d62f74f5825b}
+Holds information about a command. 
+
+\subsection{Function Documentation}
+\hypertarget{quash_8h_a4cb1c46bafec7d7dac230824230a43f6}{\index{quash.\-h@{quash.\-h}!catch\-Child@{catch\-Child}}
+\index{catch\-Child@{catch\-Child}!quash.h@{quash.\-h}}
+\subsubsection[{catch\-Child}]{\setlength{\rightskip}{0pt plus 5cm}void catch\-Child (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_a4cb1c46bafec7d7dac230824230a43f6}
+S\-I\-G\-C\-H\-L\-D handler \hypertarget{quash_8h_ac8f073dd6c9d3d38e0e2da7f5730a0bd}{\index{quash.\-h@{quash.\-h}!cd@{cd}}
+\index{cd@{cd}!quash.h@{quash.\-h}}
+\subsubsection[{cd}]{\setlength{\rightskip}{0pt plus 5cm}void cd (
+\begin{DoxyParamCaption}
+\item[{{\bf command\-\_\-t}}]{cmd}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_ac8f073dd6c9d3d38e0e2da7f5730a0bd}
+changes the working directory. \hypertarget{quash_8h_aea602e5c134151d56b0c4dedba9754c0}{\index{quash.\-h@{quash.\-h}!check\-Wkdir@{check\-Wkdir}}
+\index{check\-Wkdir@{check\-Wkdir}!quash.h@{quash.\-h}}
+\subsubsection[{check\-Wkdir}]{\setlength{\rightskip}{0pt plus 5cm}void check\-Wkdir (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{command}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_aea602e5c134151d56b0c4dedba9754c0}
+checks to see if the exec exists in the wkdir \hypertarget{quash_8h_ad9be69faa1909d85e171bdefa7e94269}{\index{quash.\-h@{quash.\-h}!exec\-\_\-cmd@{exec\-\_\-cmd}}
+\index{exec\-\_\-cmd@{exec\-\_\-cmd}!quash.h@{quash.\-h}}
+\subsubsection[{exec\-\_\-cmd}]{\setlength{\rightskip}{0pt plus 5cm}int exec\-\_\-cmd (
+\begin{DoxyParamCaption}
+\item[{{\bf command\-\_\-t}}]{cmd}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_ad9be69faa1909d85e171bdefa7e94269}
+Tries to execute command
+
+\begin{DoxyReturn}{Returns}
+0 if success and error number if failure 
+\end{DoxyReturn}
+\hypertarget{quash_8h_ac4683dbc9b044b157fd5b124ac3aadb3}{\index{quash.\-h@{quash.\-h}!exec\-To\-File@{exec\-To\-File}}
+\index{exec\-To\-File@{exec\-To\-File}!quash.h@{quash.\-h}}
+\subsubsection[{exec\-To\-File}]{\setlength{\rightskip}{0pt plus 5cm}void exec\-To\-File (
+\begin{DoxyParamCaption}
+\item[{char $\ast$$\ast$}]{exec\-Args, }
+\item[{char $\ast$}]{output\-File}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_ac4683dbc9b044b157fd5b124ac3aadb3}
+Outputs S\-T\-D\-I\-O to a file. \hypertarget{quash_8h_ae14462b385c206052e16514b52ed900c}{\index{quash.\-h@{quash.\-h}!get\-\_\-command@{get\-\_\-command}}
+\index{get\-\_\-command@{get\-\_\-command}!quash.h@{quash.\-h}}
+\subsubsection[{get\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}bool get\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{{\bf command\-\_\-t} $\ast$}]{cmd, }
+\item[{F\-I\-L\-E $\ast$}]{in}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_ae14462b385c206052e16514b52ed900c}
+Read in a command and setup the \hyperlink{structcommand__t}{command\-\_\-t} struct. Also perform some minor modifications to the string to remove trailing newline characters.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cmd} & -\/ a \hyperlink{structcommand__t}{command\-\_\-t} structure. The \hyperlink{structcommand__t_a3b77457907f6e606ffafb2f1c2dbfa49}{command\-\_\-t.\-cmdstr} and \#command\-\_\-t.\-cmdlen fields will be modified \\
+\hline
+{\em in} & -\/ an open file ready for reading \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if able to fill \hyperlink{structcommand__t_a3b77457907f6e606ffafb2f1c2dbfa49}{command\-\_\-t.\-cmdstr} and false otherwise 
+\end{DoxyReturn}
+\hypertarget{quash_8h_a61da580fc69a74f3ef17956ba5fd88a0}{\index{quash.\-h@{quash.\-h}!is\-\_\-running@{is\-\_\-running}}
+\index{is\-\_\-running@{is\-\_\-running}!quash.h@{quash.\-h}}
+\subsubsection[{is\-\_\-running}]{\setlength{\rightskip}{0pt plus 5cm}bool is\-\_\-running (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_a61da580fc69a74f3ef17956ba5fd88a0}
+Query if quash should accept more input or not.
+
+\begin{DoxyReturn}{Returns}
+True if Quash should accept more input and false otherwise 
+\end{DoxyReturn}
+\hypertarget{quash_8h_ad6ef63fe851131a17cb0291df6ffb079}{\index{quash.\-h@{quash.\-h}!kill\-Child@{kill\-Child}}
+\index{kill\-Child@{kill\-Child}!quash.h@{quash.\-h}}
+\subsubsection[{kill\-Child}]{\setlength{\rightskip}{0pt plus 5cm}bool kill\-Child (
+\begin{DoxyParamCaption}
+\item[{{\bf command\-\_\-t}}]{cmd}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_ad6ef63fe851131a17cb0291df6ffb079}
+Kills child specified by job\-\_\-id \hypertarget{quash_8h_a1d0717781241a9cfd6697089b5ef2b26}{\index{quash.\-h@{quash.\-h}!pipe\-Parse@{pipe\-Parse}}
+\index{pipe\-Parse@{pipe\-Parse}!quash.h@{quash.\-h}}
+\subsubsection[{pipe\-Parse}]{\setlength{\rightskip}{0pt plus 5cm}int pipe\-Parse (
+\begin{DoxyParamCaption}
+\item[{{\bf command\-\_\-t}}]{cmd, }
+\item[{{\bf command\-\_\-t} $\ast$}]{cmd\-Arr}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_a1d0717781241a9cfd6697089b5ef2b26}
+Breaks command into array of piped commands \hypertarget{quash_8h_a54dcfda54fd3632f5c5ac3351da9a98f}{\index{quash.\-h@{quash.\-h}!pwd@{pwd}}
+\index{pwd@{pwd}!quash.h@{quash.\-h}}
+\subsubsection[{pwd}]{\setlength{\rightskip}{0pt plus 5cm}void pwd (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_a54dcfda54fd3632f5c5ac3351da9a98f}
+Prints the working directory. \hypertarget{quash_8h_a3a82e2a567df9af9a2d60e12d7211595}{\index{quash.\-h@{quash.\-h}!set@{set}}
+\index{set@{set}!quash.h@{quash.\-h}}
+\subsubsection[{set}]{\setlength{\rightskip}{0pt plus 5cm}void set (
+\begin{DoxyParamCaption}
+\item[{{\bf command\-\_\-t}}]{cmd}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_a3a82e2a567df9af9a2d60e12d7211595}
+Sets global variables \hypertarget{quash_8h_a74a45d2648335936561898c390281a6a}{\index{quash.\-h@{quash.\-h}!terminate@{terminate}}
+\index{terminate@{terminate}!quash.h@{quash.\-h}}
+\subsubsection[{terminate}]{\setlength{\rightskip}{0pt plus 5cm}void terminate (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{quash_8h_a74a45d2648335936561898c390281a6a}
+Causes the execution loop to end. 

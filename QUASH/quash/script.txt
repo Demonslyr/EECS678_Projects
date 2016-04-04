@@ -156,13 +156,13 @@ echo ------------------
 echo --EXTRA CREDIT----
 echo ------------------
 echo --ls < test.txt > out_extra_credit_1.txt&--
-ls < test.txt > out_extra_credit_1.txt
+ls < test.txt > out_extra_credit_1.txt&
 wait 1
 echo --find | sort | head&--
-find | sort | head
+find | sort | head&
 wait 1
 echo --find | sort | head > out_extra_credit_2.out&--
-find | sort | head > out_extra_credit_2.out
+find | sort | head > out_extra_credit_2.out&
 echo --end of section--
 wait 10
 
