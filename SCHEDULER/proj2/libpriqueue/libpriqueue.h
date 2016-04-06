@@ -9,6 +9,17 @@
 */
 typedef struct _priqueue_t
 {
+    struct priqueue_node *head;
+    struct priqueue_node *tail;
+
+    int id_count = 0;
+
+} priqueue_t;
+
+typedef struct _priqueue_node
+{
+    int id;
+    struct priqueue_t *next;
 
 } priqueue_t;
 

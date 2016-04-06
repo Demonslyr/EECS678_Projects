@@ -6,7 +6,6 @@
 
 #include "libpriqueue.h"
 
-
 /**
   Initializes the priqueue_t data structure.
   
@@ -19,7 +18,13 @@
  */
 void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 {
+  if(NULL == q)
+  {
+    printf("\n Node creation failed \n");
+    return NULL;
+  }
 
+  q->head = q->tail = NULL;
 }
 
 
@@ -32,7 +37,29 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
  */
 int priqueue_offer(priqueue_t *q, void *ptr)
 {
-	return -1;
+  struct priqueue_node *ptr = (struct priqueue_node*)malloc(sizeof(struct priqueue_node));
+
+  if(NULL == ptr)
+  {
+    printf("\n Node creation failed \n");
+    return NULL;
+  }
+
+  ptr->id = id_count++;
+  ptr->next = NULL;
+
+  if( q->head == NULL )
+  {
+    q->head = ptr;
+  }
+  else
+  {
+    q->tail->next = ptr;//set current tails next node to the node we are adding
+  }
+
+  q->tail = ptr;//set tail to new node
+
+  return ptr->id;
 }
 
 
@@ -46,7 +73,11 @@ int priqueue_offer(priqueue_t *q, void *ptr)
  */
 void *priqueue_peek(priqueue_t *q)
 {
-	return NULL;
+  if( id_count == 0 )
+  {
+    return NULL;
+  }
+  return q->head;
 }
 
 
