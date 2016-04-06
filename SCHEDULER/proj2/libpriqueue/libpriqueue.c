@@ -18,6 +18,8 @@
  */
 void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 {
+  printf("priqueue_init\n");
+
   if(NULL == q)
   {
     printf("\n Node creation failed \n");
@@ -40,6 +42,8 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
  */
 int priqueue_offer(priqueue_t *q, void *ptr)
 {
+  printf("priqueue_offer\n");
+
   struct priqueue_node *node = (struct priqueue_node*)malloc(sizeof(struct priqueue_node));
 
   q->count++;
@@ -77,6 +81,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
  */
 void *priqueue_peek(priqueue_t *q)
 {
+  printf("priqueue_peek\n");
   return q->head;
 }
 
@@ -91,6 +96,8 @@ void *priqueue_peek(priqueue_t *q)
  */
 void *priqueue_poll(priqueue_t *q)
 {
+  printf("priqueue_poll\n");
+
   if( q->head == NULL )
   {
     return NULL;
@@ -102,7 +109,7 @@ void *priqueue_poll(priqueue_t *q)
   {
     q->head = q->head->next;
     q->count--;
-    priqueue_reset_index(q->head->next,1);
+    priqueue_reset_index(q->head,0);
   }
   else
   {
@@ -133,13 +140,18 @@ void priqueue_reset_index(priqueue_node *n, int count)
  */
 void *priqueue_at(priqueue_t *q, int index)
 {
+  //printf("priqueue_at\n");
+
   struct priqueue_node *node = q->head;
+
+  //printf("head->id: %d\n", q->head->id );
   
-  while(node != NULL)
+  while( node != NULL )
   {
-    if(node->id == index)
+    //printf("while loop: %d\n", node->id );
+    if( node->id == index )
     {
-      return node;
+      return node->data;
     }
     else
     {
@@ -162,6 +174,7 @@ void *priqueue_at(priqueue_t *q, int index)
  */
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
+  printf("priqueue_remove\n");
   if( q->head == NULL )
   {
     return 0;
@@ -196,7 +209,6 @@ int priqueue_remove(priqueue_t *q, void *ptr)
 
       prev = curr;
       free(curr);//delete curr here;
-      curr = curr->next;
       
       q->count--;
       removed++;
@@ -204,12 +216,13 @@ int priqueue_remove(priqueue_t *q, void *ptr)
     else
     {
       prev=curr;
-      curr=curr->next;
     }
+    
+    curr=curr->next;
   }
   if(removed > 0)//meaning there were deletions
   {
-  priqueue_reset_index(first,first->id+1);//fix the indexing
+    priqueue_reset_index(first,first->id-1);//fix the indexing
   }
 
 	return removed;
@@ -227,6 +240,8 @@ int priqueue_remove(priqueue_t *q, void *ptr)
  */
 void *priqueue_remove_at(priqueue_t *q, int index)
 {
+  printf("priqueue_remove_at\n");
+
   struct priqueue_node *node = q->head;
   struct priqueue_node *prev = NULL;
 
@@ -278,6 +293,7 @@ void *priqueue_remove_at(priqueue_t *q, int index)
  */
 int priqueue_size(priqueue_t *q)
 {
+  //printf("priqueue_size\n");
 	return q->count;
 }
 
