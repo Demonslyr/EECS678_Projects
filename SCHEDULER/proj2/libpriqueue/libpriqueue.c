@@ -99,6 +99,7 @@ void *priqueue_poll(priqueue_t *q)
   if(q->head->next != NULL)
   {
     q->head = q->head->next;
+    q->count--;
     priqueue_reset_index(q->head->next,1);
   }
   else
