@@ -237,5 +237,17 @@ int priqueue_size(priqueue_t *q)
  */
 void priqueue_destroy(priqueue_t *q)
 {
+  struct priqueue_node *node;
+  
+  //free all nodes inside queue
+  while( q->head != NULL )
+  {
+    node = q->head;
+    q->head = node->next;
 
+    free(node);
+  }
+
+  //free the queue
+  free(q);
 }
