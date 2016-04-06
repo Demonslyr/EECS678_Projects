@@ -166,7 +166,7 @@ void priqueue_print(priqueue_t *q)
 
   while( curr != NULL )
   {
-    printf(": %d ", *(int*)curr->data );
+    printf(": [%d] %d ", curr->id, *(int*)curr->data );
     curr = curr->next;
   }
   printf(":\n");
