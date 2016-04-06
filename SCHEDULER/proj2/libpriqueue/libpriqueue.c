@@ -175,7 +175,44 @@ int priqueue_remove(priqueue_t *q, void *ptr)
  */
 void *priqueue_remove_at(priqueue_t *q, int index)
 {
-	return 0;
+  struct priqueue_node *node = q->head;
+  struct priqueue_node *prev = NULL;
+
+  while( node != NULL )
+  {
+    if( node->id == index )
+    {
+      //If we are the head, set head to next node 
+      //If not change the previous nodes next pointer to our next pointer
+      if( q->head == node )
+      {
+        q->head == node->next;
+      }
+      else//if we aren't the head, prev should never be NULL
+      {
+        prev->next = node->next;
+      }
+
+      //If we are tail, set tail to previous node
+      if( q->tail == node )
+      {
+        q->tail = prev;
+      }
+      
+      priqueue_reset_index( node->next, node->id );
+
+      struct priqueue_node *tmp = node;
+
+      free(node);
+
+      return tmp;
+    }
+
+    prev = node;
+    node = node->next;
+  }
+
+	return NULL;
 }
 
 
@@ -187,7 +224,7 @@ void *priqueue_remove_at(priqueue_t *q, int index)
  */
 int priqueue_size(priqueue_t *q)
 {
-	return 0;
+	return q->count;
 }
 
 
