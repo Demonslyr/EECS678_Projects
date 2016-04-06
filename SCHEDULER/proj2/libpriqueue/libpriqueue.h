@@ -22,8 +22,6 @@ typedef struct _priqueue_t
 
     int (*comparer)( const void *, const void *);
 
-    int count;
-
 } priqueue_t;
 
 
@@ -37,7 +35,7 @@ void * priqueue_at         (priqueue_t *q, int index);
 int    priqueue_remove     (priqueue_t *q, void *ptr);
 void * priqueue_remove_at  (priqueue_t *q, int index);
 int    priqueue_size       (priqueue_t *q);
-void   priqueue_reset_index(priqueue_node *n, int count);
+void   priqueue_reindex    (priqueue_t *q);
 
 void   priqueue_destroy  (priqueue_t *q);
 

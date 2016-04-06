@@ -27,7 +27,6 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
   }
 
   q->head = q->tail = NULL;
-  q->count = 0;
 
   q->comparer = comparer;
 }
@@ -46,7 +45,6 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 
   struct priqueue_node *node = (struct priqueue_node*)malloc(sizeof(struct priqueue_node));
 
-  q->count++;
   node->next = NULL;
   node->data = ptr;
 
@@ -63,11 +61,9 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 
   q->tail = node;//set tail to new node
 
-  int tmp = node->id;
+  printf("q->tail->id: %d\n", q->tail->id );
 
-  //printf("count: %d\n", q->count);
-
-  return tmp;
+  return node->id;
 }
 
 
@@ -107,9 +103,9 @@ void *priqueue_poll(priqueue_t *q)
   
   if(q->head->next != NULL)
   {
+    free( q->head );
     q->head = q->head->next;
-    q->count--;
-    priqueue_reset_index(q->head,0);
+    priqueue_reindex( q );
   }
   else
   {
@@ -119,12 +115,16 @@ void *priqueue_poll(priqueue_t *q)
   return node->data;
 }
 
-void priqueue_reset_index(priqueue_node *n, int count)
+void priqueue_reindex(priqueue_t *q)
 {
-  n->id = count;
-  if(n->next != NULL)
+  int index = 0;
+  struct priqueue_node *curr = q->head;
+
+  while( curr != NULL )
   {
-    priqueue_reset_index(n->next, count+1);
+    curr->id = index;
+    curr = curr->next;
+    index++;
   }
 }
 
@@ -210,7 +210,6 @@ int priqueue_remove(priqueue_t *q, void *ptr)
       prev = curr;
       free(curr);//delete curr here;
       
-      q->count--;
       removed++;
     }
     else
@@ -222,7 +221,7 @@ int priqueue_remove(priqueue_t *q, void *ptr)
   }
   if(removed > 0)//meaning there were deletions
   {
-    priqueue_reset_index(first,first->id-1);//fix the indexing
+    priqueue_reindex( q );//fix the indexing
   }
 
 	return removed;
@@ -266,13 +265,10 @@ void *priqueue_remove_at(priqueue_t *q, int index)
         q->tail = prev;
       }
       
-      priqueue_reset_index( node->next, node->id );
-
       struct priqueue_node *tmp = node;
-
       free(node);
 
-      q->count--;
+      priqueue_reindex( q );
 
       return tmp;
     }
@@ -293,8 +289,13 @@ void *priqueue_remove_at(priqueue_t *q, int index)
  */
 int priqueue_size(priqueue_t *q)
 {
-  //printf("priqueue_size\n");
-	return q->count;
+  if( q->tail == NULL )
+    return 0;
+  else
+  {
+    printf ("size: %d\n", q->tail->id);
+	  return (q->tail->id + 1);
+  }
 }
 
 
