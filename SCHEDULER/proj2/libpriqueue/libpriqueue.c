@@ -177,22 +177,27 @@ int priqueue_remove(priqueue_t *q, void *ptr)
   {
     if( (*q->comparer)( curr->data, ptr) == 0 )
     {
-      if(prev==NULL)//a deletion but prev is null meaning we're deleting the head of the list so use special rules becasue the root is a different type than a node
+      if( curr == q->head )//a deletion but prev is null meaning we're deleting the head of the list so use special rules becasue the root is a different type than a node
       {
-        q->head = q->head->next;
-        curr = q-> head;
+        q->head = curr->next;
       }
       else//not deleting the head
       {
-        if(first==NULL && prev!=NULL)//first deletion but prev is not null meaning we're deleting an arbitrary entry
+        if( first == NULL && prev != NULL )//first deletion but prev is not null meaning we're deleting an arbitrary entry
         {
-          first=prev;
+          first = prev;
         }
-
-        prev->next = curr->next;
-        free(curr);// it here//delete curr here;
-        curr = prev->next;
       }
+
+      if( curr == q->tail )
+      {
+        q->tail = prev;
+      }
+
+      prev = curr;
+      free(curr);//delete curr here;
+      curr = curr->next;
+      
       q->count--;
       removed++;
     }
