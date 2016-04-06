@@ -23,7 +23,7 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
     printf("\n Node creation failed \n");
     
   }
-  q->id_count = 0;
+
   q->head = q->tail = NULL;
 }
 
@@ -39,26 +39,23 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 {
   struct priqueue_node *node = (struct priqueue_node*)malloc(sizeof(struct priqueue_node));
 
-  // if(NULL == ptr)
-  // {
-  //   printf("\n Node creation failed \n");
-  //   return -1;
-  // }
-
-  node->id = q->id_count++;
+  q->count++;
   node->next = NULL;
   node->data = ptr;
 
   if( q->head == NULL )
   {
+    node->id = 0;
     q->head = node;
   }
   else
   {
+    node->id = q->tail->id + 1;
     q->tail->next = node;//set current tails next node to the node we are adding
   }
 
   q->tail = node;//set tail to new node
+
   int tmp = node->id;
   return tmp;
 }
@@ -74,10 +71,11 @@ int priqueue_offer(priqueue_t *q, void *ptr)
  */
 void *priqueue_peek(priqueue_t *q)
 {
-  if( q->id_count == 0 )
+  if( q->count == 0 )
   {
     return NULL;
   }
+
   return q->head;
 }
 
@@ -97,9 +95,7 @@ void *priqueue_poll(priqueue_t *q)
     return NULL;
   }
   
-  struct priqueue_node *ptr = q->head;
-  
-  //ptr = q->head;
+  struct priqueue_node *node = q->head;
   
   if(q->head->next != NULL)
   {
@@ -111,7 +107,7 @@ void *priqueue_poll(priqueue_t *q)
     q->head = NULL;
   }
   
-  return ptr;
+  return node;
 }
 
 void priqueue_reset_index(priqueue_node *n, int count)
@@ -135,6 +131,20 @@ void priqueue_reset_index(priqueue_node *n, int count)
  */
 void *priqueue_at(priqueue_t *q, int index)
 {
+  struct priqueue_node *node = q->head;
+  
+  while(node != NULL)
+  {
+    if(node->id == index)
+    {
+      return node;
+    }
+    else
+    {
+      node = node->next;
+    }
+  }
+
 	return NULL;
 }
 

@@ -7,11 +7,11 @@
 /**
   Priqueue Data Structure
 */
-typedef struct _priqueue_node
+typedef struct priqueue_node
 {
     int id;
     void *data;
-    struct priqueue_t *next;
+    struct priqueue_node *next;
 
 } priqueue_node;
 
@@ -20,7 +20,7 @@ typedef struct _priqueue_t
     struct priqueue_node *head;
     struct priqueue_node *tail;
 
-    int id_count;
+    int count;
 
 } priqueue_t;
 
