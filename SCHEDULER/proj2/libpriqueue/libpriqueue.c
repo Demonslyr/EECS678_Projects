@@ -52,16 +52,47 @@ int priqueue_offer(priqueue_t *q, void *ptr)
   {
     node->id = 0;
     q->head = node;
+    q->tail = node;
   }
   else
   {
-    node->id = q->tail->id + 1;
-    q->tail->next = node;//set current tails next node to the node we are adding
+    struct priqueue_node *curr = q->head;
+    struct priqueue_node *prev = NULL;
+
+    while( curr != NULL ) 
+    {
+      printf("compare: %d\n", (*q->comparer)( node->data, curr->data));
+      if( (*q->comparer)( node->data, curr->data) >= 0 )
+      {
+        if( curr == q->tail )
+        {
+            q->tail = node;
+            curr->next = node;
+            break;
+        }
+        prev = curr;
+        curr = curr->next;
+      }
+      else
+      {
+        if( curr == q->head )
+        {
+          node->next = q->head;
+          q->head = node;
+        }
+        else
+        {
+          node->next = curr;
+          prev->next = node;
+        }
+        break;
+      }
+    }
   }
 
-  q->tail = node;//set tail to new node
+  priqueue_reindex( q );
 
-  //printf("q->tail->id: %d\n", q->tail->id );
+  priqueue_print( q );
 
   return node->id;
 }
@@ -117,6 +148,7 @@ void *priqueue_poll(priqueue_t *q)
 
 void priqueue_reindex(priqueue_t *q)
 {
+  printf("reindex\n");
   int index = 0;
   struct priqueue_node *curr = q->head;
 
@@ -126,6 +158,18 @@ void priqueue_reindex(priqueue_t *q)
     curr = curr->next;
     index++;
   }
+}
+
+void priqueue_print(priqueue_t *q)
+{
+  priqueue_node *curr = q->head;
+
+  while( curr != NULL )
+  {
+    printf(": %d ", *(int*)curr->data );
+    curr = curr->next;
+  }
+  printf(":\n");
 }
 
 
