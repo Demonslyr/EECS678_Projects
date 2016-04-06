@@ -21,9 +21,9 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
   if(NULL == q)
   {
     printf("\n Node creation failed \n");
-    return NULL;
+    
   }
-
+  q->id_count = 0;
   q->head = q->tail = NULL;
 }
 
@@ -37,29 +37,30 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
  */
 int priqueue_offer(priqueue_t *q, void *ptr)
 {
-  struct priqueue_node *ptr = (struct priqueue_node*)malloc(sizeof(struct priqueue_node));
+  struct priqueue_node *node = (struct priqueue_node*)malloc(sizeof(struct priqueue_node));
 
-  if(NULL == ptr)
-  {
-    printf("\n Node creation failed \n");
-    return NULL;
-  }
+  // if(NULL == ptr)
+  // {
+  //   printf("\n Node creation failed \n");
+  //   return -1;
+  // }
 
-  ptr->id = id_count++;
-  ptr->next = NULL;
+  node->id = q->id_count++;
+  node->next = NULL;
+  node->data = ptr;
 
   if( q->head == NULL )
   {
-    q->head = ptr;
+    q->head = node;
   }
   else
   {
-    q->tail->next = ptr;//set current tails next node to the node we are adding
+    q->tail->next = node;//set current tails next node to the node we are adding
   }
 
-  q->tail = ptr;//set tail to new node
-
-  return ptr->id;
+  q->tail = node;//set tail to new node
+  int tmp = node->id;
+  return tmp;
 }
 
 
@@ -73,7 +74,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
  */
 void *priqueue_peek(priqueue_t *q)
 {
-  if( id_count == 0 )
+  if( q->id_count == 0 )
   {
     return NULL;
   }
@@ -91,7 +92,35 @@ void *priqueue_peek(priqueue_t *q)
  */
 void *priqueue_poll(priqueue_t *q)
 {
-	return NULL;
+  if( q->head == NULL )
+  {
+    return NULL;
+  }
+  
+  struct priqueue_node *ptr = q->head;
+  
+  //ptr = q->head;
+  
+  if(q->head->next != NULL)
+  {
+    q->head = q->head->next;
+    priqueue_reset_index(q->head->next,1);
+  }
+  else
+  {
+    q->head = NULL;
+  }
+  
+  return ptr;
+}
+
+void priqueue_reset_index(priqueue_node *n, int count)
+{
+  n->id = count;
+  if(n->next != NULL)
+  {
+    priqueue_reset_index(n->next, count+1);
+  }
 }
 
 
