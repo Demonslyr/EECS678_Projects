@@ -59,7 +59,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 
   int tmp = node->id;
 
-  printf("count: %d\n", q->count);
+  //printf("count: %d\n", q->count);
 
   return tmp;
 }
@@ -106,7 +106,7 @@ void *priqueue_poll(priqueue_t *q)
     q->head = NULL;
   }
   
-  return node;
+  return node->data;
 }
 
 void priqueue_reset_index(priqueue_node *n, int count)
