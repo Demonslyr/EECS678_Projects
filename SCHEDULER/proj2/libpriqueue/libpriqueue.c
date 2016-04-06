@@ -175,6 +175,7 @@ void *priqueue_at(priqueue_t *q, int index)
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
   printf("priqueue_remove\n");
+
   if( q->head == NULL )
   {
     return 0;
@@ -189,27 +190,34 @@ int priqueue_remove(priqueue_t *q, void *ptr)
   {
     if( (*q->comparer)( curr->data, ptr) == 0 )
     {
-      if( curr == q->head )//a deletion but prev is null meaning we're deleting the head of the list so use special rules becasue the root is a different type than a node
+      if( curr == q->head )//we are deleting the head node
       {
         q->head = curr->next;
       }
 
-      if( curr == q->tail )
+      if( curr == q->tail )//we are deleting the tail node
       {
-        q->tail = prev;
+        if( prev != NULL )
+        {
+          q->tail = prev;
+        }
+        else
+        {
+          q->tail = q->head;
+        }
       }
 
-      prev = curr;
+      prev->next = curr->next;
       free(curr);//delete curr here;
+      curr = prev->next;
       
       removed++;
     }
     else
     {
       prev=curr;
-    }
-    
-    curr=curr->next;
+      curr = curr->next;
+    } 
   }
   if(removed > 0)//meaning there were deletions
   {
@@ -233,40 +241,40 @@ void *priqueue_remove_at(priqueue_t *q, int index)
 {
   printf("priqueue_remove_at\n");
 
-  struct priqueue_node *node = q->head;
+  struct priqueue_node *curr = q->head;
   struct priqueue_node *prev = NULL;
 
-  while( node != NULL )
+  while( curr != NULL )
   {
-    if( node->id == index )
+    if( curr->id == index )
     {
       //If we are the head, set head to next node 
       //If not change the previous nodes next pointer to our next pointer
-      if( q->head == node )
+      if( q->head == curr )
       {
-        q->head == node->next;
+        q->head == curr->next;
       }
       else//if we aren't the head, prev should never be NULL
       {
-        prev->next = node->next;
+        prev->next = curr->next;
       }
 
       //If we are tail, set tail to previous node
-      if( q->tail == node )
+      if( q->tail == curr )
       {
         q->tail = prev;
       }
       
-      struct priqueue_node *tmp = node;
-      free(node);
+      struct priqueue_node *tmp = curr;
+      free(curr);
 
       priqueue_reindex( q );
 
       return tmp;
     }
 
-    prev = node;
-    node = node->next;
+    prev = curr;
+    curr = curr->next;
   }
 
 	return NULL;
@@ -285,7 +293,6 @@ int priqueue_size(priqueue_t *q)
     return 0;
   else
   {
-    //printf ("size: %d\n", q->tail->id);
 	  return (q->tail->id + 1);
   }
 }
