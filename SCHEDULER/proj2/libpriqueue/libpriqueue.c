@@ -61,7 +61,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 
   q->tail = node;//set tail to new node
 
-  printf("q->tail->id: %d\n", q->tail->id );
+  //printf("q->tail->id: %d\n", q->tail->id );
 
   return node->id;
 }
@@ -180,7 +180,6 @@ int priqueue_remove(priqueue_t *q, void *ptr)
     return 0;
   }
 
-  struct priqueue_node *first = NULL;//node before first deleted node. This is for the priqueue_reset_index funciton.
   struct priqueue_node *prev = NULL;//Node before the current node
   struct priqueue_node *curr = q->head;//current node being checked
 
@@ -193,13 +192,6 @@ int priqueue_remove(priqueue_t *q, void *ptr)
       if( curr == q->head )//a deletion but prev is null meaning we're deleting the head of the list so use special rules becasue the root is a different type than a node
       {
         q->head = curr->next;
-      }
-      else//not deleting the head
-      {
-        if( first == NULL && prev != NULL )//first deletion but prev is not null meaning we're deleting an arbitrary entry
-        {
-          first = prev;
-        }
       }
 
       if( curr == q->tail )
@@ -293,7 +285,7 @@ int priqueue_size(priqueue_t *q)
     return 0;
   else
   {
-    printf ("size: %d\n", q->tail->id);
+    //printf ("size: %d\n", q->tail->id);
 	  return (q->tail->id + 1);
   }
 }
