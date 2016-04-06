@@ -20,6 +20,8 @@ typedef struct _priqueue_t
     struct priqueue_node *head;
     struct priqueue_node *tail;
 
+    int (*comparer)( const void *, const void *);
+
     int count;
 
 } priqueue_t;

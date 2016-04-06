@@ -26,6 +26,8 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 
   q->head = q->tail = NULL;
   q->count = 0;
+
+  q->comparer = comparer;
 }
 
 
@@ -160,7 +162,7 @@ void *priqueue_at(priqueue_t *q, int index)
  */
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
-  if(q->head==NULL)
+  if( q->head == NULL )
   {
     return 0;
   }
@@ -168,12 +170,12 @@ int priqueue_remove(priqueue_t *q, void *ptr)
   struct priqueue_node *first = NULL;//node before first deleted node. This is for the priqueue_reset_index funciton.
   struct priqueue_node *prev = NULL;//Node before the current node
   struct priqueue_node *curr = q->head;//current node being checked
-  
+
   int removed = 0;//Number of entries removed
 
-  while(curr!=NULL)
+  while( curr != NULL )
   {
-    if(curr->data == ptr)
+    if( (*q->comparer)( curr->data, ptr) == 0 )
     {
       if(prev==NULL)//a deletion but prev is null meaning we're deleting the head of the list so use special rules becasue the root is a different type than a node
       {
@@ -196,7 +198,7 @@ int priqueue_remove(priqueue_t *q, void *ptr)
     }
     else
     {
-      prev=prev->next;
+      prev=curr;
       curr=curr->next;
     }
   }
