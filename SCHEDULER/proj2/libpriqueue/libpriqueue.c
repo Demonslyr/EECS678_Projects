@@ -25,6 +25,7 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
   }
 
   q->head = q->tail = NULL;
+  q->count = 0;
 }
 
 
@@ -57,6 +58,9 @@ int priqueue_offer(priqueue_t *q, void *ptr)
   q->tail = node;//set tail to new node
 
   int tmp = node->id;
+
+  printf("count: %d\n", q->count);
+
   return tmp;
 }
 
@@ -71,11 +75,6 @@ int priqueue_offer(priqueue_t *q, void *ptr)
  */
 void *priqueue_peek(priqueue_t *q)
 {
-  if( q->count == 0 )
-  {
-    return NULL;
-  }
-
   return q->head;
 }
 
@@ -191,6 +190,7 @@ int priqueue_remove(priqueue_t *q, void *ptr)
         free(curr);// it here//delete curr here;
         curr = prev->next;
       }
+      q->count--;
       removed++;
     }
     else
