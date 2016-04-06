@@ -205,6 +205,8 @@ void *priqueue_remove_at(priqueue_t *q, int index)
 
       free(node);
 
+      q->count--;
+
       return tmp;
     }
 
