@@ -236,8 +236,12 @@ int priqueue_remove(priqueue_t *q, void *ptr)
       {
         q->head = curr->next;
       }
-
-      prev->next = curr->next;
+      else
+      {
+        prev->next = curr->next;
+      }
+      
+      prev = curr;
       free(curr);//delete curr here;
       curr = prev->next;
       
