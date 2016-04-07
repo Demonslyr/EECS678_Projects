@@ -16,9 +16,21 @@
 */
 typedef struct _job_t
 {
+  int job_number;
+  int time;
+  int running_time;
+  int priority;
 
 } job_t;
 
+typedef struct core_t
+{
+  job_t *current_job;
+} core_t;
+
+priqueue_t job_queue;
+core_t core_array;
+scheme_t pri_scheme;
 
 /**
   Initalizes the scheduler.
@@ -34,6 +46,16 @@ typedef struct _job_t
 */
 void scheduler_start_up(int cores, scheme_t scheme)
 {
+  struct core_t core_arr[cores];
+  core_array = *core_arr;
+
+  int i = 0;
+
+  while( i < cores )
+  {
+    (core_array+i)->current_job = NULL;
+    i++;
+  }
 
 }
 
