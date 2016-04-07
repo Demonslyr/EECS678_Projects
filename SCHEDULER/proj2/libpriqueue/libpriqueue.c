@@ -18,8 +18,6 @@
  */
 void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 {
-  printf("priqueue_init\n");
-
   if(NULL == q)
   {
     printf("\n Node creation failed \n");
@@ -41,8 +39,6 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
  */
 int priqueue_offer(priqueue_t *q, void *ptr)
 {
-  printf("priqueue_offer\n");
-
   struct priqueue_node *node = (struct priqueue_node*)malloc(sizeof(struct priqueue_node));
 
   node->next = NULL;
@@ -60,7 +56,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 
     while( curr != NULL ) 
     {
-      printf("compare: %d\n", (*q->comparer)( node->data, curr->data));
+      //printf("compare: %d\n", (*q->comparer)( node->data, curr->data));
       if( (*q->comparer)( node->data, curr->data) >= 0 )
       {
         if( curr->next == NULL )
@@ -89,8 +85,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
   }
 
   priqueue_reindex( q );
-
-  priqueue_print( q );
+  //priqueue_print( q );
 
   return node->id;
 }
@@ -121,8 +116,6 @@ void *priqueue_peek(priqueue_t *q)
  */
 void *priqueue_poll(priqueue_t *q)
 {
-  printf("priqueue_poll\n");
-
   if( q->head == NULL )
   {
     return NULL;
@@ -146,7 +139,6 @@ void *priqueue_poll(priqueue_t *q)
 
 void priqueue_reindex(priqueue_t *q)
 {
-  printf("reindex\n");
   int index = 0;
   struct priqueue_node *curr = q->head;
 
@@ -182,11 +174,7 @@ void priqueue_print(priqueue_t *q)
  */
 void *priqueue_at(priqueue_t *q, int index)
 {
-  //printf("priqueue_at\n");
-
   struct priqueue_node *node = q->head;
-
-  //printf("head->id: %d\n", q->head->id );
   
   while( node != NULL )
   {
@@ -216,7 +204,7 @@ void *priqueue_at(priqueue_t *q, int index)
  */
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
-  printf("priqueue_remove\n");
+  //printf("priqueue_remove\n");
 
   if( q->head == NULL )
   {
@@ -240,7 +228,7 @@ int priqueue_remove(priqueue_t *q, void *ptr)
       {
         prev->next = curr->next;
       }
-      
+
       prev = curr;
       free(curr);//delete curr here;
       curr = prev->next;
@@ -346,7 +334,4 @@ void priqueue_destroy(priqueue_t *q)
 
     free(node);
   }
-
-  //free the queue
-  free(q);
 }
