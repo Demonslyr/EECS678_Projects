@@ -57,7 +57,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
     while( curr != NULL ) 
     {
       //printf("compare: %d\n", (*q->comparer)( node->data, curr->data));
-      if( (*q->comparer)( node->data, curr->data) >= 0 )
+      if( (*q->comparer)( node->data, curr->data) > 0 )
       {
         if( curr->next == NULL )
         {
