@@ -26,7 +26,7 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
     
   }
 
-  q->head = q->tail = NULL;
+  q->head = NULL;
 
   q->comparer = comparer;
 }
@@ -52,7 +52,6 @@ int priqueue_offer(priqueue_t *q, void *ptr)
   {
     node->id = 0;
     q->head = node;
-    q->tail = node;
   }
   else
   {
@@ -64,9 +63,8 @@ int priqueue_offer(priqueue_t *q, void *ptr)
       printf("compare: %d\n", (*q->comparer)( node->data, curr->data));
       if( (*q->comparer)( node->data, curr->data) >= 0 )
       {
-        if( curr == q->tail )
+        if( curr->next == NULL )
         {
-            q->tail = node;
             curr->next = node;
             break;
         }
@@ -239,18 +237,6 @@ int priqueue_remove(priqueue_t *q, void *ptr)
         q->head = curr->next;
       }
 
-      if( curr == q->tail )//we are deleting the tail node
-      {
-        if( prev != NULL )
-        {
-          q->tail = prev;
-        }
-        else
-        {
-          q->tail = q->head;
-        }
-      }
-
       prev->next = curr->next;
       free(curr);//delete curr here;
       curr = prev->next;
@@ -303,11 +289,6 @@ void *priqueue_remove_at(priqueue_t *q, int index)
         prev->next = curr->next;
       }
 
-      //If we are tail, set tail to previous node
-      if( q->tail == curr )
-      {
-        q->tail = prev;
-      }
       
       struct priqueue_node *tmp = curr;
       free(curr);
@@ -333,12 +314,14 @@ void *priqueue_remove_at(priqueue_t *q, int index)
  */
 int priqueue_size(priqueue_t *q)
 {
-  if( q->tail == NULL )
-    return 0;
-  else
+  struct priqueue_node *curr = q->head;
+
+  while( curr->next != NULL )
   {
-	  return (q->tail->id + 1);
+    curr = curr->next;
   }
+
+  return (curr->id + 1);
 }
 
 
