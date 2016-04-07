@@ -53,7 +53,7 @@ void scheduler_start_up(int cores, scheme_t scheme)
 
   while( i < cores )
   {
-    (core_array+i)->current_job = NULL;
+    //(core_array+i)->current_job = NULL;
     i++;
   }
 

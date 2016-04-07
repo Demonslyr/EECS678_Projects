@@ -218,7 +218,7 @@ int priqueue_remove(priqueue_t *q, void *ptr)
 
   while( curr != NULL )
   {
-    if( (*q->comparer)( curr->data, ptr) == 0 )
+    if( curr->data == ptr )//( (*q->comparer)( curr->data, ptr) == 0 )
     {
       if( curr == q->head )//we are deleting the head node
       {
@@ -261,8 +261,6 @@ int priqueue_remove(priqueue_t *q, void *ptr)
  */
 void *priqueue_remove_at(priqueue_t *q, int index)
 {
-  printf("priqueue_remove_at\n");
-
   struct priqueue_node *curr = q->head;
   struct priqueue_node *prev = NULL;
 
@@ -281,7 +279,6 @@ void *priqueue_remove_at(priqueue_t *q, int index)
         prev->next = curr->next;
       }
 
-      
       struct priqueue_node *tmp = curr;
       free(curr);
 
