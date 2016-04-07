@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "libscheduler.h"
 #include "../libpriqueue/libpriqueue.h"
@@ -27,9 +28,10 @@ typedef struct core_t
 {
   job_t *current_job;
 } core_t;
-
+int num_cores;
 priqueue_t job_queue;
-core_t core_array;
+//core_t **core_array;
+core_t **core_array;
 scheme_t pri_scheme;
 
 /**
@@ -46,17 +48,47 @@ scheme_t pri_scheme;
 */
 void scheduler_start_up(int cores, scheme_t scheme)
 {
-  struct core_t core_arr[cores];
-  core_array = *core_arr;
+    num_cores = cores;
+  //struct core_t core_arr[cores];
+  //core_array = *core_arr;
 
   int i = 0;
 
-  while( i < cores )
-  {
-    (core_array+i)->current_job = NULL;
-    i++;
-  }
+//   while( i < cores )
+//   {
+//     (core_array+i)->current_job = NULL;
+//     i++;
+//   }
 
+// DArray *DArray_create(size_t element_size, size_t initial_max)
+// {
+    //core_t *coreArray = malloc(sizeof(DArray));
+    //check_mem(array);
+    //array->max = initial_max;
+    //check(num_cores > 0, "Number of cores must be > 0.");
+
+    core_array = calloc(num_cores, sizeof(core_t*));
+    // int i = 0;
+    while(i<num_cores)
+    {
+        struct core_t *tmp = (struct core_t*)malloc(sizeof(struct core_t));
+        tmp->current_job = NULL;
+        core_array[i]=tmp;
+        printf("made a core");
+        i++;
+    }
+    //check_mem(coreArray);
+
+    //array->end = 0;
+    //array->element_size = element_size;
+    //array->expand_rate = DEFAULT_EXPAND_RATE;
+
+//     return coreArray;
+
+// error:
+//     if(coreArray) free(coreArray);
+//     return NULL;
+// }
 }
 
 
@@ -82,6 +114,15 @@ void scheduler_start_up(int cores, scheme_t scheme)
  */
 int scheduler_new_job(int job_number, int time, int running_time, int priority)
 {
+    int i = 0;
+    while(i<num_cores)
+    {
+    core_t *ptr = core_array[i];
+    if(ptr->current_job == NULL)
+        printf("job is null\n");    
+    printf("touched the core array core\n");
+    i++;
+    }
 	return -1;
 }
 
