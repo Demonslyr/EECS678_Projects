@@ -9,6 +9,11 @@
 #include "libscheduler.h"
 #include "../libpriqueue/libpriqueue.h"
 
+#define PSJF_ARRIVAL_TIME_A (core_array[i]->current_job->time)
+#define PSJF_ARRIVAL_TIME_B (core_array[longest]->current_job->time)
+#define PSJF_REMAINING_TIME_A (core_array[i]->current_job->running_time-(core_array[i]->current_job->time-time))
+#define PSJF_REMAINING_TIME_B (core_array[longest]->current_job->running_time-(core_array[longest]->current_job->time-time))
+
 
 /**
   Stores information making up a job to be scheduled including any statistics.
@@ -177,6 +182,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             printf("SJF schedule\n");
             while(i<num_cores)
             {
+                //I think jobs with same running_time are being ordered incorrectly in the queue
                 if(core_array[i]->current_job == NULL)
                 {
                     core_array[i]->current_job = tmp;
@@ -190,6 +196,10 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             break;
         case PSJF:
             printf("PSJF schedule\n");
+            
+            
+            
+            ///Check for idle cores
             while(i<num_cores)
             {
                 if(core_array[i]->current_job == NULL)
@@ -200,42 +210,43 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 }
             i++;
             }
+            
+            ///find core with job with most time remaining.
             i=1;
             int longest = 0;
             while(i<num_cores)
             {
-                int arrival_timeA = core_array[i]->current_job->time;
-                int arrival_timeB = core_array[i-1]->current_job->time;
-                int remaining_timeA = core_array[i]->current_job->running_time-(core_array[i]->current_job->time-time);
-                int remaining_timeB = core_array[i-1]->current_job->running_time-(core_array[i-1]->current_job->time-time);
-                if((remaining_timeA) == (remaining_timeB))
+                if((PSJF_REMAINING_TIME_A) == (PSJF_REMAINING_TIME_B))
                 {
-                    if(arrival_timeA > arrival_timeB)
+                    if(PSJF_ARRIVAL_TIME_A > PSJF_ARRIVAL_TIME_B)
                     {
                         longest = i;
                     }
-                    else
-                    {
-                        longest = i-1;
-                    }
                 }
-                else if ((remaining_timeA) > (remaining_timeB))
+                else if ((PSJF_REMAINING_TIME_A) > (PSJF_REMAINING_TIME_B))
                 {
                     longest = i;
                 }
                 
             i++;
             }
-            int remaining_time_longest = core_array[longest]->current_job->running_time-(core_array[longest]->current_job->time-time);
-            if((remaining_time_longest) > (tmp->running_time - (tmp->time-time)))
+            
+            printf("The longest job is on core %d\n",i);
+            
+            ///figure out if longest job remaining is longer than the job that jsut arrived.
+            if((PSJF_REMAINING_TIME_B) > (tmp->running_time - (tmp->time-time)))
             {
-                core_array[longest]->current_job->running_time = remaining_time_longest;
+                printf("placed job %d into the queue. Placed job %d onto core %d!\n",core_array[longest]->current_job->job_number,tmp->job_number,longest);
+                core_array[longest]->current_job->running_time = PSJF_REMAINING_TIME_B;
                 priqueue_offer(&job_queue,core_array[longest]->current_job);
                 core_array[longest]->current_job = tmp;
+                return longest;
             }
             else
             {
+                printf("Placed the new job, job: %d, into the queue.",tmp->job_number);
                 priqueue_offer(&job_queue,tmp);
+                return -1;
                 
             }
             break;
@@ -415,7 +426,7 @@ int scheduler_quantum_expired(int core_id, int time)
  */
 float scheduler_average_waiting_time()
 {
-	return (total_job_waiting_time/jobs_finished);
+	return ((float)total_job_waiting_time/(float)jobs_finished);
 }
 
 
@@ -430,7 +441,7 @@ float scheduler_average_waiting_time()
  */
 float scheduler_average_turnaround_time()
 {
-	return (total_turnaround_time/jobs_finished);
+	return ((float)total_turnaround_time/(float)jobs_finished);
 }
 
 
@@ -445,7 +456,7 @@ float scheduler_average_turnaround_time()
  */
 float scheduler_average_response_time()
 {
-	return (total_response_time/jobs_finished);
+	return ((float)total_response_time/(float)jobs_finished);
 }
 
 
