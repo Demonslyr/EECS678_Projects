@@ -122,10 +122,11 @@ void *priqueue_poll(priqueue_t *q)
   }
   
   struct priqueue_node *node = q->head;
+  void *data = node->data;
   
   if(q->head->next != NULL)
   {
-    free( q->head );
+    free( node );
     q->head = q->head->next;
     priqueue_reindex( q );
   }
@@ -134,7 +135,7 @@ void *priqueue_poll(priqueue_t *q)
     q->head = NULL;
   }
   
-  return node->data;
+  return data;
 }
 
 void priqueue_reindex(priqueue_t *q)
