@@ -16,7 +16,9 @@
   You may need to define some global variables or a struct to store your job queue elements. 
 */
 
-int total_job_waiting_time;
+int total_job_waiting_time = 0;
+int total_turnaround_time = 0;
+int total_response_time = 0;
 int jobs_finished = 0;
 int num_cores;
 priqueue_t job_queue;
@@ -26,7 +28,7 @@ scheme_t pri_scheme;
 
 int fifo_compare(const void * a, const void * b)
 {
-    printf("IM THE FIFO COMPARE!");
+    //printf("IM THE FIFO COMPARE!");
     return (1);
 }
 
@@ -34,9 +36,14 @@ int sjf_compare(const void * a, const void * b)
 {
     const job_t * job1 = a;
 	const job_t * job2 = b;
-	printf("job1 - job2: %d\n", job1->running_time - job2->running_time );
 	return ( job1->running_time - job2->running_time );
-    //return (*(job_t*)a->running_time - *(job_t*)b->running_time);
+}
+
+int pri_compare(const void * a, const void * b)
+{
+    const job_t * job1 = a;
+	const job_t * job2 = b;
+	return ( job1->priority - job2->priority );
 }
 
 /**
@@ -57,26 +64,28 @@ void scheduler_start_up(int cores, scheme_t scheme)
     //struct core_t core_arr[cores];
     //core_array = *core_arr;
     pri_scheme = scheme;
-    printf("InScheme: %d\n",scheme);
-    printf("RecScheme: %d\n",pri_scheme);
     switch(pri_scheme)
     {
-        case 0:
+        case FCFS:
             priqueue_init(&job_queue,fifo_compare);
             break;
-        case 1:
+        case SJF:
             priqueue_init(&job_queue,sjf_compare);
             break;
         case PSJF:
+            priqueue_init(&job_queue,sjf_compare);
             break;
         case PRI:
+            priqueue_init(&job_queue,pri_compare);
             break;
         case PPRI:
+            priqueue_init(&job_queue,pri_compare);
             break;
         case RR:
+            priqueue_init(&job_queue,fifo_compare);
             break;                      
         default:
-            printf("Invalid value for scheme!!! Received: %d\n",scheme );
+            printf("Invalid value for scheme!!! Received: %d\n",pri_scheme );
             break;                          
     }
 
@@ -136,7 +145,8 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
     tmp->time = time;
     tmp->job_number = job_number;
     tmp->running_time = running_time;
-    tmp->priority = priority;    
+    tmp->priority = priority;   
+    tmp->previously_scheduled = false; 
     
     // struct job_t* test_job = priqueue_peek(&job_queue);
     // printf("LOOK AT ME IN TEH QUEUE!!: %d\n",test_job->job_number);
@@ -154,16 +164,12 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 if(core_array[i]->current_job == NULL)
                 {
                     core_array[i]->current_job = tmp;
+                    tmp->previously_scheduled = true;
                     printf("Assigned job %d to core number %d\n",job_number,i);
                     return i;
                 }
-                // core_t *ptr = core_array[i];
-                // if(ptr->current_job == NULL)
-                //     printf("job is null\n");    
-                // printf("touched the core array core\n");
             i++;
             }
-            
             priqueue_offer(&job_queue,tmp);
             break;
         case SJF:
@@ -176,10 +182,6 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                     printf("Assigned job %d to core number %d\n",job_number,i);
                     return i;
                 }
-                // core_t *ptr = core_array[i];
-                // if(ptr->current_job == NULL)
-                //     printf("job is null\n");    
-                // printf("touched the core array core\n");
             i++;
             }
             
@@ -194,7 +196,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
         case RR:
             break;                                                
         default:
-            printf("Improperly initialized queue.");
+            printf("Invalid value for scheme!!! Received: %d\n",pri_scheme );
             break;
     }
 	return -1;
@@ -218,14 +220,20 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
 int scheduler_job_finished(int core_id, int job_number, int time)
 {
     jobs_finished++;
-    struct job_t* queued_job = priqueue_poll(&job_queue);
+    total_turnaround_time+=(time-core_array[core_id]->current_job->time);
     
-    int j=0;
+    struct job_t* queued_job = priqueue_poll(&job_queue);
+    //int j=0;
     
     core_array[core_id]->current_job = queued_job;
     if(core_array[core_id]->current_job != NULL)
     {
         total_job_waiting_time+=(time-core_array[core_id]->current_job->time);
+        if(!core_array[core_id]->current_job->previously_scheduled)
+        {
+            total_response_time+=(time-core_array[core_id]->current_job->time);
+            core_array[core_id]->current_job->previously_scheduled = true;
+        }
         printf("Job was waiting in queue for %d time cycles!",time-core_array[core_id]->current_job->time);
         return core_array[core_id]->current_job->job_number;
     }
@@ -249,12 +257,40 @@ int scheduler_job_finished(int core_id, int job_number, int time)
 int scheduler_quantum_expired(int core_id, int time)
 {
     printf("Quatum expired!\n");
+    
+        switch(pri_scheme)
+    {
+        case FCFS:
+            priqueue_init(&job_queue,fifo_compare);
+            break;
+        case SJF:
+            priqueue_init(&job_queue,sjf_compare);
+            break;
+        case PSJF:
+            priqueue_init(&job_queue,sjf_compare);
+            break;
+        case PRI:
+            priqueue_init(&job_queue,pri_compare);
+            break;
+        case PPRI:
+            priqueue_init(&job_queue,pri_compare);
+            break;
+        case RR:
+            priqueue_init(&job_queue,fifo_compare);
+            break;                      
+        default:
+            printf("Invalid value for scheme!!! Received: %d\n",pri_scheme );
+            break;                          
+    }
+    
 	return -1;
 }
 
 
 /**
   Returns the average waiting time of all jobs scheduled by your scheduler.
+
+    Waiting Time: Time a job spends waiting in the queue. 
 
   Assumptions:
     - This function will only be called after all scheduling is complete (all jobs that have arrived will have finished and no new jobs will arrive).
@@ -269,18 +305,22 @@ float scheduler_average_waiting_time()
 /**
   Returns the average turnaround time of all jobs scheduled by your scheduler.
 
+    Turnaround Time: Time to complete a task (ready -> complete)
+
   Assumptions:
     - This function will only be called after all scheduling is complete (all jobs that have arrived will have finished and no new jobs will arrive).
   @return the average turnaround time of all jobs scheduled.
  */
 float scheduler_average_turnaround_time()
 {
-	return 0.0;
+	return (total_turnaround_time/jobs_finished);
 }
 
 
 /**
   Returns the average response time of all jobs scheduled by your scheduler.
+
+    Response Time: Time to schedule a task (ready -> first scheduled)
 
   Assumptions:
     - This function will only be called after all scheduling is complete (all jobs that have arrived will have finished and no new jobs will arrive).
@@ -288,7 +328,7 @@ float scheduler_average_turnaround_time()
  */
 float scheduler_average_response_time()
 {
-	return 0.0;
+	return (total_response_time/jobs_finished);
 }
 
 
