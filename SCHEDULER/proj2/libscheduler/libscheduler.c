@@ -239,6 +239,19 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             }
             break;
         case PRI:
+            printf("PRI schedule\n");
+            while(i<num_cores)
+            {
+                if(core_array[i]->current_job == NULL)
+                {
+                    core_array[i]->current_job = tmp;
+                    printf("Assigned job %d to core number %d\n",job_number,i);
+                    return i;
+                }
+            i++;
+            }
+            
+            priqueue_offer(&job_queue,tmp);
             break;
         case PPRI:
             break;
