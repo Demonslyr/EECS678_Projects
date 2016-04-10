@@ -189,7 +189,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             priqueue_offer(&job_queue,tmp);
             break;
         case PSJF:
-            printf("SJF schedule\n");
+            printf("PSJF schedule\n");
             while(i<num_cores)
             {
                 if(core_array[i]->current_job == NULL)
@@ -255,6 +255,54 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             priqueue_offer(&job_queue,tmp);
             break;
         case PPRI:
+            printf("PPRI schedule\n");
+            while(i<num_cores)
+            {
+                if(core_array[i]->current_job == NULL)
+                {
+                    core_array[i]->current_job = tmp;
+                    printf("Assigned job %d to core number %d\n",job_number,i);
+                    return i;
+                }
+            i++;
+            }
+            i=1;
+            int lowest = 0;
+            while(i<num_cores)
+            {
+                int arrival_timeA = core_array[i]->current_job->time;
+                int arrival_timeB = core_array[i-1]->current_job->time;
+                int priorityA = core_array[i]->current_job->priority;
+                int priorityB = core_array[i-1]->current_job->priority;
+                if((priorityA) == (priorityB))
+                {
+                    if(arrival_timeA > arrival_timeB)
+                    {
+                        longest = i;
+                    }
+                    // else
+                    // {
+                    //     longest = i-1;
+                    // }
+                }
+                else if ((priorityA) > (priorityB))
+                {
+                    longest = i;
+                }
+                
+            i++;
+            }
+            if((core_array[lowest]->current_job->priority) > (tmp->running_time - (tmp->time-time)))
+            {
+                int remaining_time = core_array[lowest]->current_job->running_time-(core_array[lowest]->current_job->time-time);
+                core_array[lowest]->current_job->running_time = remaining_time;
+                priqueue_offer(&job_queue,core_array[lowest]->current_job);
+                core_array[lowest]->current_job = tmp;
+            }
+            else
+            {
+                priqueue_offer(&job_queue,tmp);   
+            }
             break;
         case RR:
             printf("RR schedule\n");
