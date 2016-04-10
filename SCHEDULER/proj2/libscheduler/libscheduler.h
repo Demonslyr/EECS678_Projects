@@ -18,6 +18,7 @@ typedef struct job_t
   int time;
   int running_time;
   int priority;
+  int time_placed_in_queue;
   bool previously_scheduled;
 
 } job_t;

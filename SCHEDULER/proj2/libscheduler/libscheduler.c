@@ -146,7 +146,8 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
     tmp->job_number = job_number;
     tmp->running_time = running_time;
     tmp->priority = priority;   
-    tmp->previously_scheduled = false; 
+    tmp->previously_scheduled = false;
+    tmp->time_placed_in_queue = time; 
     
     // struct job_t* test_job = priqueue_peek(&job_queue);
     // printf("LOOK AT ME IN TEH QUEUE!!: %d\n",test_job->job_number);
@@ -320,44 +321,25 @@ int scheduler_quantum_expired(int core_id, int time)
 {
     printf("Quatum expired!\n");
     
-        switch(pri_scheme)
-    {
-        case FCFS:
-            //priqueue_init(&job_queue,fifo_compare);
-            break;
-        case SJF:
-            //priqueue_init(&job_queue,sjf_compare);
-            break;
-        case PSJF:
-            //priqueue_init(&job_queue,sjf_compare);
-            break;
-        case PRI:
-            //priqueue_init(&job_queue,pri_compare);
-            break;
-        case PPRI:
-            //priqueue_init(&job_queue,pri_compare);
-            break;
-        case RR:
-            //priqueue_init(&job_queue,fifo_compare);
-            
-            priqueue_offer(&job_queue,core_array[core_id]->current_job);
-            
-            if(!core_array[core_id]->current_job->previously_scheduled)
-            {
-                total_response_time+=(time-core_array[core_id]->current_job->time);
-                core_array[core_id]->current_job->previously_scheduled = true;
-            }            
-            
-            struct job_t* queued_job = priqueue_poll(&job_queue);
-            core_array[core_id]->current_job = queued_job;
-            return core_array[core_id]->current_job->job_number;
-            break;                      
-        default:
-            printf("Invalid value for scheme!!! Received: %d\n",pri_scheme );
-            break;                          
-    }
+    /////maybe call the job_finished function if the quantum happens when the job is scheduled to finish anyways.
+    core_array[core_id]->current_job->time_placed_in_queue = time;
+    priqueue_offer(&job_queue,core_array[core_id]->current_job);
     
-	return -1;
+    struct job_t* queued_job = priqueue_poll(&job_queue);
+    core_array[core_id]->current_job = queued_job;
+    total_job_waiting_time+=(time-core_array[core_id]->current_job->time_placed_in_queue);
+    
+    
+    if(!core_array[core_id]->current_job->previously_scheduled)
+    {
+        total_response_time+=(time-core_array[core_id]->current_job->time);
+        core_array[core_id]->current_job->previously_scheduled = true;
+    }            
+    
+    return core_array[core_id]->current_job->job_number;
+   
+       
+	//return -1;
 }
 
 
