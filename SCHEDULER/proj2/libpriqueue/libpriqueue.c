@@ -102,7 +102,10 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 void *priqueue_peek(priqueue_t *q)
 {
   printf("priqueue_peek\n");
-  return q->head;
+  if(q->head == NULL){
+      return NULL;
+  }
+  return q->head->data;
 }
 
 
