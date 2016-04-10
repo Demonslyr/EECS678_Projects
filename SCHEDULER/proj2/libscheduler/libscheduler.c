@@ -188,12 +188,74 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             priqueue_offer(&job_queue,tmp);
             break;
         case PSJF:
+            printf("SJF schedule\n");
+            while(i<num_cores)
+            {
+                if(core_array[i]->current_job == NULL)
+                {
+                    core_array[i]->current_job = tmp;
+                    printf("Assigned job %d to core number %d\n",job_number,i);
+                    return i;
+                }
+            i++;
+            }
+            i=1;
+            int longest = 0;
+            while(i<num_cores)
+            {
+                int arrival_timeA = core_array[i]->current_job->time;
+                int arrival_timeB = core_array[i-1]->current_job->time;
+                int remaining_timeA = core_array[i]->current_job->running_time-(core_array[i]->current_job->time-time);
+                int remaining_timeB = core_array[i-1]->current_job->running_time-(core_array[i-1]->current_job->time-time);
+                if((remaining_timeA) == (remaining_timeB))
+                {
+                    if(arrival_timeA > arrival_timeB)
+                    {
+                        longest = i;
+                    }
+                    else
+                    {
+                        longest = i-1;
+                    }
+                }
+                else if ((remaining_timeA) > (remaining_timeB))
+                {
+                    longest = i;
+                }
+                
+            i++;
+            }
+            int remaining_time_longest = core_array[longest]->current_job->running_time-(core_array[longest]->current_job->time-time);
+            if((remaining_time_longest) > (tmp->running_time - (tmp->time-time)))
+            {
+                core_array[longest]->current_job->running_time = remaining_time_longest;
+                priqueue_offer(&job_queue,core_array[longest]->current_job);
+                core_array[longest]->current_job = tmp;
+            }
+            else
+            {
+                priqueue_offer(&job_queue,tmp);
+                
+            }
             break;
         case PRI:
             break;
         case PPRI:
             break;
         case RR:
+            printf("RR schedule\n");
+            while(i<num_cores)
+            {
+                if(core_array[i]->current_job == NULL)
+                {
+                    core_array[i]->current_job = tmp;
+                    tmp->previously_scheduled = true;
+                    printf("Assigned job %d to core number %d\n",job_number,i);
+                    return i;
+                }
+            i++;
+            }
+            priqueue_offer(&job_queue,tmp);
             break;                                                
         default:
             printf("Invalid value for scheme!!! Received: %d\n",pri_scheme );
@@ -261,22 +323,34 @@ int scheduler_quantum_expired(int core_id, int time)
         switch(pri_scheme)
     {
         case FCFS:
-            priqueue_init(&job_queue,fifo_compare);
+            //priqueue_init(&job_queue,fifo_compare);
             break;
         case SJF:
-            priqueue_init(&job_queue,sjf_compare);
+            //priqueue_init(&job_queue,sjf_compare);
             break;
         case PSJF:
-            priqueue_init(&job_queue,sjf_compare);
+            //priqueue_init(&job_queue,sjf_compare);
             break;
         case PRI:
-            priqueue_init(&job_queue,pri_compare);
+            //priqueue_init(&job_queue,pri_compare);
             break;
         case PPRI:
-            priqueue_init(&job_queue,pri_compare);
+            //priqueue_init(&job_queue,pri_compare);
             break;
         case RR:
-            priqueue_init(&job_queue,fifo_compare);
+            //priqueue_init(&job_queue,fifo_compare);
+            
+            priqueue_offer(&job_queue,core_array[core_id]->current_job);
+            
+            if(!core_array[core_id]->current_job->previously_scheduled)
+            {
+                total_response_time+=(time-core_array[core_id]->current_job->time);
+                core_array[core_id]->current_job->previously_scheduled = true;
+            }            
+            
+            struct job_t* queued_job = priqueue_poll(&job_queue);
+            core_array[core_id]->current_job = queued_job;
+            return core_array[core_id]->current_job->job_number;
             break;                      
         default:
             printf("Invalid value for scheme!!! Received: %d\n",pri_scheme );
