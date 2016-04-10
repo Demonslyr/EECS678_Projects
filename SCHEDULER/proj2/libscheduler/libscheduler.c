@@ -115,7 +115,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
     int i = 0;
     switch(pri_scheme)
     {
-        case 0: //FCFS
+        case FCFS:
             while(i<num_cores)
             {
                 if(core_array[i]->current_job == NULL)
@@ -133,8 +133,16 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             
             priqueue_offer(&job_queue,tmp);
             break;
-        case 1:
+        case SJF:
             break;
+        case PSJF:
+            break;
+        case PRI:
+            break;
+        case PPRI:
+            break;
+        case RR:
+            break;                                                
         default:
             printf("Improperly initialized queue.");
             break;
@@ -187,6 +195,7 @@ int scheduler_job_finished(int core_id, int job_number, int time)
  */
 int scheduler_quantum_expired(int core_id, int time)
 {
+    printf("Quatum expired!\n");
 	return -1;
 }
 
