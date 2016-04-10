@@ -16,6 +16,8 @@
   You may need to define some global variables or a struct to store your job queue elements. 
 */
 
+int total_job_waiting_time;
+int jobs_finished = 0;
 int num_cores;
 priqueue_t job_queue;
 //core_t **core_array;
@@ -24,7 +26,17 @@ scheme_t pri_scheme;
 
 int fifo_compare(const void * a, const void * b)
 {
-    return (0);
+    printf("IM THE FIFO COMPARE!");
+    return (1);
+}
+
+int sjf_compare(const void * a, const void * b)
+{
+    const job_t * job1 = a;
+	const job_t * job2 = b;
+	printf("job1 - job2: %d\n", job1->running_time - job2->running_time );
+	return ( job1->running_time - job2->running_time );
+    //return (*(job_t*)a->running_time - *(job_t*)b->running_time);
 }
 
 /**
@@ -41,13 +53,34 @@ int fifo_compare(const void * a, const void * b)
 */
 void scheduler_start_up(int cores, scheme_t scheme)
 {
-    num_cores = cores;
-  //struct core_t core_arr[cores];
-  //core_array = *core_arr;
+        num_cores = cores;
+    //struct core_t core_arr[cores];
+    //core_array = *core_arr;
+    pri_scheme = scheme;
+    printf("InScheme: %d\n",scheme);
+    printf("RecScheme: %d\n",pri_scheme);
+    switch(pri_scheme)
+    {
+        case 0:
+            priqueue_init(&job_queue,fifo_compare);
+            break;
+        case 1:
+            priqueue_init(&job_queue,sjf_compare);
+            break;
+        case PSJF:
+            break;
+        case PRI:
+            break;
+        case PPRI:
+            break;
+        case RR:
+            break;                      
+        default:
+            printf("Invalid value for scheme!!! Received: %d\n",scheme );
+            break;                          
+    }
 
-    priqueue_init(&job_queue,fifo_compare);
-
-  int i = 0;
+    int i = 0;
 
     core_array = calloc(num_cores, sizeof(core_t*));
     while(i<num_cores)
@@ -103,8 +136,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
     tmp->time = time;
     tmp->job_number = job_number;
     tmp->running_time = running_time;
-    tmp->priority = priority;
-    
+    tmp->priority = priority;    
     
     // struct job_t* test_job = priqueue_peek(&job_queue);
     // printf("LOOK AT ME IN TEH QUEUE!!: %d\n",test_job->job_number);
@@ -116,6 +148,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
     switch(pri_scheme)
     {
         case FCFS:
+            printf("FCFS schedule\n");
             while(i<num_cores)
             {
                 if(core_array[i]->current_job == NULL)
@@ -134,6 +167,23 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             priqueue_offer(&job_queue,tmp);
             break;
         case SJF:
+            printf("SJF schedule\n");
+            while(i<num_cores)
+            {
+                if(core_array[i]->current_job == NULL)
+                {
+                    core_array[i]->current_job = tmp;
+                    printf("Assigned job %d to core number %d\n",job_number,i);
+                    return i;
+                }
+                // core_t *ptr = core_array[i];
+                // if(ptr->current_job == NULL)
+                //     printf("job is null\n");    
+                // printf("touched the core array core\n");
+            i++;
+            }
+            
+            priqueue_offer(&job_queue,tmp);
             break;
         case PSJF:
             break;
@@ -167,6 +217,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
  */
 int scheduler_job_finished(int core_id, int job_number, int time)
 {
+    jobs_finished++;
     struct job_t* queued_job = priqueue_poll(&job_queue);
     
     int j=0;
@@ -174,6 +225,8 @@ int scheduler_job_finished(int core_id, int job_number, int time)
     core_array[core_id]->current_job = queued_job;
     if(core_array[core_id]->current_job != NULL)
     {
+        total_job_waiting_time+=(time-core_array[core_id]->current_job->time);
+        printf("Job was waiting in queue for %d time cycles!",time-core_array[core_id]->current_job->time);
         return core_array[core_id]->current_job->job_number;
     }
 	return -1;
@@ -209,7 +262,7 @@ int scheduler_quantum_expired(int core_id, int time)
  */
 float scheduler_average_waiting_time()
 {
-	return 0.0;
+	return (total_job_waiting_time/jobs_finished);
 }
 
 

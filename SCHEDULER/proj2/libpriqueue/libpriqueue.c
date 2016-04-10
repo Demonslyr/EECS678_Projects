@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "../libscheduler/libscheduler.h"
 #include "libpriqueue.h"
-
 /**
   Initializes the priqueue_t data structure.
   
