@@ -15,24 +15,17 @@
 
   You may need to define some global variables or a struct to store your job queue elements. 
 */
-typedef struct _job_t
-{
-  int job_number;
-  int time;
-  int running_time;
-  int priority;
 
-} job_t;
-
-typedef struct core_t
-{
-  job_t *current_job;
-} core_t;
 int num_cores;
 priqueue_t job_queue;
 //core_t **core_array;
 core_t **core_array;
 scheme_t pri_scheme;
+
+int fifo_compare(const void * a, const void * b)
+{
+    return (0);
+}
 
 /**
   Initalizes the scheduler.
@@ -52,23 +45,11 @@ void scheduler_start_up(int cores, scheme_t scheme)
   //struct core_t core_arr[cores];
   //core_array = *core_arr;
 
+    priqueue_init(&job_queue,fifo_compare);
+
   int i = 0;
 
-//   while( i < cores )
-//   {
-//     (core_array+i)->current_job = NULL;
-//     i++;
-//   }
-
-// DArray *DArray_create(size_t element_size, size_t initial_max)
-// {
-    //core_t *coreArray = malloc(sizeof(DArray));
-    //check_mem(array);
-    //array->max = initial_max;
-    //check(num_cores > 0, "Number of cores must be > 0.");
-
     core_array = calloc(num_cores, sizeof(core_t*));
-    // int i = 0;
     while(i<num_cores)
     {
         struct core_t *tmp = (struct core_t*)malloc(sizeof(struct core_t));
@@ -77,19 +58,22 @@ void scheduler_start_up(int cores, scheme_t scheme)
         printf("made a core");
         i++;
     }
-    //check_mem(coreArray);
-
-    //array->end = 0;
-    //array->element_size = element_size;
-    //array->expand_rate = DEFAULT_EXPAND_RATE;
-
-//     return coreArray;
-
-// error:
-//     if(coreArray) free(coreArray);
-//     return NULL;
-// }
+    
+    // struct job_t *tmp = (struct job_t*)malloc(sizeof(struct job_t));
+    // tmp->time = 0;
+    // tmp->job_number = 43;
+    // tmp->running_time = 6;
+    // tmp->priority = 3;
+    
+    // priqueue_offer(&job_queue,tmp);
+    
+    // struct job_t* test_job = priqueue_peek(&job_queue);
+    // printf("LOOK AT ME!!: %d\n",test_job->job_number);
+    // test_job = NULL;
+    // test_job = priqueue_poll(&job_queue);
+    // printf("Also this!: %d\n",test_job->job_number);
 }
+
 
 
 /**
@@ -114,14 +98,46 @@ void scheduler_start_up(int cores, scheme_t scheme)
  */
 int scheduler_new_job(int job_number, int time, int running_time, int priority)
 {
+    
+    struct job_t *tmp = (struct job_t*)malloc(sizeof(struct job_t));
+    tmp->time = time;
+    tmp->job_number = job_number;
+    tmp->running_time = running_time;
+    tmp->priority = priority;
+    
+    
+    // struct job_t* test_job = priqueue_peek(&job_queue);
+    // printf("LOOK AT ME IN TEH QUEUE!!: %d\n",test_job->job_number);
+    // test_job = NULL;
+    // test_job = priqueue_poll(&job_queue);
+    // printf("Also this in the QUEUE!: %d\n",test_job->job_number);
+    
     int i = 0;
-    while(i<num_cores)
+    switch(pri_scheme)
     {
-    core_t *ptr = core_array[i];
-    if(ptr->current_job == NULL)
-        printf("job is null\n");    
-    printf("touched the core array core\n");
-    i++;
+        case 0: //FCFS
+            while(i<num_cores)
+            {
+                if(core_array[i]->current_job == NULL)
+                {
+                    core_array[i]->current_job = tmp;
+                    printf("Assigned job %d to core number %d\n",job_number,i);
+                    return i;
+                }
+                // core_t *ptr = core_array[i];
+                // if(ptr->current_job == NULL)
+                //     printf("job is null\n");    
+                // printf("touched the core array core\n");
+            i++;
+            }
+            
+            priqueue_offer(&job_queue,tmp);
+            break;
+        case 1:
+            break;
+        default:
+            printf("Improperly initialized queue.");
+            break;
     }
 	return -1;
 }
@@ -143,6 +159,15 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
  */
 int scheduler_job_finished(int core_id, int job_number, int time)
 {
+    struct job_t* queued_job = priqueue_poll(&job_queue);
+    
+    int j=0;
+    
+    core_array[core_id]->current_job = queued_job;
+    if(core_array[core_id]->current_job != NULL)
+    {
+        return core_array[core_id]->current_job->job_number;
+    }
 	return -1;
 }
 

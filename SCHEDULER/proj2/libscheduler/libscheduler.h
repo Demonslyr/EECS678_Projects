@@ -4,9 +4,28 @@
 #ifndef LIBSCHEDULER_H_
 #define LIBSCHEDULER_H_
 
+typedef int bool;
+#define true 1;
+#define false 0;
+
 /**
   Constants which represent the different scheduling algorithms
 */
+
+typedef struct job_t
+{
+  int job_number;
+  int time;
+  int running_time;
+  int priority;
+
+} job_t;
+
+typedef struct core_t
+{
+  job_t *current_job;
+} core_t;
+
 typedef enum {FCFS = 0, SJF, PSJF, PRI, PPRI, RR} scheme_t;
 
 void  scheduler_start_up               (int cores, scheme_t scheme);
