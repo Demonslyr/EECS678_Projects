@@ -191,6 +191,9 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 if(core_array[i]->current_job == NULL)
                 {
                     tmp->placed_on_core = time;
+                    if(!tmp->previously_scheduled){
+                        tmp->first_placed_on_core = time;
+                    }
                     tmp->previously_scheduled = true;
                     core_array[i]->current_job = tmp;
                     printf("Assigned job %d to core number %d\n",job_number,i);
@@ -208,6 +211,9 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 if(core_array[i]->current_job == NULL)
                 {
                     tmp->placed_on_core = time;
+                    if(!tmp->previously_scheduled){
+                        tmp->first_placed_on_core = time;
+                    }                    
                     tmp->previously_scheduled = true;
                     core_array[i]->current_job = tmp;
                     printf("Assigned job %d to core number %d\n",job_number,i);
@@ -227,6 +233,9 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 if(core_array[i]->current_job == NULL)
                 {
                     tmp->placed_on_core = time;
+                    if(!tmp->previously_scheduled){
+                        tmp->first_placed_on_core = time;
+                    }                                        
                     tmp->previously_scheduled = true;
                     core_array[i]->current_job = tmp;
                     printf("Assigned job %d to core number %d\n",job_number,i);
@@ -264,8 +273,15 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 printf("placed job %d into the queue. Placed job %d onto core %d!\n",core_array[flagged]->current_job->job_number,tmp->job_number,flagged);
                 core_array[flagged]->current_job->running_time = REMAINING_TIME_B;
                 core_array[flagged]->current_job->time_placed_in_queue = time;
+                if(core_array[flagged]->current_job->first_placed_on_core == time)
+                {
+                    core_array[flagged]->current_job->previously_scheduled = false;
+                }
                 priqueue_offer(&job_queue,core_array[flagged]->current_job);
                 tmp->placed_on_core = time;
+                if(!tmp->previously_scheduled){
+                    tmp->first_placed_on_core = time;
+                }                                    
                 tmp->previously_scheduled = true;
                 core_array[flagged]->current_job = tmp;
                 return flagged;
@@ -284,6 +300,9 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 if(core_array[i]->current_job == NULL)
                 {
                     tmp->placed_on_core = time;
+                    if(!tmp->previously_scheduled){
+                        tmp->first_placed_on_core = time;
+                    }                                        
                     tmp->previously_scheduled = true;
                     core_array[i]->current_job = tmp;
                     printf("Assigned job %d to core number %d\n",job_number,i);
@@ -302,6 +321,9 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 if(core_array[i]->current_job == NULL)
                 {
                     tmp->placed_on_core = time;
+                    if(!tmp->previously_scheduled){
+                        tmp->first_placed_on_core = time;
+                    }                                        
                     tmp->previously_scheduled = true;
                     core_array[i]->current_job = tmp;
                     printf("Assigned job %d to core number %d\n",job_number,i);
@@ -338,8 +360,15 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 printf("placed job %d into the queue. Placed job %d onto core %d!\n",core_array[flagged]->current_job->job_number,tmp->job_number,flagged);
                 core_array[flagged]->current_job->running_time = REMAINING_TIME_B;
                 core_array[flagged]->current_job->time_placed_in_queue = time;
+                if(core_array[flagged]->current_job->first_placed_on_core == time)
+                {
+                    core_array[flagged]->current_job->previously_scheduled = false;
+                }
                 priqueue_offer(&job_queue,core_array[flagged]->current_job);
                 tmp->placed_on_core = time;
+                if(!tmp->previously_scheduled){
+                    tmp->first_placed_on_core = time;
+                }                                    
                 tmp->previously_scheduled = true;
                 core_array[flagged]->current_job = tmp;
                 return flagged;
@@ -358,6 +387,9 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 if(core_array[i]->current_job == NULL)
                 {
                     tmp->placed_on_core = time;
+                    if(!tmp->previously_scheduled){
+                        tmp->first_placed_on_core = time;
+                    }                                        
                     tmp->previously_scheduled = true;
                     core_array[i]->current_job = tmp;
                     printf("Assigned job %d to core number %d\n",job_number,i);
@@ -406,7 +438,10 @@ int scheduler_job_finished(int core_id, int job_number, int time)
         //total_job_waiting_time+=(time-core_array[core_id]->current_job->time);
         if(!core_array[core_id]->current_job->previously_scheduled)
         {
-            total_response_time+=(time-core_array[core_id]->current_job->time);
+            total_response_time+=(time-core_array[core_id]->current_job->time_placed_in_queue);
+            if(!core_array[core_id]->current_job->previously_scheduled){
+                core_array[core_id]->current_job->first_placed_on_core = time;
+            }                                
             core_array[core_id]->current_job->previously_scheduled = true;
         }
         printf("Job was waiting in queue for %d time cycles!",time-core_array[core_id]->current_job->time);
@@ -444,7 +479,7 @@ int scheduler_quantum_expired(int core_id, int time)
     
     if(!core_array[core_id]->current_job->previously_scheduled)
     {
-        total_response_time+=(time-core_array[core_id]->current_job->time);
+        total_response_time+=(time-core_array[core_id]->current_job->time_placed_in_queue);
         core_array[core_id]->current_job->previously_scheduled = true;
     }            
     
