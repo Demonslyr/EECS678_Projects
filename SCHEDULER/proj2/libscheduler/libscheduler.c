@@ -117,7 +117,6 @@ void scheduler_start_up(int cores, scheme_t scheme)
         struct core_t *tmp = (struct core_t*)malloc(sizeof(struct core_t));
         tmp->current_job = NULL;
         core_array[i]=tmp;
-        printf("made a core");
         i++;
     }
 }
@@ -410,7 +409,6 @@ int scheduler_job_finished(int core_id, int job_number, int time)
     {
     core_array[core_id]->current_job->placed_on_core = time;
         total_job_waiting_time+=(time-core_array[core_id]->current_job->time_placed_in_queue);
-        //total_job_waiting_time+=(time-core_array[core_id]->current_job->time);
         if(!core_array[core_id]->current_job->previously_scheduled)
         {
             total_response_time+=(time-core_array[core_id]->current_job->time_placed_in_queue);
@@ -534,7 +532,6 @@ void scheduler_clean_up()
 void scheduler_show_queue()
 {
     int i = 0;
-    printf("Job Queue:");
     while( priqueue_at( &job_queue, i ) != NULL )
     {
         struct job_t* data = priqueue_at( &job_queue, i );   
