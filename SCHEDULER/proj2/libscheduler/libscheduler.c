@@ -9,11 +9,12 @@
 #include "libscheduler.h"
 #include "../libpriqueue/libpriqueue.h"
 
-#define PSJF_ARRIVAL_TIME_A (core_array[i]->current_job->time)
-#define PSJF_ARRIVAL_TIME_B (core_array[longest]->current_job->time)
-#define PSJF_REMAINING_TIME_A (core_array[i]->current_job->running_time-(core_array[i]->current_job->time-time))
-#define PSJF_REMAINING_TIME_B (core_array[longest]->current_job->running_time-(core_array[longest]->current_job->time-time))
-
+#define ARRIVAL_TIME_A (core_array[i]->current_job->time)
+#define ARRIVAL_TIME_B (core_array[flagged]->current_job->time)
+#define REMAINING_TIME_A (core_array[i]->current_job->running_time-(core_array[i]->current_job->time-time))
+#define REMAINING_TIME_B (core_array[flagged]->current_job->running_time-(core_array[flagged]->current_job->time-time))
+#define PRIORITY_A (core_array[i]->current_job->priority)
+#define PRIORITY_B (core_array[flagged]->current_job->priority)
 
 /**
   Stores information making up a job to be scheduled including any statistics.
@@ -40,15 +41,15 @@ int fifo_compare(const void * a, const void * b)
 int sjf_compare(const void * a, const void * b)
 {
     const job_t * job1 = a;
-	const job_t * job2 = b;
-	return ( job1->running_time - job2->running_time );
+	  const job_t * job2 = b;
+	  return ( job1->running_time - job2->running_time );
 }
 
 int pri_compare(const void * a, const void * b)
 {
     const job_t * job1 = a;
-	const job_t * job2 = b;
-	return ( job1->priority - job2->priority );
+	  const job_t * job2 = b;
+	  return ( job1->priority - job2->priority );
 }
 
 /**
@@ -161,6 +162,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
     // printf("Also this in the QUEUE!: %d\n",test_job->job_number);
     
     int i = 0;
+    int flagged = 0;
     switch(pri_scheme)
     {
         case FCFS:
@@ -196,9 +198,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             break;
         case PSJF:
             printf("PSJF schedule\n");
-            
-            
-            
+
             ///Check for idle cores
             while(i<num_cores)
             {
@@ -213,19 +213,19 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             
             ///find core with job with most time remaining.
             i=1;
-            int longest = 0;
+            flagged = 0;
             while(i<num_cores)
             {
-                if((PSJF_REMAINING_TIME_A) == (PSJF_REMAINING_TIME_B))
+                if((REMAINING_TIME_A) == (REMAINING_TIME_B))
                 {
-                    if(PSJF_ARRIVAL_TIME_A > PSJF_ARRIVAL_TIME_B)
+                    if(ARRIVAL_TIME_A > ARRIVAL_TIME_B)
                     {
-                        longest = i;
+                        flagged = i;
                     }
                 }
-                else if ((PSJF_REMAINING_TIME_A) > (PSJF_REMAINING_TIME_B))
+                else if ((REMAINING_TIME_A) > (REMAINING_TIME_B))
                 {
-                    longest = i;
+                    flagged = i;
                 }
                 
             i++;
@@ -234,20 +234,19 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             printf("The longest job is on core %d\n",i);
             
             ///figure out if longest job remaining is longer than the job that jsut arrived.
-            if((PSJF_REMAINING_TIME_B) > (tmp->running_time - (tmp->time-time)))
+            if((REMAINING_TIME_B) > (tmp->running_time - (tmp->time-time)))
             {
-                printf("placed job %d into the queue. Placed job %d onto core %d!\n",core_array[longest]->current_job->job_number,tmp->job_number,longest);
-                core_array[longest]->current_job->running_time = PSJF_REMAINING_TIME_B;
-                priqueue_offer(&job_queue,core_array[longest]->current_job);
-                core_array[longest]->current_job = tmp;
-                return longest;
+                printf("placed job %d into the queue. Placed job %d onto core %d!\n",core_array[flagged]->current_job->job_number,tmp->job_number,flagged);
+                core_array[flagged]->current_job->running_time = REMAINING_TIME_B;
+                priqueue_offer(&job_queue,core_array[flagged]->current_job);
+                core_array[flagged]->current_job = tmp;
+                return flagged;
             }
             else
             {
                 printf("Placed the new job, job: %d, into the queue.",tmp->job_number);
                 priqueue_offer(&job_queue,tmp);
-                return -1;
-                
+                return -1;    
             }
             break;
         case PRI:
@@ -267,6 +266,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             break;
         case PPRI:
             printf("PPRI schedule\n");
+            //Check for idle cores
             while(i<num_cores)
             {
                 if(core_array[i]->current_job == NULL)
@@ -277,44 +277,45 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                 }
             i++;
             }
+            
+            ///find core with job with most time remaining.
             i=1;
-            int lowest = 0;
+            flagged = 0;
             while(i<num_cores)
             {
-                int arrival_timeA = core_array[i]->current_job->time;
-                int arrival_timeB = core_array[i-1]->current_job->time;
-                int priorityA = core_array[i]->current_job->priority;
-                int priorityB = core_array[i-1]->current_job->priority;
-                if((priorityA) == (priorityB))
+                if((PRIORITY_A) == (PRIORITY_B))
                 {
-                    if(arrival_timeA > arrival_timeB)
+                    if(ARRIVAL_TIME_A > ARRIVAL_TIME_B)
                     {
-                        longest = i;
+                        flagged = i;
                     }
-                    // else
-                    // {
-                    //     longest = i-1;
-                    // }
                 }
-                else if ((priorityA) > (priorityB))
+                else if ((REMAINING_TIME_A) > (REMAINING_TIME_B))
                 {
-                    longest = i;
+                    flagged = i;
                 }
                 
             i++;
             }
-            if((core_array[lowest]->current_job->priority) > (tmp->running_time - (tmp->time-time)))
+            
+            printf("The longest job is on core %d\n",i);
+            
+            ///figure out if longest job remaining is longer than the job that jsut arrived.
+            if((PRIORITY_B) > (tmp->priority))
             {
-                int remaining_time = core_array[lowest]->current_job->running_time-(core_array[lowest]->current_job->time-time);
-                core_array[lowest]->current_job->running_time = remaining_time;
-                priqueue_offer(&job_queue,core_array[lowest]->current_job);
-                core_array[lowest]->current_job = tmp;
+                printf("placed job %d into the queue. Placed job %d onto core %d!\n",core_array[flagged]->current_job->job_number,tmp->job_number,flagged);
+                core_array[flagged]->current_job->running_time = REMAINING_TIME_B;
+                priqueue_offer(&job_queue,core_array[flagged]->current_job);
+                core_array[flagged]->current_job = tmp;
+                return flagged;
             }
             else
             {
-                priqueue_offer(&job_queue,tmp);   
+                printf("Placed the new job, job: %d, into the queue.",tmp->job_number);
+                priqueue_offer(&job_queue,tmp);
+                return -1;    
             }
-            break;
+            break;       
         case RR:
             printf("RR schedule\n");
             while(i<num_cores)
@@ -329,7 +330,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             i++;
             }
             priqueue_offer(&job_queue,tmp);
-            break;                                                
+            break;                                         
         default:
             printf("Invalid value for scheme!!! Received: %d\n",pri_scheme );
             break;
