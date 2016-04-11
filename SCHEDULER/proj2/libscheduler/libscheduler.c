@@ -11,8 +11,8 @@
 
 #define ARRIVAL_TIME_A (core_array[i]->current_job->time)
 #define ARRIVAL_TIME_B (core_array[flagged]->current_job->time)
-#define REMAINING_TIME_A (core_array[i]->current_job->running_time-(core_array[i]->current_job->placed_on_core-time))
-#define REMAINING_TIME_B (core_array[flagged]->current_job->running_time-(core_array[flagged]->current_job->placed_on_core-time))
+#define REMAINING_TIME_A (core_array[i]->current_job->running_time-(time-core_array[i]->current_job->placed_on_core))
+#define REMAINING_TIME_B (core_array[flagged]->current_job->running_time-(time-core_array[flagged]->current_job->placed_on_core))
 #define PRIORITY_A (core_array[i]->current_job->priority)
 #define PRIORITY_B (core_array[flagged]->current_job->priority)
 
@@ -41,15 +41,33 @@ int fifo_compare(const void * a, const void * b)
 int sjf_compare(const void * a, const void * b)
 {
     const job_t * job1 = a;
-	  const job_t * job2 = b;
-	  return ( job1->running_time - job2->running_time );
+	const job_t * job2 = b;
+    
+    if((job1->running_time - job2->running_time) == 0)
+    {
+        if(job1->time > job2->time)
+        {
+            return (1);
+        }
+        
+    }
+	return ( job1->running_time - job2->running_time );
 }
 
 int pri_compare(const void * a, const void * b)
 {
     const job_t * job1 = a;
-	  const job_t * job2 = b;
-	  return ( job1->priority - job2->priority );
+	const job_t * job2 = b;
+    
+    if((job1->priority - job2->priority) == 0)
+    {
+        if(job1->time > job2->time)
+        {
+            return (1);
+        }
+        
+    }
+	return ( job1->priority - job2->priority );
 }
 
 /**
@@ -237,13 +255,15 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             i++;
             }
             
-            printf("The longest job is on core %d\n",i);
+            printf("The longest job is on core %d\n",flagged);
             
             ///figure out if longest job remaining is longer than the job that jsut arrived.
-            if((REMAINING_TIME_B) > (tmp->running_time - (tmp->time-time)))
+            printf("Job %d runtime %d is less than Job %d runtime %d\n",core_array[flagged]->current_job->job_number,REMAINING_TIME_B,tmp->job_number,tmp->running_time);
+            if((REMAINING_TIME_B) > (tmp->running_time))
             {
                 printf("placed job %d into the queue. Placed job %d onto core %d!\n",core_array[flagged]->current_job->job_number,tmp->job_number,flagged);
                 core_array[flagged]->current_job->running_time = REMAINING_TIME_B;
+                core_array[flagged]->current_job->time_placed_in_queue = time;
                 priqueue_offer(&job_queue,core_array[flagged]->current_job);
                 tmp->placed_on_core = time;
                 tmp->previously_scheduled = true;
@@ -302,7 +322,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
                         flagged = i;
                     }
                 }
-                else if ((REMAINING_TIME_A) > (REMAINING_TIME_B))
+                else if ((PRIORITY_A) > (PRIORITY_B))
                 {
                     flagged = i;
                 }
@@ -310,13 +330,14 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             i++;
             }
             
-            printf("The longest job is on core %d\n",i);
+            printf("The priority closes to 0 job is on core %d\n",flagged);
             
             ///figure out if longest job remaining is longer than the job that jsut arrived.
             if((PRIORITY_B) > (tmp->priority))
             {
                 printf("placed job %d into the queue. Placed job %d onto core %d!\n",core_array[flagged]->current_job->job_number,tmp->job_number,flagged);
                 core_array[flagged]->current_job->running_time = REMAINING_TIME_B;
+                core_array[flagged]->current_job->time_placed_in_queue = time;
                 priqueue_offer(&job_queue,core_array[flagged]->current_job);
                 tmp->placed_on_core = time;
                 tmp->previously_scheduled = true;
@@ -377,8 +398,10 @@ int scheduler_job_finished(int core_id, int job_number, int time)
     //int j=0;
     
     core_array[core_id]->current_job = queued_job;
+    
     if(core_array[core_id]->current_job != NULL)
     {
+    core_array[core_id]->current_job->placed_on_core = time;
         total_job_waiting_time+=(time-core_array[core_id]->current_job->time_placed_in_queue);
         //total_job_waiting_time+=(time-core_array[core_id]->current_job->time);
         if(!core_array[core_id]->current_job->previously_scheduled)
