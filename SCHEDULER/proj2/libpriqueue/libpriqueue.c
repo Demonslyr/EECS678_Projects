@@ -166,19 +166,6 @@ void priqueue_print_jobs(priqueue_t *q)
   printf(" [NULL]\n"); 
 }
 
-void priqueue_print(priqueue_t *q)
-{
-  priqueue_node *curr = q->head;
-
-  while( curr != NULL )
-  {
-    printf(": [%d] %d ", curr->id, *(int*)curr->data );
-    curr = curr->next;
-  }
-  printf(":\n");
-}
-
-
 /**
   Returns the element at the specified position in this list, or NULL if
   the queue does not contain an index'th element.
@@ -194,7 +181,6 @@ void *priqueue_at(priqueue_t *q, int index)
   
   while( node != NULL )
   {
-    //printf("while loop: %d\n", node->id );
     if( node->id == index )
     {
       return node->data;
@@ -220,8 +206,6 @@ void *priqueue_at(priqueue_t *q, int index)
  */
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
-  //printf("priqueue_remove\n");
-
   if( q->head == NULL )
   {
     return 0;
