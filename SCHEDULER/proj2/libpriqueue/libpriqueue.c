@@ -129,7 +129,6 @@ void *priqueue_poll(priqueue_t *q)
   
   if(q->head->next != NULL)
   {
-    free( node );
     q->head = q->head->next;
     priqueue_reindex( q );
   }
@@ -137,7 +136,7 @@ void *priqueue_poll(priqueue_t *q)
   {
     q->head = NULL;
   }
-  
+  free( node );
   return data;
 }
 

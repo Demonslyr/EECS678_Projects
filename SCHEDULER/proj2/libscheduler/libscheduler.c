@@ -425,9 +425,8 @@ int scheduler_job_finished(int core_id, int job_number, int time)
 {
     jobs_finished++;
     total_turnaround_time+=(time-core_array[core_id]->current_job->time);
-    
+    free(core_array[core_id]->current_job);
     struct job_t* queued_job = priqueue_poll(&job_queue);
-    //int j=0;
     
     core_array[core_id]->current_job = queued_job;
     
@@ -543,6 +542,14 @@ float scheduler_average_response_time()
 */
 void scheduler_clean_up()
 {
+priqueue_destroy(&job_queue);
+int i=0;
+while(i<num_cores)
+{
+    free(core_array[i]);
+    i++;
+}
+free(core_array);
 
 }
 
