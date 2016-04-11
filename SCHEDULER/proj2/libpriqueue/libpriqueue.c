@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "../libscheduler/libscheduler.h"
 #include "libpriqueue.h"
+
 /**
   Initializes the priqueue_t data structure.
   
@@ -28,7 +28,6 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 
   q->comparer = comparer;
 }
-
 
 /**
   Inserts the specified element into this priority queue.
@@ -56,7 +55,6 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 
     while( curr != NULL ) 
     {
-      //printf("compare: %d\n", (*q->comparer)( node->data, curr->data));
       if( (*q->comparer)( node->data, curr->data) > 0 )
       {
         if( curr->next == NULL )
@@ -85,11 +83,9 @@ int priqueue_offer(priqueue_t *q, void *ptr)
   }
 
   priqueue_reindex( q );
-  //priqueue_print( q );
 
   return node->id;
 }
-
 
 /**
   Retrieves, but does not remove, the head of this queue, returning NULL if
@@ -101,7 +97,6 @@ int priqueue_offer(priqueue_t *q, void *ptr)
  */
 void *priqueue_peek(priqueue_t *q)
 {
-  printf("priqueue_peek\n");
   if(q->head == NULL){
       return NULL;
   }
@@ -153,19 +148,6 @@ void priqueue_reindex(priqueue_t *q)
   }
 }
 
-void priqueue_print_jobs(priqueue_t *q)
-{
-   priqueue_node *curr = q->head;
-   printf("Job Queue:");
-  while( curr != NULL )
-  {
-     struct job_t* data = curr->data;   
-    printf(" [Jn:%d, rt:%d, pri:%d] ->", data->job_number,data->running_time,data->priority );
-    curr = curr->next;
-  }
-  printf(" [NULL]\n"); 
-}
-
 /**
   Returns the element at the specified position in this list, or NULL if
   the queue does not contain an index'th element.
@@ -193,7 +175,6 @@ void *priqueue_at(priqueue_t *q, int index)
 
 	return NULL;
 }
-
 
 /**
   Removes all instances of ptr from the queue. 
@@ -249,7 +230,6 @@ int priqueue_remove(priqueue_t *q, void *ptr)
 	return removed;
 }
 
-
 /**
   Removes the specified index from the queue, moving later elements up
   a spot in the queue to fill the gap.
@@ -294,7 +274,6 @@ void *priqueue_remove_at(priqueue_t *q, int index)
 	return NULL;
 }
 
-
 /**
   Returns the number of elements in the queue.
  
@@ -312,7 +291,6 @@ int priqueue_size(priqueue_t *q)
 
   return (curr->id + 1);
 }
-
 
 /**
   Destroys and frees all the memory associated with q.

@@ -451,7 +451,6 @@ int scheduler_quantum_expired(int core_id, int time)
     core_array[core_id]->current_job = queued_job;
     total_job_waiting_time+=(time-core_array[core_id]->current_job->time_placed_in_queue);
     
-    
     if(!core_array[core_id]->current_job->previously_scheduled)
     {
         total_response_time+=(time-core_array[core_id]->current_job->time_placed_in_queue);
@@ -534,5 +533,13 @@ void scheduler_clean_up()
 */
 void scheduler_show_queue()
 {
-    priqueue_print_jobs(&job_queue);
+    int i = 0;
+    printf("Job Queue:");
+    while( priqueue_at( &job_queue, i ) != NULL )
+    {
+        struct job_t* data = priqueue_at( &job_queue, i );   
+        printf(" [Jn:%d, rt:%d, pri:%d] ->", data->job_number,data->running_time,data->priority );
+        i++;
+    }
+    printf(" [NULL]\n"); 
 }
