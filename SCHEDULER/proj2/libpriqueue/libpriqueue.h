@@ -36,6 +36,7 @@ void * priqueue_remove_at  (priqueue_t *q, int index);
 int    priqueue_size       (priqueue_t *q);
 void   priqueue_reindex    (priqueue_t *q);
 void   priqueue_print      (priqueue_t *q);
+void   priqueue_print_jobs      (priqueue_t *q);
 
 void   priqueue_destroy  (priqueue_t *q);
 

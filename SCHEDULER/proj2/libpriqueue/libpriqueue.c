@@ -154,6 +154,19 @@ void priqueue_reindex(priqueue_t *q)
   }
 }
 
+void priqueue_print_jobs(priqueue_t *q)
+{
+   priqueue_node *curr = q->head;
+   printf("Job Queue:");
+  while( curr != NULL )
+  {
+     struct job_t* data = curr->data;   
+    printf(" [Jn:%d, rt:%d, pri:%d] ->", data->job_number,data->running_time,data->priority );
+    curr = curr->next;
+  }
+  printf(" [NULL]\n"); 
+}
+
 void priqueue_print(priqueue_t *q)
 {
   priqueue_node *curr = q->head;
