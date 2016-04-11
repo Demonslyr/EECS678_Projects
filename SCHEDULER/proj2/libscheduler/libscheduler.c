@@ -28,20 +28,18 @@ int total_response_time = 0;
 int jobs_finished = 0;
 int num_cores;
 priqueue_t job_queue;
-//core_t **core_array;
 core_t **core_array;
 scheme_t pri_scheme;
 
 int fifo_compare(const void * a, const void * b)
 {
-    //printf("IM THE FIFO COMPARE!");
     return (1);
 }
 
 int sjf_compare(const void * a, const void * b)
 {
     const job_t * job1 = a;
-	const job_t * job2 = b;
+	  const job_t * job2 = b;
     
     if((job1->running_time - job2->running_time) == 0)
     {
@@ -51,13 +49,13 @@ int sjf_compare(const void * a, const void * b)
         }
         
     }
-	return ( job1->running_time - job2->running_time );
+	  return ( job1->running_time - job2->running_time );
 }
 
 int pri_compare(const void * a, const void * b)
 {
     const job_t * job1 = a;
-	const job_t * job2 = b;
+	  const job_t * job2 = b;
     
     if((job1->priority - job2->priority) == 0)
     {
@@ -67,7 +65,7 @@ int pri_compare(const void * a, const void * b)
         }
         
     }
-	return ( job1->priority - job2->priority );
+	  return ( job1->priority - job2->priority );
 }
 
 /**
@@ -84,9 +82,7 @@ int pri_compare(const void * a, const void * b)
 */
 void scheduler_start_up(int cores, scheme_t scheme)
 {
-        num_cores = cores;
-    //struct core_t core_arr[cores];
-    //core_array = *core_arr;
+    num_cores = cores;
     pri_scheme = scheme;
     switch(pri_scheme)
     {
@@ -124,20 +120,6 @@ void scheduler_start_up(int cores, scheme_t scheme)
         printf("made a core");
         i++;
     }
-    
-    // struct job_t *tmp = (struct job_t*)malloc(sizeof(struct job_t));
-    // tmp->time = 0;
-    // tmp->job_number = 43;
-    // tmp->running_time = 6;
-    // tmp->priority = 3;
-    
-    // priqueue_offer(&job_queue,tmp);
-    
-    // struct job_t* test_job = priqueue_peek(&job_queue);
-    // printf("LOOK AT ME!!: %d\n",test_job->job_number);
-    // test_job = NULL;
-    // test_job = priqueue_poll(&job_queue);
-    // printf("Also this!: %d\n",test_job->job_number);
 }
 
 
@@ -173,12 +155,6 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
     tmp->previously_scheduled = false;
     tmp->time_placed_in_queue = time;
     tmp->placed_on_core = -1; 
-    
-    // struct job_t* test_job = priqueue_peek(&job_queue);
-    // printf("LOOK AT ME IN TEH QUEUE!!: %d\n",test_job->job_number);
-    // test_job = NULL;
-    // test_job = priqueue_poll(&job_queue);
-    // printf("Also this in the QUEUE!: %d\n",test_job->job_number);
     
     int i = 0;
     int flagged = 0;
@@ -403,7 +379,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
             printf("Invalid value for scheme!!! Received: %d\n",pri_scheme );
             break;
     }
-	return -1;
+	  return -1;
 }
 
 
@@ -446,7 +422,7 @@ int scheduler_job_finished(int core_id, int job_number, int time)
         printf("Job was waiting in queue for %d time cycles!",time-core_array[core_id]->current_job->time);
         return core_array[core_id]->current_job->job_number;
     }
-	return -1;
+	  return -1;
 }
 
 
@@ -483,9 +459,6 @@ int scheduler_quantum_expired(int core_id, int time)
     }            
     
     return core_array[core_id]->current_job->job_number;
-   
-       
-	//return -1;
 }
 
 
@@ -500,7 +473,7 @@ int scheduler_quantum_expired(int core_id, int time)
  */
 float scheduler_average_waiting_time()
 {
-	return ((float)total_job_waiting_time/(float)jobs_finished);
+	  return ((float)total_job_waiting_time/(float)jobs_finished);
 }
 
 
@@ -515,7 +488,7 @@ float scheduler_average_waiting_time()
  */
 float scheduler_average_turnaround_time()
 {
-	return ((float)total_turnaround_time/(float)jobs_finished);
+	  return ((float)total_turnaround_time/(float)jobs_finished);
 }
 
 
@@ -530,7 +503,7 @@ float scheduler_average_turnaround_time()
  */
 float scheduler_average_response_time()
 {
-	return ((float)total_response_time/(float)jobs_finished);
+	  return ((float)total_response_time/(float)jobs_finished);
 }
 
 
@@ -542,15 +515,14 @@ float scheduler_average_response_time()
 */
 void scheduler_clean_up()
 {
-priqueue_destroy(&job_queue);
-int i=0;
-while(i<num_cores)
-{
-    free(core_array[i]);
-    i++;
-}
-free(core_array);
-
+    priqueue_destroy(&job_queue);
+    int i=0;
+    while(i<num_cores)
+    {
+        free(core_array[i]);
+        i++;
+    }
+    free(core_array);
 }
 
 

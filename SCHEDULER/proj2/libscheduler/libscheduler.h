@@ -22,7 +22,6 @@ typedef struct job_t
   int placed_on_core;
   int first_placed_on_core;
   bool previously_scheduled;
-
 } job_t;
 
 typedef struct core_t
