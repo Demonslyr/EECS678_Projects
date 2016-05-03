@@ -51,6 +51,8 @@
 typedef struct {
 	struct list_head list;
 	/* TODO: DECLARE NECESSARY MEMBER VARIABLES */
+	int index;
+	int order;
 } page_t;
 
 /**************************************************************************
@@ -82,6 +84,8 @@ void buddy_init()
 	int n_pages = (1<<MAX_ORDER) / PAGE_SIZE;
 	for (i = 0; i < n_pages; i++) {
 		/* TODO: INITIALIZE PAGE STRUCTURES */
+		g_pages[i].index = i;
+		g_pages[i].order = -1;
 	}
 
 	/* initialize freelist */
@@ -91,6 +95,7 @@ void buddy_init()
 
 	/* add the entire memory as a freeblock */
 	list_add(&g_pages[0].list, &free_area[MAX_ORDER]);
+	g_pages[0].order = MAX_ORDER;
 }
 
 /**
@@ -110,7 +115,48 @@ void buddy_init()
 void *buddy_alloc(int size)
 {
 	/* TODO: IMPLEMENT THIS FUNCTION */
-	return NULL;
+	int order, iter;
+	order = find_order_needed(size);
+
+	iter = order;
+
+	if( order < 0 )
+	{
+		return NULL;
+	}
+
+	while( list_empty( &free_area[iter] ) )
+	{
+		iter ++;
+	}
+
+	while( iter > order )
+	{
+		if( !list_empty( &free_area[iter] ) )
+		{
+			page_t *pg = list_entry( free_area[iter].next, page_t, list );
+
+			int index = pg->index;
+			//printf( "index: %d\n", index );
+			list_move( free_area[iter].next, free_area[iter-1].next );
+			pg->order = iter-1;
+
+			page_t *pg2 = &g_pages[ index + ( 1 << ( iter-1 ) ) / PAGE_SIZE ];
+			list_add_tail( &pg2->list, &free_area[ iter-1 ] );
+			pg2->order = iter-1;
+
+			iter--;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+
+	struct list_head * holder = free_area[order].next;
+	list_del( free_area[order].next );
+	//printf( "size: %d order: %d\n", size, order);
+	return holder;
 }
 
 /**
