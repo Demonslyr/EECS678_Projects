@@ -154,13 +154,13 @@ void buddy_dump()
 int find_order_needed(int size)
 {
 	int o;
-	for( o = MIN_ORDER; i <= MAX_ORDER; o++ )
+	for( o = MIN_ORDER; o <= MAX_ORDER; o++ )
 	{
-		if( pow(2, MIN_ORDER) >= size )
+		if( (1<<o) >= size )
 		{
 			return o;
 		}
 	}
 
-	return NULL;
+	return -1;
 }
