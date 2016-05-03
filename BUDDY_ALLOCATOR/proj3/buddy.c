@@ -145,3 +145,23 @@ void buddy_dump()
 	}
 	printf("\n");
 }
+
+/**
+ * Find needed size
+ * 
+ * returns the order we need
+ */
+int find_size_needed(int size)
+{
+	int array = [4, 8, 16, 32, 64, 128, 256, 512, 1024];
+
+	for( int i = 0; i < 9; i++ )
+	{
+		if( array[i]*1024 >= size )
+		{
+			return i;
+		}
+	}
+
+	return NULL;
+}
