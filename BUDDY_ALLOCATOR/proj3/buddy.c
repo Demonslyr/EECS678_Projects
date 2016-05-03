@@ -147,19 +147,18 @@ void buddy_dump()
 }
 
 /**
- * Find needed size
+ * Find needed order
  * 
  * returns the order we need
  */
-int find_size_needed(int size)
+int find_order_needed(int size)
 {
-	int array = [4, 8, 16, 32, 64, 128, 256, 512, 1024];
-
-	for( int i = 0; i < 9; i++ )
+	int o;
+	for( o = MIN_ORDER; i <= MAX_ORDER; o++ )
 	{
-		if( array[i]*1024 >= size )
+		if( pow(2, MIN_ORDER) >= size )
 		{
-			return i;
+			return o;
 		}
 	}
 
