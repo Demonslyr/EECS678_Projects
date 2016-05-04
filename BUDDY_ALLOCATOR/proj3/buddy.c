@@ -190,7 +190,7 @@ void buddy_free(void *addr)
 				pg->order++;
 				if( pg->index < buddy_index )
 				{
-					if( move )
+					if( move == 1 )
 					{
 						list_move(&g_pages[pg->index].list, &free_area[pg->order] );
 					}
@@ -203,6 +203,17 @@ void buddy_free(void *addr)
 				else
 				{
 					list_move( &g_pages[buddy_index].list, &free_area[pg->order] );
+                    
+                    //////////////////////////////////////////
+                    if(move == 1)
+                    {
+                    list_del( &g_pages[pg->index].list );
+                    }
+                    
+                    pg = &g_pages[buddy_index];//list_entry(PAGE_TO_ADDR(buddy_index),page_t, list);
+                    pg->order++;//increase "buddy's" order
+                    ///////////////////////////////////////////
+                    
 				}
 				move = 1;
 				break;
@@ -232,7 +243,7 @@ void buddy_free(void *addr)
 void buddy_dump()
 {
 	int o;
-	printf("**");
+	//printf("**");
 	for (o = MIN_ORDER; o <= MAX_ORDER; o++) {
 		struct list_head *pos;
 		int cnt = 0;

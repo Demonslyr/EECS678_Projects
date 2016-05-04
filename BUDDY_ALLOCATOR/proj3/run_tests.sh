@@ -17,7 +17,7 @@ do
 
     ./buddy -i $F > $TMP_FILE
 
-    # cat $TMP_FILE # Uncomment this line to output run results
+     cat $TMP_FILE # Uncomment this line to output run results
 
     RESULT_FILE=`echo $F | sed "s/$TEST_PREFIX/$RESULT_PREFIX/g"`
 
