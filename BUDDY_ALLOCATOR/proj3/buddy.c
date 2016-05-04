@@ -174,7 +174,7 @@ void buddy_free(void *addr)
 	int move = 0;
 	page_t * pg = list_entry( addr, page_t, list );
 
-	while( pg->order < MAX_ORDER )
+	while( pg->order <= MAX_ORDER )
 	{
 		int found = 0;
 		int buddy_index = ADDR_TO_PAGE(BUDDY_ADDR( PAGE_TO_ADDR(pg->index), pg->order ) );
