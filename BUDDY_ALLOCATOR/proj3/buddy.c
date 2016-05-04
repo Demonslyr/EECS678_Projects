@@ -125,7 +125,7 @@ void *buddy_alloc(int size)
 		return NULL;
 	}
 
-	while( list_empty( &free_area[iter] ) )
+	while( list_empty( &free_area[iter] ) && iter < MAX_ORDER)
 	{
 		iter ++;
 	}
@@ -207,7 +207,7 @@ void buddy_free(void *addr)
                     //////////////////////////////////////////
                     if(move == 1)
                     {
-                    list_del( &g_pages[pg->index].list );
+                    	list_del( &g_pages[pg->index].list );
                     }
                     
                     pg = &g_pages[buddy_index];//list_entry(PAGE_TO_ADDR(buddy_index),page_t, list);
