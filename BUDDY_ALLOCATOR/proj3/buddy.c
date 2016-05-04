@@ -53,6 +53,7 @@ typedef struct {
 	/* TODO: DECLARE NECESSARY MEMBER VARIABLES */
 	int index;
 	int order;
+	int isFree;
 } page_t;
 
 /**************************************************************************
@@ -86,6 +87,7 @@ void buddy_init()
 		/* TODO: INITIALIZE PAGE STRUCTURES */
 		g_pages[i].index = i;
 		g_pages[i].order = -1;
+		g_pages[i].isFree = 1;
 	}
 
 	/* initialize freelist */
@@ -140,7 +142,7 @@ void *buddy_alloc(int size)
 			g_pages[index].order = iter-1;
 			list_move( free_area[iter].next, free_area[iter-1].next );
 
-			int buddy_index = index + ( ( 1 << ( iter-1 ) ) / PAGE_SIZE );
+			int buddy_index = (index + ( ( 1 << ( iter-1 ) ) / PAGE_SIZE ))-1;
 			g_pages[buddy_index].order = iter-1;
 			list_add_tail( &g_pages[buddy_index].list, &free_area[ iter-1 ] );
 
@@ -154,6 +156,7 @@ void *buddy_alloc(int size)
 	}
 
 	struct list_head * holder = free_area[order].next;
+	list_entry( holder, page_t, list )->isFree = 0;
 	list_del( free_area[order].next );
 	//printf( "size: %d order: %d\n", size, order);
 	return holder;
@@ -172,10 +175,28 @@ void buddy_free(void *addr)
 {
 	/* TODO: IMPLEMENT THIS FUNCTION */
 	int i;
-	page_t * pg = &g_pages[ ADDR_TO_PAGE(addr) ];
+
+	page_t * pg = list_entry( addr, page_t, list );
 	for( i = pg->order; i < MAX_ORDER; i++)
 	{
-		int buddy_index = ADDR_TO_PAGE(BUDDY_ADDR( (struct page_t*)addr, i ));
+		int buddy_index = ADDR_TO_PAGE(BUDDY_ADDR( PAGE_TO_ADDR(pg->index), pg->order ));
+		// if( !g_pages[buddy_index].isFree )
+		// {
+		// 	printf("buddy not free\n");
+		// }
+		// else
+		// {
+		// 	printf("buddy free\n");
+		// }
+		// page_t * iter;
+		// list_for_each_entry( iter, free_area[pg->order].next, list)
+		// {
+		// 	if( g_pages[buddy_index].list == iter->list )
+		// 	{
+		// 		printf("inside list for each entry if\n");
+		// 		return;
+		// 	}
+		// }
 		printf("order: %d\n", pg->order);
 		printf("index: %d\n", pg->index);
 		printf("buddy index: %d\n", buddy_index);
