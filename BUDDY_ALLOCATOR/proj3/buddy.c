@@ -174,14 +174,21 @@ void buddy_free(void *addr)
 	int i;
 
 	page_t * pg = list_entry( addr, page_t, list );
+
 	for( i = pg->order; i < MAX_ORDER; i++)
 	{
 		int buddy_index = ADDR_TO_PAGE(BUDDY_ADDR( PAGE_TO_ADDR(pg->index), pg->order ));
 
-		page_t * iter;
-		list_for_each_entry( iter, free_area[pg->order].next, list )
+		struct list_head * i;
+		list_for_each( i, &free_area[pg->order] )
 		{
-			printf("%d --", iter->index);
+			if( buddy_index == list_entry( i, page_t, list )->index )//if buddy is in list it is free
+			{	
+				printf("free\n");
+				pg->order++;
+				list_move( &pg->list, free_area[pg->order].next);
+				break;
+			}
 		}
 
 		printf("order: %d    index: %d   buddy index: %d\n", pg->order, pg->index, buddy_index);
