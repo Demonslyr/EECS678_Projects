@@ -171,6 +171,7 @@ void *buddy_alloc(int size)
 void buddy_free(void *addr)
 {
 	/* TODO: IMPLEMENT THIS FUNCTION */
+	int move = 0;
 	page_t * pg = list_entry( addr, page_t, list );
 
 	while( pg->order < MAX_ORDER )
@@ -189,19 +190,34 @@ void buddy_free(void *addr)
 				pg->order++;
 				if( pg->index < buddy_index )
 				{
-					list_add( &g_pages[pg->index].list, &free_area[pg->order] );
+					if( move )
+					{
+						list_move(&g_pages[pg->index].list, &free_area[pg->order] );
+					}
+					else
+					{
+						list_add( &g_pages[pg->index].list, &free_area[pg->order] );
+					}
 					list_del( &g_pages[buddy_index].list );
 				}
 				else
 				{
 					list_move( &g_pages[buddy_index].list, &free_area[pg->order] );
 				}
+				move = 1;
 				break;
 			}
 		}
 		if( !found )
 		{
-			list_add( &g_pages[pg->index].list, &free_area[pg->order] );
+			if( move )
+			{
+				list_move( &g_pages[pg->index].list, &free_area[pg->order]);
+			}
+			else
+			{
+				list_add( &g_pages[pg->index].list, &free_area[pg->order] );
+			}
 			break;
 		}
 
