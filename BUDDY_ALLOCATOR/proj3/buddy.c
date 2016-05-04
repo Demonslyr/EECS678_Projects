@@ -177,16 +177,15 @@ void buddy_free(void *addr)
 
 	for( i = pg->order; i < MAX_ORDER; i++)
 	{
-		int buddy_index = ADDR_TO_PAGE(BUDDY_ADDR( PAGE_TO_ADDR(pg->index), pg->order ));
+		int buddy_index = ADDR_TO_PAGE(BUDDY_ADDR( PAGE_TO_ADDR(pg->index), pg->order ) );
 
 		struct list_head * i;
 		list_for_each( i, &free_area[pg->order] )
 		{
 			if( buddy_index == list_entry( i, page_t, list )->index )//if buddy is in list it is free
 			{	
-				printf("free\n");
-				pg->order++;
-				list_move( &pg->list, free_area[pg->order].next);
+				printf("%d\n", pg->index);
+				list_add( &g_pages[pg->index].list, &free_area[pg->order+1] );
 				break;
 			}
 		}
