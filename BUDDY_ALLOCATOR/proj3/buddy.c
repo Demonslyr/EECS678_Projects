@@ -53,7 +53,6 @@ typedef struct {
 	/* TODO: DECLARE NECESSARY MEMBER VARIABLES */
 	int index;
 	int order;
-	int isFree;
 } page_t;
 
 /**************************************************************************
@@ -87,7 +86,6 @@ void buddy_init()
 		/* TODO: INITIALIZE PAGE STRUCTURES */
 		g_pages[i].index = i;
 		g_pages[i].order = -1;
-		g_pages[i].isFree = 1;
 	}
 
 	/* initialize freelist */
@@ -157,7 +155,6 @@ void *buddy_alloc(int size)
 	}
 
 	struct list_head * holder = free_area[order].next;
-	list_entry( holder, page_t, list )->isFree = 0;
 	list_del( free_area[order].next );
 	return holder;
 }
@@ -180,26 +177,14 @@ void buddy_free(void *addr)
 	for( i = pg->order; i < MAX_ORDER; i++)
 	{
 		int buddy_index = ADDR_TO_PAGE(BUDDY_ADDR( PAGE_TO_ADDR(pg->index), pg->order ));
-		if( !g_pages[buddy_index].isFree )
+
+		page_t * iter;
+		list_for_each_entry( iter, free_area[pg->order].next, list )
 		{
-			printf("buddy not free\n");
+			printf("%d --", iter->index);
 		}
-		else
-		{
-			printf("buddy free\n");
-		}
-		// page_t * iter;
-		// list_for_each_entry( iter, free_area[pg->order].next, list)
-		// {
-		// 	if( g_pages[buddy_index].list == iter->list )
-		// 	{
-		// 		printf("inside list for each entry if\n");
-		// 		return;
-		// 	}
-		// }
-		printf("order: %d\n", pg->order);
-		printf("index: %d\n", pg->index);
-		printf("buddy index: %d\n", buddy_index);
+
+		printf("order: %d    index: %d   buddy index: %d\n", pg->order, pg->index, buddy_index);
 	}
 }
 
