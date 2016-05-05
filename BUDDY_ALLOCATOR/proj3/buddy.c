@@ -130,6 +130,11 @@ void *buddy_alloc(int size)
 		iter ++;
 	}
 
+	if( list_empty( &free_area[iter] ) && iter == MAX_ORDER )
+	{
+		return NULL;
+	}
+
 	while( iter > order )
 	{
 		if( !list_empty( &free_area[iter] ) )
